@@ -1,0 +1,9 @@
+{
+	"name": "ADF-WORKSHOP-BOOTCAMP-2025",
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "029091cc-ec08-41f6-a424-c7ae31184ca4",
+		"tenantId": "17dcec91-66ec-4c4b-a988-473694df546c"
+	}
+}
