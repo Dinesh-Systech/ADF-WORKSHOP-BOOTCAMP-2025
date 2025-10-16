@@ -51,15 +51,11 @@
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate table JSivakum.Stg_Sales_Org_TSE_IN1677;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -83,12 +79,11 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_CSV_IN1677",
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
-							"Directory": "IN1677/End To End Workshop/Src",
-							"Filename": "Sales Org TSE.csv"
+							"Schema": "JSivakum",
+							"Table": "Stg_Sales_Org_TSE_IN1677"
 						}
 					}
 				]

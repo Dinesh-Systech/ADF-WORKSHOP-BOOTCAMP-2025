@@ -26,7 +26,22 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate table JSivakum. Stg_GLAccountMaster_IN1677;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -36,6 +51,16 @@
 							"Container": "boootcamp25",
 							"Directory": "IN1677/End To End Workshop/Src",
 							"Filename": "GLAccountMaster"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "JSivakum",
+							"Table": "Stg_GLAccountMaster_IN1677"
 						}
 					}
 				]
