@@ -15,6 +15,32 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Alc_Customer_Master_IN1680",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstg": {
+								"schema": "KRavi",
+								"table": "Stg_CustomerMaster_IN1680",
+								"database": "Target_ADF_B2025"
+							},
+							"SRCtgt": {
+								"schema": "KRavi",
+								"table": "Alc_Customer_Master_IN1680",
+								"database": "Target_ADF_B2025"
+							},
+							"SNKupdateTgt": {
+								"schema": "KRavi",
+								"table": "Alc_Customer_Master_IN1680",
+								"database": "Target_ADF_B2025"
+							},
+							"SNKinsert": {
+								"schema": "KRavi",
+								"table": "Alc_Customer_Master_IN1680",
+								"database": "Target_ADF_B2025"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
