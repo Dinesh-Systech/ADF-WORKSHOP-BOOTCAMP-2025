@@ -28,21 +28,21 @@
 							{
 								"name": "CreatedDate",
 								"value": {
-									"value": "utcNow",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
 							{
 								"name": "UpdatedBy",
 								"value": {
-									"value": "@pipeline().Pipeline",
+									"value": "null",
 									"type": "Expression"
 								}
 							},
 							{
 								"name": "UpdatedDate",
 								"value": {
-									"value": "utcNow",
+									"value": "null",
 									"type": "Expression"
 								}
 							}
@@ -52,7 +52,6 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate Table Alcobev.CustomerMaster",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -69,7 +68,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Azure_SQL",
+						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
@@ -80,7 +79,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_Azure_SQL",
+						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",

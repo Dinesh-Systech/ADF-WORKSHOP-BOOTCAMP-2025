@@ -1,9 +1,9 @@
 {
-	"name": "PL_Stg_Activation_Master_IN1675",
+	"name": "PL_Stg_Plant_Master_IN1675",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_STG_Activation_Master_AzureSQL",
+				"name": "CP_STG_Plant_Master_AzureSQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -35,7 +35,7 @@
 							{
 								"name": "UpdatedBy",
 								"value": {
-									"value": "null",
+									"value": "null\n",
 									"type": "Expression"
 								}
 							},
@@ -52,7 +52,6 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate Table Stg_Activation_Master_IN1675",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -73,7 +72,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "ActivationMaster",
+							"TableName": "PlantMaster",
 							"DatabaseName": "Trainer"
 						}
 					}
@@ -84,7 +83,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "Stg_Activation_Master_IN1675"
+							"TableName": "Stg_Plant_Master_IN1675"
 						}
 					}
 				]

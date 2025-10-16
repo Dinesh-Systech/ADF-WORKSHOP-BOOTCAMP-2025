@@ -1,9 +1,9 @@
 {
-	"name": "PL_Stg_Activation_Master_IN1675",
+	"name": "PL_Stg_GL_Account_Master_IN1675",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_STG_Activation_Master_AzureSQL",
+				"name": "CP_STG_GL_Account_Master_AzureSQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "CreatedBy",
@@ -47,12 +47,18 @@
 								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate Table Stg_Activation_Master_IN1675",
+						"preCopyScript": "Truncate Table Stg_GL_Account_Master_IN1675",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -69,12 +75,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Azure_SQL_IN1675",
+						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "Alcobev",
-							"TableName": "ActivationMaster",
-							"DatabaseName": "Trainer"
+							"ContainerName": "boootcamp25",
+							"FolderName": "Workshop_Src_Files",
+							"FileName": "GLAccountMaster.csv"
 						}
 					}
 				],
@@ -84,7 +90,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "Stg_Activation_Master_IN1675"
+							"TableName": "Stg_GL_Account_Master_IN1675"
 						}
 					}
 				]

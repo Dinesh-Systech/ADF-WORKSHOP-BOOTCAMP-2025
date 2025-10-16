@@ -28,7 +28,7 @@
 							{
 								"name": "CreatedDate",
 								"value": {
-									"value": "utcNow",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate Table Alcobev.ActivationMapping",
+						"preCopyScript": "Truncate Table Stg_Activation_Mapping_IN1675",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -69,7 +69,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Azure_SQL",
+						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
@@ -80,7 +80,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_Azure_SQL",
+						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
