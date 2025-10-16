@@ -1,0 +1,27 @@
+{
+	"name": "PL_CustomerMaster_IN1677",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_Src_stg",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Src to Stg"
+		},
+		"annotations": []
+	}
+}
