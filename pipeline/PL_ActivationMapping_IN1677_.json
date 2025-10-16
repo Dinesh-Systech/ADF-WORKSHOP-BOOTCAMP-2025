@@ -1,5 +1,5 @@
 {
-	"name": "PL_CompanyMaster_IN1677",
+	"name": "PL_ActivationMapping_IN1677_",
 	"properties": {
 		"activities": [
 			{
@@ -15,23 +15,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
 					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_AzureSqlTable_IN1677",
-						"type": "DatasetReference",
-						"parameters": {
-							"Schema": "Alcobev",
-							"Table": "CompanyMaster"
-						}
-					}
-				]
+				}
 			}
 		],
 		"folder": {
