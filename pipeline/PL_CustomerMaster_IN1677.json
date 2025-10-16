@@ -17,6 +17,36 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAt",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC', 'India Standard Time'), 'dd:MM:yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAt",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -28,7 +58,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
-							"Table": "CompanyMaster"
+							"Table": "CustomerMaster"
 						}
 					}
 				]

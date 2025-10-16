@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "DS_CSV_IN1677",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AzureBlobStorage_IN1677",
