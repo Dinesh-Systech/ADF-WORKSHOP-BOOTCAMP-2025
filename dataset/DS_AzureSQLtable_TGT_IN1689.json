@@ -3,7 +3,13 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AZURE_SQL_IN1689",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbName": {
+					"value": "@dataset().dbName",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"schema": {
@@ -11,6 +17,9 @@
 				"defaultValue": "VSri"
 			},
 			"tablename": {
+				"type": "string"
+			},
+			"dbName": {
 				"type": "string"
 			}
 		},

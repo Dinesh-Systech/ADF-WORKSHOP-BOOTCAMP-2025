@@ -90,7 +90,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "VSri",
-							"tablename": "Stg_Sales_Org_TSE_IN1689"
+							"tablename": "Stg_Sales_Org_TSE_IN1689",
+							"dbName": "Target_ADF_B2025"
 						}
 					}
 				]
