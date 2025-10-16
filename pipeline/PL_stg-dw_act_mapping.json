@@ -1,0 +1,40 @@
+{
+	"name": "PL_stg-dw_act_mapping",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_stg_dw_act_mapping",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_stg_dw",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRC": {
+								"SchemaName": "RRamesh"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "stg - dw"
+		},
+		"annotations": []
+	}
+}
