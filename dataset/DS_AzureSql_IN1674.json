@@ -11,6 +11,9 @@
 			},
 			"TableName": {
 				"type": "string"
+			},
+			"databasename": {
+				"type": "string"
 			}
 		},
 		"annotations": [],

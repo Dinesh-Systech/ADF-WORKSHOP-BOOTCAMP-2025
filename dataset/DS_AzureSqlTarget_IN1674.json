@@ -11,6 +11,9 @@
 			},
 			"Table": {
 				"type": "string"
+			},
+			"Database": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
