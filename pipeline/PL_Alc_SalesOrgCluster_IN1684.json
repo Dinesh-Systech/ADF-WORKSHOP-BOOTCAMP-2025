@@ -1,9 +1,9 @@
 {
-	"name": "PL_Alc_GL_Account_IN1684",
+	"name": "PL_Alc_SalesOrgCluster_IN1684",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_GL_Account",
+				"name": "DF_SalesOrgCluster",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,17 +16,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_GL_Account",
+						"referenceName": "DF_GeographyMaster",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCGLAccount": {
+							"SRCGeographyMaster": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "stg_GL_Account_IN1684",
+								"PR_TableName": "stg_Geography_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
-							"SNKGLAccount": {
+							"SNKGeography": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "Alc_GL_Account_Master_IN1684",
+								"PR_TableName": "Alc_Geography_Master_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							}
 						}
