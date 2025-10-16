@@ -21,7 +21,7 @@
 						"datasetParameters": {
 							"SrcActivationMapping": {
 								"Schema": "JSivakum",
-								"Table": "Stg_ActivationMaster_IN1677"
+								"Table": "Alc_Activation_Mapping_IN1677"
 							},
 							"SinkAlcActivationMappingIN1677": {
 								"Schema": "JSivakum",
