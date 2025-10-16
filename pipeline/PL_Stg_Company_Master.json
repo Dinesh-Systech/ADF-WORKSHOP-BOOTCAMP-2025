@@ -1,0 +1,9 @@
+{
+	"name": "PL_Stg_Company_Master",
+	"properties": {
+		"folder": {
+			"name": "PL_Src_Stg"
+		},
+		"annotations": []
+	}
+}
