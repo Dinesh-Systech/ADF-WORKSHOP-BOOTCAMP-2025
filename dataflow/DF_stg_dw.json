@@ -15,13 +15,24 @@
 					"name": "SRC"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNK"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SELECT"
 				},
 				{
 					"name": "NULL"
+				},
+				{
+					"name": "SKEY"
 				}
 			],
 			"scriptLines": [
@@ -33,7 +44,20 @@
 				"     skipDuplicateMapOutputs: true) ~> SELECT",
 				"SELECT derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL"
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
+				"NULL keyGenerate(output({undefined} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKEY",
+				"SKEY sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNK"
 			]
 		}
 	}
