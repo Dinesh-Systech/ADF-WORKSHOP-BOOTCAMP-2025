@@ -1,6 +1,69 @@
 {
 	"name": "PL_PrimarySalesPlanAOP_IN1674",
 	"properties": {
+		"activities": [
+			{
+				"name": "CD_SRC-TGT",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAt",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAt",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSql_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev",
+							"TableName": "Primary_Sales_Plan_AOP"
+						}
+					}
+				]
+			}
+		],
 		"folder": {
 			"name": "SRC_TRG"
 		},
