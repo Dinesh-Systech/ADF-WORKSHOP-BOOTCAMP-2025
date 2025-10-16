@@ -21,7 +21,7 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKAlcActivationMaster"
+					"name": "SNKAlcGeography"
 				}
 			],
 			"transformations": [
@@ -82,7 +82,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcActivationMaster"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcGeography"
 			]
 		}
 	}
