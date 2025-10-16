@@ -1,0 +1,104 @@
+{
+	"name": "DF_Stg_Primary_Sales_Plan_AOP_IN1680",
+	"properties": {
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgt"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNK"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtDel"
+				}
+			],
+			"transformations": [
+				{
+					"name": "maxDate"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "AlterInsert"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "AlterDelete"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgt",
+				"SRCtgt aggregate() ~> maxDate",
+				"SRCstg derive() ~> Transformation",
+				"Insert@Insert alterRow() ~> AlterInsert",
+				"Transformation split(ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: true) ~> Insert@(Insert, delete)",
+				"Insert@delete alterRow() ~> AlterDelete",
+				"maxDate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNK",
+				"AlterInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
+				"AlterDelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtDel"
+			]
+		}
+	}
+}
