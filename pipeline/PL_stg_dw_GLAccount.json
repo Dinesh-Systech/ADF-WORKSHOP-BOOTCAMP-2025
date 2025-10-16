@@ -1,0 +1,47 @@
+{
+	"name": "PL_stg_dw_GLAccount",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_stg_dw_GLAccount",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_stg_dw_GLAccount",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstg": {
+								"SchemaName": "RRamesh",
+								"Table": "stg_ALC_GL_Account_IN1685",
+								"DB_Name": "Target_ADF_B2025"
+							},
+							"SNKtgt": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_GL_Account_Master_IN1685",
+								"DB_Name": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "stg - dw"
+		},
+		"annotations": []
+	}
+}
