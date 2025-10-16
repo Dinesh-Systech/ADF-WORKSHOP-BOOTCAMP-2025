@@ -1,9 +1,9 @@
 {
-	"name": "PL_PlantMaster_IN1684",
+	"name": "PL_SalesOrgCluster_IN1684",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_PlantMaster_to_stg_PlantMaster",
+				"name": "CP_SalesOrgCluster_to_stg_SalesOrgCluster",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "Created Date",
@@ -47,12 +47,18 @@
 								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table stg_Plant_IN1684;",
+						"preCopyScript": "truncate table stg_Sales_Org_Cluster_IN1684;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -63,62 +69,122 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "PlantCode",
+									"name": "Cluster Name",
 									"type": "String",
-									"physicalType": "nvarchar"
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "PlantCode",
+									"name": "ClusterName",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "PlantName",
+									"name": "Cluster Code",
 									"type": "String",
-									"physicalType": "nvarchar"
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "PlantName",
+									"name": "ClusterCode",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "CompanyCode",
-									"type": "Double",
-									"physicalType": "float"
+									"name": "Cluster ID",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "CompanyCode",
+									"name": "ClusterID",
 									"type": "Int32",
 									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "StateCode",
+									"name": "Cluster Head",
 									"type": "String",
-									"physicalType": "nvarchar"
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "StateCode",
+									"name": "ClusterHead",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "StateName",
+									"name": "Cluster SFA Code",
 									"type": "String",
-									"physicalType": "nvarchar"
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "StateName",
+									"name": "ClusterSFACode",
 									"type": "String",
 									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster Head Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClusterHeadEmail",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster  Head Mobile",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClusterHeadMobile",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Active_flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Active_flag",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClusterStartDate",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClusterEndDate",
+									"type": "Date",
+									"physicalType": "date"
 								}
 							},
 							{
@@ -176,12 +242,10 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_AzureSql_IN1684",
+						"referenceName": "DS_CSV_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Schema": "Alcobev",
-							"PR_TableName": "PlantMaster",
-							"PR_DB": "Trainer"
+							"PR_File": "Sales Org Cluster.csv"
 						}
 					}
 				],
@@ -191,7 +255,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Schema": "PMahendi",
-							"PR_TableName": "stg_Plant_IN1684",
+							"PR_TableName": "stg_Sales_Org_Cluster_IN1684",
 							"PR_DB": "Target_ADF_B2025"
 						}
 					}
