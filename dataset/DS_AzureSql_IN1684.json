@@ -3,10 +3,37 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AzureSql_IN1684",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"PR_DB": {
+					"value": "@dataset().PR_DB",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"PR_Schema": {
+				"type": "string"
+			},
+			"PR_TableName": {
+				"type": "string"
+			},
+			"PR_DB": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().PR_Schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().PR_TableName",
+				"type": "Expression"
+			}
+		}
 	}
 }
