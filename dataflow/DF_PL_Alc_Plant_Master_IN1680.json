@@ -1,0 +1,170 @@
+{
+	"name": "DF_PL_Alc_Plant_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgplant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtPlant"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtplant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "LeftJoinStgAndTgt"
+				},
+				{
+					"name": "insert"
+				},
+				{
+					"name": "nullHandling"
+				},
+				{
+					"name": "updatedAt"
+				},
+				{
+					"name": "SLCTsrccols"
+				},
+				{
+					"name": "SLCTtgtUpdate"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantName as string,",
+				"          CompanyCode as short,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCstgplant",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantName as string,",
+				"          CompanyCode as short,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCtgtPlant",
+				"SRCtgtPlant select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"SRCstgplant, selectTgt join(PlantCode == tgt_PlantCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"nullHandling split(isNull(tgt_PlantCode),",
+				"     !isNull(tgt_PlantCode) && (PlantName!=tgt_PlantName),",
+				"     disjoint: false) ~> insert@(insert, update)",
+				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
+				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = 'PL_Alc_Company_Master_IN1680') ~> updatedAt",
+				"Transformation select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          SalesOrgCode = tgt_SalesOrgCode,",
+				"          SalesOrgName = tgt_SalesOrgName,",
+				"          CompanyCode = tgt_CompanyCode,",
+				"          CompanyKey = tgt_CompanyKey,",
+				"          CompanyName = tgt_CompanyName,",
+				"          ReportingHierarchyCode1 = tgt_ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = tgt_ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = tgt_ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = tgt_ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = tgt_ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = tgt_ReportingHierarchyName3,",
+				"          CreatedAt = tgt_CreatedAt,",
+				"          UpdatedAt = tgt_UpdatedAt,",
+				"          CreatedBy = tgt_CreatedBy,",
+				"          UpdatedBy = tgt_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"insert@insert derive(PlantCode = left(concat(PlantCode, '000000'),6)) ~> Transformation",
+				"SLCTsrccols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNKtgtplant",
+				"updatedAt sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtUpdate"
+			]
+		}
+	}
+}
