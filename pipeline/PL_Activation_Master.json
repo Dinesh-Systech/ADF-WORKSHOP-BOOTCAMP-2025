@@ -17,7 +17,17 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_Activation_Master",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcActivationMaster": {
+								"Schema": "JSivakum",
+								"Table": "Stg_ActivationMaster_IN1677"
+							},
+							"SinkAlcActivationMasterN1677": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Activation_Master_IN1677"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,

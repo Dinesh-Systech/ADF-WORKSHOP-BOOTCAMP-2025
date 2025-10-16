@@ -73,22 +73,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          PromotionCode,",
-				"          PromotionKey,",
-				"          PromotionDescription,",
-				"          PromotionType,",
-				"          RetailerCode,",
-				"          EffectiveFrom,",
-				"          EffectiveTo,",
-				"          MappingLevel,",
-				"          IsActive,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy",
-				"     )) ~> SinkAlcActivationMappingIN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcActivationMappingIN1677"
 			]
 		}
 	}
