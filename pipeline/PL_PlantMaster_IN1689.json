@@ -28,7 +28,7 @@
 							{
 								"name": "UpdatedAT",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -50,7 +50,128 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Stg_PlantMaster_IN1689",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PlantCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "PlantCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PlantName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "PlantName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CompanyCode",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"name": "CompanyCode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "StateName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "StateName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedAT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedAT",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -59,6 +180,17 @@
 						"parameters": {
 							"schema": "Alcobev",
 							"tablename": "PlantMaster"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "VSri",
+							"tablename": "Stg_PlantMaster_IN1689",
+							"dbName": "Target_ADF_B2025"
 						}
 					}
 				]
