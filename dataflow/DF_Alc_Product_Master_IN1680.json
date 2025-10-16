@@ -1,0 +1,206 @@
+{
+	"name": "DF_Alc_Product_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgproduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtProduct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "LeftJoinStgAndTgt"
+				},
+				{
+					"name": "insert"
+				},
+				{
+					"name": "nullHandling"
+				},
+				{
+					"name": "updatedAt"
+				},
+				{
+					"name": "SLCTsrccols"
+				},
+				{
+					"name": "SLCTtgtUpdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as short,",
+				"          Division as string,",
+				"          ConversionFactor as boolean,",
+				"          AcquiredStartDate as string,",
+				"          AcquiredEndDate as string,",
+				"          DisposedStartDate as string,",
+				"          DisposedEndDate as string,",
+				"          InnovationFlag as boolean,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCstgproduct",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as short,",
+				"          Division as string,",
+				"          ConversionFactor as boolean,",
+				"          AcquiredStartDate as string,",
+				"          AcquiredEndDate as string,",
+				"          DisposedStartDate as string,",
+				"          DisposedEndDate as string,",
+				"          InnovationFlag as boolean,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCtgtProduct",
+				"SRCtgtProduct select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"SRCstgproduct, selectTgt join(SKUCode == tgt_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"nullHandling split(isNull(tgt_CompanyCode),",
+				"     !isNull(tgt_CompanyCode) && (SalesOrgCode!=tgt_SalesOrgCode ||SalesOrgName!=tgt_SalesOrgName),",
+				"     disjoint: false) ~> insert@(insert, update)",
+				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
+				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = 'PL_Alc_Company_Master_IN1680') ~> updatedAt",
+				"insert@insert select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          SalesOrgCode = tgt_SalesOrgCode,",
+				"          SalesOrgName = tgt_SalesOrgName,",
+				"          CompanyCode = tgt_CompanyCode,",
+				"          CompanyKey = tgt_CompanyKey,",
+				"          CompanyName = tgt_CompanyName,",
+				"          ReportingHierarchyCode1 = tgt_ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = tgt_ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = tgt_ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = tgt_ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = tgt_ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = tgt_ReportingHierarchyName3,",
+				"          CreatedAt = tgt_CreatedAt,",
+				"          UpdatedAt = tgt_UpdatedAt,",
+				"          CreatedBy = tgt_CreatedBy,",
+				"          UpdatedBy = tgt_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"SLCTsrccols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNKtgtProduct",
+				"updatedAt sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtUpdate"
+			]
+		}
+	}
+}
