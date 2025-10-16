@@ -75,7 +75,10 @@
 		],
 		"typeProperties": {
 			"schema": "SKomala",
-			"table": "stg_Activation_Mapping"
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
 		}
 	}
 }
