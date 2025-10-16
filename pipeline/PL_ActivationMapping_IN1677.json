@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate table JSivakum.stg_Activation_Mapping;",
+						"preCopyScript": "Truncate table JSivakum.Stg_ActivationMapping_IN1677;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -83,7 +83,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "stg_Activation_Mapping"
+							"Table": "Stg_ActivationMapping_IN1677"
 						}
 					}
 				]
