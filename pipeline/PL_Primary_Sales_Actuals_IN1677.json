@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CD_Src_stg",
-				"type": "Copy",
+				"name": "DF_Primary_Sales_Actuals_Incremental_IN1677",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,78 +15,31 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"additionalColumns": [
-							{
-								"name": "CreatedAt",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
+					"dataflow": {
+						"referenceName": "DF_Primary_Sales_Actuals_Incremental_IN1677",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcPrimarySalesActuals": {
+								"Schema": "Alcobev",
+								"Table": "Primary_Sales_Actuals",
+								"DB": "Trainer"
 							},
-							{
-								"name": "UpdatedAt",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
+							"TgtPrimarySalesActuals": {
+								"Schema": "JSivakum",
+								"Table": "Stg_Primary_Sales_Actuals_IN1677"
 							},
-							{
-								"name": "CreatedBy",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "UpdatedBy",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
+							"SinkStgPrimarySalesActualsIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Stg_Primary_Sales_Actuals_IN1677"
 							}
-						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						}
 					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_AzureSqlTable_Src_IN1677",
-						"type": "DatasetReference",
-						"parameters": {
-							"Schema": "Alcobev",
-							"Table": "Primary_Sales_Actuals",
-							"DB": "Trainer"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
-						"type": "DatasetReference",
-						"parameters": {
-							"Schema": "JSivakum",
-							"Table": "Stg_Primary_Sales_Actuals_IN1677",
-							"DB": "Target_ADF_B2025"
-						}
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
