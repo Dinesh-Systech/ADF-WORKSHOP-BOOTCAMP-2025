@@ -20,13 +20,52 @@
 						"additionalColumns": [
 							{
 								"name": "created_date",
-								"value": ""
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created_by",
+								"value": {
+									"value": "\"IN1685\"",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_date",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_by",
+								"value": {
+									"value": "\"IN1685\"",
+									"type": "Expression"
+								}
 							}
 						],
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table ;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -35,6 +74,12 @@
 						"parameters": {
 							"SchemaName": "Alcobev"
 						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
 					}
 				]
 			}
