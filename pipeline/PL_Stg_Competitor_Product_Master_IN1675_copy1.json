@@ -1,0 +1,97 @@
+{
+	"name": "PL_Stg_Competitor_Product_Master_IN1675_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_STG_Competitor_Product_Master_AzureSQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedDate",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "null\n",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedDate",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev",
+							"TableName": "CompetitorProductMaster",
+							"DatabaseName": "Trainer"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev",
+							"TableName": "Stg_Competitor_Product_Master_IN1675"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "PL_Src_Stg"
+		},
+		"annotations": []
+	}
+}
