@@ -50,7 +50,26 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -59,6 +78,17 @@
 						"parameters": {
 							"Schema": "Alcobev",
 							"Table": "Sales Org TSE"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1677",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"Directory": "IN1677/End To End Workshop/Src",
+							"Filename": "Sales Org TSE.csv"
 						}
 					}
 				]
