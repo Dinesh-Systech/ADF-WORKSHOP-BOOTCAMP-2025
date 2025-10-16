@@ -50,7 +50,20 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -59,6 +72,16 @@
 						"parameters": {
 							"Schema": "Alcobev",
 							"Table": "Primary_Sales_Plan_AOP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "JSivakum",
+							"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
 						}
 					}
 				]
