@@ -3,13 +3,22 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_azure_sql_IN1680",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"database": {
+					"value": "@dataset().database",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"schema": {
 				"type": "string"
 			},
 			"table": {
+				"type": "string"
+			},
+			"database": {
 				"type": "string"
 			}
 		},
