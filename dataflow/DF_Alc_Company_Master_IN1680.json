@@ -13,14 +13,36 @@
 						"type": "DatasetReference"
 					},
 					"name": "SRCstgcustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtCustomer"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtCustomer"
+				}
+			],
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCstgcustomer"
+				"     ignoreNoFilesFound: false) ~> SRCstgcustomer",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCtgtCustomer",
+				"SRCstgcustomer sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNKtgtCustomer"
 			]
 		}
 	}
