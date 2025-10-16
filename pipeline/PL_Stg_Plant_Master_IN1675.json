@@ -35,14 +35,14 @@
 							{
 								"name": "UpdatedBy",
 								"value": {
-									"value": "null\n",
+									"value": "UNK",
 									"type": "Expression"
 								}
 							},
 							{
 								"name": "UpdatedDate",
 								"value": {
-									"value": "null",
+									"value": "1900-01-01 00:00:00",
 									"type": "Expression"
 								}
 							}
@@ -52,6 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate Table Stg_Plant_Master_IN1675",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -59,6 +60,112 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PlantCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "PlantCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PlantName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "PlantName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CompanyCode",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"name": "CompanyCode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "StateName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "StateName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -82,8 +189,9 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "Alcobev",
-							"TableName": "Stg_Plant_Master_IN1675"
+							"SchemaName": "DMuthuku",
+							"TableName": "Stg_Plant_Master_IN1675",
+							"DatabaseName": "Target_ADF_B2025"
 						}
 					}
 				]
