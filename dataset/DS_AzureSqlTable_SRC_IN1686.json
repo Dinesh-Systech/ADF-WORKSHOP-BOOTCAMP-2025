@@ -21,10 +21,7 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": {
-				"value": "@dataset().Schema",
-				"type": "Expression"
-			},
+			"schema": "Alcobev",
 			"table": {
 				"value": "@dataset().table",
 				"type": "Expression"
