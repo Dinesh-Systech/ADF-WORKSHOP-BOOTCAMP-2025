@@ -52,10 +52,8 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table STG_ActivationMapping_IN1674",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate",
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
@@ -85,7 +83,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "CKumaram",
-							"Table": "STG_ActivationMapping_IN1674",
+							"Table": "Stg_ActivationMapping_IN1674",
 							"Database": "Target_ADF_B2025"
 						}
 					}
