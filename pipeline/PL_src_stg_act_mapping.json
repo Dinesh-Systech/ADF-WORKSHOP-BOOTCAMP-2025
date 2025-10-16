@@ -52,8 +52,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table stg_ALC_ActivationMapping_IN1685;",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -115,8 +117,8 @@
 								},
 								"sink": {
 									"name": "EffectiveFrom",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
@@ -127,8 +129,8 @@
 								},
 								"sink": {
 									"name": "EffectiveTo",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
