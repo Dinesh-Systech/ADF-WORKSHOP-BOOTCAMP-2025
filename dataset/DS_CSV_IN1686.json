@@ -1,0 +1,68 @@
+{
+	"name": "DS_CSV_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureBlobStorage_IN1686",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Filename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Final_Project"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Filename",
+					"type": "Expression"
+				},
+				"folderPath": "IN1686/Final_Project",
+				"container": "boootcamp25"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "GeneralLedgerCode",
+				"type": "String"
+			},
+			{
+				"name": "GeneralLedgerName",
+				"type": "String"
+			},
+			{
+				"name": "GLType",
+				"type": "String"
+			},
+			{
+				"name": "Currency",
+				"type": "String"
+			},
+			{
+				"name": "Reporting_Hierarchy_Name_L1",
+				"type": "String"
+			},
+			{
+				"name": "Reporting_Hierarchy_Name_L2",
+				"type": "String"
+			},
+			{
+				"name": "Reporting_Hierarchy_Name_L3",
+				"type": "String"
+			},
+			{
+				"name": "Reporting_Hierarchy_Name_L4",
+				"type": "String"
+			}
+		]
+	}
+}
