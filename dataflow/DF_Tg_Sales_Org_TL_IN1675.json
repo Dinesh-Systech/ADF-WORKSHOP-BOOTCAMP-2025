@@ -56,7 +56,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcSalesTLMaster",
-				"DataTypeConversion keyGenerate(output(ClusterKey as long),",
+				"DataTypeConversion keyGenerate(output(TLKey as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> ClusterKey",
 				"ClusterKey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
