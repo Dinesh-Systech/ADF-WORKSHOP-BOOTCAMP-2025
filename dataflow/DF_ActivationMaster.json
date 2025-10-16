@@ -1,5 +1,5 @@
 {
-	"name": "DF_ActivationMapping",
+	"name": "DF_ActivationMaster",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Tgt"
