@@ -1,0 +1,81 @@
+{
+	"name": "DF_GeographyMaster_IN1674",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCGeography"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcGeography"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKGeography"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCGeography",
+				"NullHandling keyGenerate(output(GeographyKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKGeography",
+				"SRCGeography derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
+				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
+				"          each(match(type=='date'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
+				"SKGeography select(mapColumn(",
+				"          GeographyKey,",
+				"          CountryCode,",
+				"          CountryName,",
+				"          ZoneCode,",
+				"          ZoneName,",
+				"          StateCode,",
+				"          StateName,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          Pipeline_RunID",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcGeography"
+			]
+		}
+	}
+}
