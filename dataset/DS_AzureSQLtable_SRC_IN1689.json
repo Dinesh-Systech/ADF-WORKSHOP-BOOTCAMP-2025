@@ -3,7 +3,10 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AZURE_SQL_IN1689",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbName": "Trainer"
+			}
 		},
 		"parameters": {
 			"schema": {
