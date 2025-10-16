@@ -74,6 +74,7 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          PromotionCode,",
+				"          PromotionKey,",
 				"          PromotionDescription,",
 				"          PromotionType,",
 				"          ProductLevelCode,",
@@ -82,8 +83,7 @@
 				"          CreatedAt,",
 				"          UpdatedAt,",
 				"          CreatedBy,",
-				"          UpdatedBy,",
-				"          PromotionKey",
+				"          UpdatedBy",
 				"     )) ~> SinkAlcActivationMasterN1677"
 			]
 		}
