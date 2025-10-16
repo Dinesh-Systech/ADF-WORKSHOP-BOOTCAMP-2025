@@ -1,0 +1,40 @@
+{
+	"name": "DF_stg_dw",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRC"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SELECT"
+				},
+				{
+					"name": "NULL"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRC",
+				"SRC select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECT",
+				"SELECT derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL"
+			]
+		}
+	}
+}
