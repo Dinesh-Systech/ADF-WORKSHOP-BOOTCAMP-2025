@@ -58,7 +58,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
-							"Table": "CustomerMaster"
+							"Table": "CustomerMaster",
+							"DB": "Trainer"
 						}
 					}
 				]

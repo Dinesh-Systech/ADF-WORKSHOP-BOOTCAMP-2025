@@ -3,7 +3,13 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AzureSqlDatabase_IN1677",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"db": {
+					"value": "@dataset().DB",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"Schema": {
@@ -11,6 +17,9 @@
 				"defaultValue": "Alcobev"
 			},
 			"Table": {
+				"type": "string"
+			},
+			"DB": {
 				"type": "string"
 			}
 		},

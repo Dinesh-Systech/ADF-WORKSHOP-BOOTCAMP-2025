@@ -71,7 +71,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
-							"Table": "Primary_Sales_Plan_AOP"
+							"Table": "Primary_Sales_Plan_AOP",
+							"DB": "Trainer"
 						}
 					}
 				],

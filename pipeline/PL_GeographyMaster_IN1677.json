@@ -73,7 +73,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
-							"Table": "GeographyMaster"
+							"Table": "GeographyMaster",
+							"DB": "Trainer"
 						}
 					}
 				],

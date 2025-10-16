@@ -73,7 +73,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
-							"Table": "ActivationMapping"
+							"Table": "ActivationMapping",
+							"DB": "Trainer"
 						}
 					}
 				],
