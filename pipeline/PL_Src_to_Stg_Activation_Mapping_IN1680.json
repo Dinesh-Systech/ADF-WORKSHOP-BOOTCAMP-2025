@@ -35,7 +35,7 @@
 							{
 								"name": "CreatedBy",
 								"value": {
-									"value": "@pipeline().RunId",
+									"value": "@pipeline().Pipeline",
 									"type": "Expression"
 								}
 							},
