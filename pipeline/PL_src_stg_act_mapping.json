@@ -1,9 +1,9 @@
 {
-	"name": "PL_src_stg_copy1",
+	"name": "PL_src_stg_act_mapping",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP",
+				"name": "CP_src_stg_act_mapping",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -21,7 +21,7 @@
 							{
 								"name": "created_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
@@ -35,7 +35,7 @@
 							{
 								"name": "updated_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
@@ -71,7 +71,8 @@
 						"referenceName": "DS_AzureSQL_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "Alcobev"
+							"SchemaName": "Alcobev",
+							"Table": "ActivationMapping"
 						}
 					}
 				],
