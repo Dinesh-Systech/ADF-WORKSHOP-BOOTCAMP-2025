@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "OrcSource",
 						"additionalColumns": [
 							{
 								"name": "CreatedAt",
@@ -47,8 +47,11 @@
 								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
 					},
 					"sink": {
 						"type": "AzureSqlSink",
@@ -67,11 +70,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Azure_sql_IN1680",
+						"referenceName": "DS_Blob_CSV_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "Alcobev",
-							"table": "CustomerMaster"
+							"container": "boootcamp25",
+							"folder": "IN1680/finalproject",
+							"file": "Sales Org Cluster.csv"
 						}
 					}
 				],
