@@ -1,0 +1,80 @@
+{
+	"name": "DF_SalesOrgCluster",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesOrgCluster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SinkGLAccountMasterN1677"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ClusterKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Cluster_Name as string,",
+				"          Cluster_Code as string,",
+				"          Cluster_ID as integer,",
+				"          Cluster_Head as string,",
+				"          Cluster_SFA_Code as string,",
+				"          Cluster_Head_Email as string,",
+				"          Cluster__Head_Mobile as long,",
+				"          Active_flag as integer,",
+				"          Cluster_Start_Date as string,",
+				"          Cluster_End_Date as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcSalesOrgCluster",
+				"Transformation keyGenerate(output(Cluster_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> ClusterKey",
+				"ClusterKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"SrcSalesOrgCluster derive(UpdatedAt = toTimestamp(null())) ~> Transformation",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkGLAccountMasterN1677"
+			]
+		}
+	}
+}
