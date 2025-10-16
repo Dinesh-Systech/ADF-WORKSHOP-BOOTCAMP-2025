@@ -1,0 +1,27 @@
+{
+	"name": "PL_IN1686_Sales Org TSE_SRC_STG",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_Sales Org TSE",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/SRC_STG"
+		},
+		"annotations": []
+	}
+}

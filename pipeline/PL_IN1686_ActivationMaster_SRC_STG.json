@@ -1,0 +1,104 @@
+{
+	"name": "PL_IN1686_ActivationMaster_SRC_STG",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_ActivationMaster",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "Created By",
+								"value": {
+									"value": "IN1686_Sanjay_Komala",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created Date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated By",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated Date",
+								"value": {
+									"value": "31/12/2999",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Pipeline RunID",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Alcobev.stg_Activation",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_SRC_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "Alcobev",
+							"table": "ActivationMaster"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "Alcobev",
+							"tablename": "stg_Activation"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Final_Project/SRC_STG"
+		},
+		"annotations": []
+	}
+}

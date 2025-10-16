@@ -1,0 +1,62 @@
+{
+	"name": "PL_ActivationMaster_IN1677",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_Src_stg",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAt",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC', 'India Standard Time'), 'dd:MM:yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAt",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"enableStaging": false
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Src to Stg"
+		},
+		"annotations": []
+	}
+}
