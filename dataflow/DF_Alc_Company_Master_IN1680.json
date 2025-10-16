@@ -114,7 +114,7 @@
 				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
 				"nullHandling split(isNull(tgt_CompanyCode),",
 				"     !isNull(tgt_CompanyCode) && (SalesOrgCode!=tgt_SalesOrgCode ||SalesOrgName!=tgt_SalesOrgName),",
-				"     disjoint: false) ~> insert@(insert, update)",
+				"     disjoint: true) ~> insert@(insert, update)",
 				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
