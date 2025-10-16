@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "Transformation"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -65,7 +68,26 @@
 				"SrcSalesOrgCluster derive(UpdatedAt = toTimestamp(null()),",
 				"          Cluster_Start_Date = toDate(Cluster_Start_Date,'dd-MM-yyyy'),",
 				"          Cluster_End_Date = toDate(Cluster_End_Date,'dd-MM-yyyy')) ~> Transformation",
-				"NullHandling sink(allowSchemaDrift: true,",
+				"NullHandling select(mapColumn(",
+				"          Cluster_Name,",
+				"          Cluster_Code,",
+				"          Cluster_ID,",
+				"          Cluster_Head,",
+				"          Cluster_SFA_Code,",
+				"          Cluster_Head_Email,",
+				"          Cluster_Head_Mobile = Cluster__Head_Mobile,",
+				"          Active_flag,",
+				"          Cluster_Start_Date,",
+				"          Cluster_End_Date,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          Cluster_Key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
