@@ -1,5 +1,5 @@
 {
-	"name": "DS_AzureSqlTable_IN1677",
+	"name": "DS_AzureSqlTable_Src_IN1677",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AzureSqlDatabase_IN1677",

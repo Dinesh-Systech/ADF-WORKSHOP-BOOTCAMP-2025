@@ -39,7 +39,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_AzureSqlTable_IN1677",
+						"referenceName": "DS_AzureSqlTable_Src_IN1677",
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "Alcobev",
