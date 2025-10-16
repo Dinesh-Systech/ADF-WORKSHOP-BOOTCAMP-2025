@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SrcGeographyMaster"
+					"name": "SrcGLAccountMaster"
 				}
 			],
 			"sinks": [
@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcGeographyMasterN1677"
+					"name": "SinkGLAccountMasterN1677"
 				}
 			],
 			"transformations": [
@@ -51,7 +51,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcGeographyMaster",
+				"     format: 'table') ~> SrcGLAccountMaster",
 				"Transformation keyGenerate(output(PromotionKey as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> PromotionKey",
@@ -60,7 +60,7 @@
 				"\r",
 				"),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
-				"SrcGeographyMaster derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
+				"SrcGLAccountMaster derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
 				"          EffectiveTo = toDate(EffectiveTo,'dd-MM-yyyy'),",
 				"          UpdatedAt = toTimestamp(null())) ~> Transformation",
 				"NullHandling sink(allowSchemaDrift: true,",
@@ -86,7 +86,7 @@
 				"          CreatedBy,",
 				"          UpdatedBy,",
 				"          PromotionKey",
-				"     )) ~> SinkAlcGeographyMasterN1677"
+				"     )) ~> SinkGLAccountMasterN1677"
 			]
 		}
 	}

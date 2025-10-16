@@ -1,0 +1,45 @@
+{
+	"name": "PL_GeographyMaster",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_PL_GeographyMaster",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Activation_Mapping",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcActivationMapping": {
+								"Schema": "JSivakum",
+								"Table": "Stg_GeographyMaster_IN1677"
+							},
+							"SinkAlcActivationMappingIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Geography_Master_IN1677"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Stg to Dw"
+		},
+		"annotations": []
+	}
+}
