@@ -28,6 +28,11 @@
 								"SchemaName": "RRamesh",
 								"Table": "stg_ALC_Primary_Sales_Actuals_IN1685",
 								"DB_Name": "Target_ADF_B2025"
+							},
+							"SNKtgt": {
+								"SchemaName": "RRamesh",
+								"Table": "stg_ALC_Primary_Sales_Actuals_IN1685",
+								"DB_Name": "Target_ADF_B2025"
 							}
 						}
 					},
