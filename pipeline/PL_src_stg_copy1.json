@@ -1,5 +1,5 @@
 {
-	"name": "PL_src_stg",
+	"name": "PL_src_stg_copy1",
 	"properties": {
 		"activities": [
 			{
@@ -71,7 +71,8 @@
 						"referenceName": "DS_AzureSQL_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "Alcobev"
+							"SchemaName": "Alcobev",
+							"Table": "ActivationMapping"
 						}
 					}
 				],
