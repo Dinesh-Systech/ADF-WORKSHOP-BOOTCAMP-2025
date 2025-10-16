@@ -42,7 +42,7 @@
 							{
 								"name": "Updated Date",
 								"value": {
-									"value": "31/12/2999",
+									"value": "1990-01-01",
 									"type": "Expression"
 								}
 							},
@@ -57,7 +57,22 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table stg_Customer",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -66,6 +81,16 @@
 						"parameters": {
 							"Schema": "Alcobev",
 							"table": "CustomerMaster"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "SKomala",
+							"tablename": "stg_Customer"
 						}
 					}
 				]
