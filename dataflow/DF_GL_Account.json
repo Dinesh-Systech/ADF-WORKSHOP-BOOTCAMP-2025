@@ -1,5 +1,5 @@
 {
-	"name": "DF_ActivationMaster",
+	"name": "DF_GL_Account",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Tgt"
@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCActivationMaster"
+					"name": "SRCGLAccount"
 				}
 			],
 			"sinks": [
@@ -21,15 +21,12 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKActivation"
+					"name": "SNKGLAccount"
 				}
 			],
 			"transformations": [
 				{
-					"name": "DatatypeCange"
-				},
-				{
-					"name": "ActivationKey"
+					"name": "GLAccountKey"
 				},
 				{
 					"name": "SelectOrder"
@@ -40,12 +37,14 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          PromotionCode as string,",
-				"          PromotionDescription as string,",
-				"          PromotionType as string,",
-				"          ProductLevelCode as string,",
-				"          EffectiveFrom as string,",
-				"          EffectiveTo as string,",
+				"          GeneralLedgerCode as integer,",
+				"          GeneralLedgerName as string,",
+				"          GLType as string,",
+				"          Currency as string,",
+				"          Reporting_Hierarchy_Name_L1 as string,",
+				"          Reporting_Hierarchy_Name_L2 as string,",
+				"          Reporting_Hierarchy_Name_L3 as string,",
+				"          Reporting_Hierarchy_Name_L4 as string,",
 				"          {Created By} as string,",
 				"          {Created Date} as timestamp,",
 				"          {Updated By} as string,",
@@ -54,20 +53,20 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCActivationMaster",
-				"SRCActivationMaster derive(EffectiveFrom = toDate(EffectiveFrom,\"dd-MM-yyyy\"),",
-				"          EffectiveTo = toDate(EffectiveTo,\"dd-MM-yyyy\")) ~> DatatypeCange",
-				"NullHandling keyGenerate(output(ActivationKey as long),",
+				"     format: 'table') ~> SRCGLAccount",
+				"NullHandling keyGenerate(output(GeneralLedgerKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> ActivationKey",
-				"ActivationKey select(mapColumn(",
-				"          PromotionCode,",
-				"          ActivationKey,",
-				"          PromotionDescription,",
-				"          PromotionType,",
-				"          ProductLevelCode,",
-				"          EffectiveFrom,",
-				"          EffectiveTo,",
+				"     stepValue: 1L) ~> GLAccountKey",
+				"GLAccountKey select(mapColumn(",
+				"          GeneralLedgerCode,",
+				"          GLAccountKey = GeneralLedgerKey,",
+				"          GeneralLedgerName,",
+				"          GLType,",
+				"          Currency,",
+				"          Reporting_Hierarchy_Name_L1,",
+				"          Reporting_Hierarchy_Name_L2,",
+				"          Reporting_Hierarchy_Name_L3,",
+				"          Reporting_Hierarchy_Name_L4,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
@@ -75,7 +74,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectOrder",
-				"DatatypeCange derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"SRCGLAccount derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type == 'int'), $$ = iifNull($#, -1)),",
 				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
 				"SelectOrder sink(allowSchemaDrift: true,",
@@ -90,18 +89,20 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          PromotionCode,",
-				"          ActivationKey,",
-				"          PromotionDescription,",
-				"          PromotionType,",
-				"          ProductLevelCode,",
-				"          EffectiveFrom,",
-				"          EffectiveTo,",
+				"          GeneralLedgerCode,",
+				"          GLAccountKey,",
+				"          GeneralLedgerName,",
+				"          GLType,",
+				"          Currency,",
+				"          Reporting_Hierarchy_Name_L1,",
+				"          Reporting_Hierarchy_Name_L2,",
+				"          Reporting_Hierarchy_Name_L3,",
+				"          Reporting_Hierarchy_Name_L4,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKActivation"
+				"     )) ~> SNKGLAccount"
 			]
 		}
 	}
