@@ -1,0 +1,81 @@
+{
+	"name": "DS_AzureSqlTable_TGT_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureSqlDatabase_TGT",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string",
+				"defaultValue": "SKomala"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Final_Project"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PromotionCode",
+				"type": "varchar"
+			},
+			{
+				"name": "PromotionDescription",
+				"type": "varchar"
+			},
+			{
+				"name": "PromotionType",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "EffectiveFrom",
+				"type": "date"
+			},
+			{
+				"name": "EffectiveTo",
+				"type": "date"
+			},
+			{
+				"name": "MappingLevel",
+				"type": "varchar"
+			},
+			{
+				"name": "IsActive",
+				"type": "varchar"
+			},
+			{
+				"name": "Created By",
+				"type": "varchar"
+			},
+			{
+				"name": "Created Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Updated By",
+				"type": "varchar"
+			},
+			{
+				"name": "Updated Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "SKomala",
+			"table": "stg_Activation_Mapping"
+		}
+	}
+}
