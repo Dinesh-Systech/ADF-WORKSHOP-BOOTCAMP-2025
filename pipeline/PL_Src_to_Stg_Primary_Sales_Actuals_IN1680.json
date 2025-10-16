@@ -1,0 +1,9 @@
+{
+	"name": "PL_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+	"properties": {
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"name": "PL_to_Src_Stg_Product_Master",
+	"properties": {
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"annotations": []
+	}
+}
