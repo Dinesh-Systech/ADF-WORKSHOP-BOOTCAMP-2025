@@ -15,8 +15,316 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "Created By",
+								"value": {
+									"value": "IN1686_Sanjay_Komala",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created Date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated By",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated Date",
+								"value": {
+									"value": "1990-01-01",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Pipeline RunID",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"partitionOption": "None",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate Table stg_Sales_Org_TL",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TL Territory Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Territory Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Territory Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Territory Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Territory ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Territory ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TL",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL SFA Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL SFA Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Code",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Email",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Mobile",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Mobile",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Market Working Norms",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Market Working Norms",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Min Market Working with TSE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Min Market Working with TSE",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Active_flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Active_flag",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL Start Date",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "TL End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL End Date",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Cluster_code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline RunID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Pipeline_RunID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Filename": "Sales Org TL.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "SKomala",
+							"tablename": "stg_Sales_Org_TL"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
