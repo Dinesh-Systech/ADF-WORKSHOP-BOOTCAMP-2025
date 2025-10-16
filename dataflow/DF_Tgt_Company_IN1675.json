@@ -13,6 +13,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCompany"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCompany"
 				}
 			],
 			"sinks": [],
@@ -22,6 +29,45 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "JoinSrcAndTgt"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "select5"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn4"
 				}
 			],
 			"scriptLines": [
@@ -45,13 +91,124 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcCompany",
-				"SrcCompany keyGenerate(output(CompanyKey as long),",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          ConpanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtCompany",
+				"JoinSrcAndTgt keyGenerate(output(CompanyKey as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CompanyKey",
-				"CompanyKey split(ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(Insert, Update, Existing)"
+				"CompanyKey split(isNull({Tgt.CompanyCode}) || ({Src.CompanyName}=={Tgt.CompanyCode}&&{Src.SalesOrgCode}!={Tgt.SalesOrgCode}||{Src.SalesOrgName}!={Tgt.SalesOrgName}),",
+				"     !isNull({Tgt.CompanyCode})&&({Src.CompanyCode}=={Tgt.CompanyCode}&&{Src.SalesOrgCode}!={Tgt.SalesOrgCode}||{Src.SalesOrgName}!={Tgt.SalesOrgName}),",
+				"     {Src.CompanyCode}=={Tgt.CompanyCode} && {Src.SalesOrgCode}=={Tgt.SalesOrgCode}&&{Src.SalesOrgName}=={Tgt.SalesOrgName},",
+				"     disjoint: true) ~> split1@(Insert, Update, Existing)",
+				"SrcCompany select(mapColumn(",
+				"          each(match(true()),",
+				"               'Src.'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"TgtCompany select(mapColumn(",
+				"          each(match(true()),",
+				"               'Tgt.'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1, select2 join({Src.CompanyCode} == {Tgt.CompanyCode},",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcAndTgt",
+				"alterRow1 select(mapColumn(",
+				"          CompanyCode = {Src.CompanyCode},",
+				"          CompanyKey,",
+				"          CompanyName = {Src.CompanyName},",
+				"          SalesOrgCode = {Src.SalesOrgCode},",
+				"          SalesOrgName = {Src.SalesOrgName},",
+				"          ReportingHierarchyCode1 = {Src.ReportingHierarchyCode1},",
+				"          ReportingHierarchyName1 = {Src.ReportingHierarchyName1},",
+				"          ReportingHierarchyCode2 = {Src.ReportingHierarchyCode2},",
+				"          ReportingHierarchyName2 = {Src.ReportingHierarchyName2},",
+				"          ReportingHierarchyCode3 = {Src.ReportingHierarchyCode3},",
+				"          ReportingHierarchyName3 = {Src.ReportingHierarchyName3},",
+				"          isActive,",
+				"          CreatedDate = {Src.CreatedDate},",
+				"          CreatedBy = {Src.CreatedBy},",
+				"          UpdatedDate = {Src.UpdatedDate},",
+				"          UpdatedBy = {Src.UpdatedBy}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"alterRow2 select(mapColumn(",
+				"          CompanyCode = {Tgt.CompanyCode},",
+				"          CompanyKey,",
+				"          CompanyName = {Tgt.CompanyName},",
+				"          SalesOrgCode = {Tgt.SalesOrgCode},",
+				"          SalesOrgName = {Tgt.SalesOrgName},",
+				"          ReportingHierarchyCode1 = {Tgt.ReportingHierarchyCode1},",
+				"          ReportingHierarchyName1 = {Tgt.ReportingHierarchyName1},",
+				"          ReportingHierarchyCode2 = {Tgt.ReportingHierarchyCode2},",
+				"          ReportingHierarchyName2 = {Tgt.ReportingHierarchyName2},",
+				"          ReportingHierarchyCode3 = {Tgt.ReportingHierarchyCode3},",
+				"          ReportingHierarchyName3 = {Tgt.ReportingHierarchyName3},",
+				"          isActive,",
+				"          CreatedDate = {Tgt.CreatedDate},",
+				"          CreatedBy = {Tgt.CreatedBy},",
+				"          UpdatedDate = {Tgt.UpdatedDate},",
+				"          UpdatedBy = {Tgt.UpdatedBy}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"derivedColumn3 select(mapColumn(",
+				"          CompanyCode = {Tgt.CompanyCode},",
+				"          CompanyKey,",
+				"          CompanyName = {Tgt.CompanyName},",
+				"          SalesOrgCode = {Tgt.SalesOrgCode},",
+				"          SalesOrgName = {Tgt.SalesOrgName},",
+				"          ReportingHierarchyCode1 = {Tgt.ReportingHierarchyCode1},",
+				"          ReportingHierarchyName1 = {Tgt.ReportingHierarchyName1},",
+				"          ReportingHierarchyCode2 = {Tgt.ReportingHierarchyCode2},",
+				"          ReportingHierarchyName2 = {Tgt.ReportingHierarchyName2},",
+				"          ReportingHierarchyCode3 = {Tgt.ReportingHierarchyCode3},",
+				"          ReportingHierarchyName3 = {Tgt.ReportingHierarchyName3},",
+				"          isActive,",
+				"          CreatedDate = {Tgt.CreatedDate},",
+				"          CreatedBy = {Tgt.CreatedBy},",
+				"          UpdatedDate = {Tgt.UpdatedDate},",
+				"          UpdatedBy = {Tgt.UpdatedBy}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"split1@Insert derive(isActive = 1,",
+				"          {Src.CreatedDate} = currentTimestamp(),",
+				"          {Src.CreatedBy} = 'IN1675') ~> derivedColumn1",
+				"split1@Update derive(isActive = 0,",
+				"          {Src.UpdatedDate} = currentTimestamp(),",
+				"          {Src.UpdatedBy} = 'IN1675') ~> derivedColumn2",
+				"split1@Existing derive(isActive = 1) ~> derivedColumn3",
+				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
+				"derivedColumn2 alterRow(updateIf(true())) ~> alterRow2",
+				"select3 union(byName: true)~> union1",
+				"union1 derive(each(match(type=='string'), $$ = iif(isNull($$),'UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type=='datetime'), $$ = iifNull($$, toDate('31/12/2999', 'dd/MM/yyyy')))) ~> derivedColumn4"
 			]
 		}
 	}
