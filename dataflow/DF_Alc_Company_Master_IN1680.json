@@ -29,20 +29,148 @@
 						"type": "DatasetReference"
 					},
 					"name": "SNKtgtCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtUpdate"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "LeftJoinStgAndTgt"
+				},
+				{
+					"name": "insert"
+				},
+				{
+					"name": "nullHandling"
+				},
+				{
+					"name": "updatedAt"
+				},
+				{
+					"name": "SLCTsrccols"
+				},
+				{
+					"name": "SLCTtgtUpdate"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCstgcustomer",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCtgtCustomer",
-				"SRCstgcustomer sink(allowSchemaDrift: true,",
+				"SRCtgtCustomer select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"SRCstgcustomer, selectTgt join(CompanyCode == tgt_CompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"nullHandling split(isNull(tgt_CompanyCode),",
+				"     !isNull(tgt_CompanyCode) && (SalesOrgCode!=tgt_SalesOrgCode ||SalesOrgName!=tgt_SalesOrgName),",
+				"     disjoint: false) ~> insert@(insert, update)",
+				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
+				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = 'PL_Alc_Company_Master_IN1680') ~> updatedAt",
+				"insert@insert select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          SalesOrgCode = tgt_SalesOrgCode,",
+				"          SalesOrgName = tgt_SalesOrgName,",
+				"          CompanyCode = tgt_CompanyCode,",
+				"          CompanyKey = tgt_CompanyKey,",
+				"          CompanyName = tgt_CompanyName,",
+				"          ReportingHierarchyCode1 = tgt_ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = tgt_ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = tgt_ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = tgt_ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = tgt_ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = tgt_ReportingHierarchyName3,",
+				"          CreatedAt = tgt_CreatedAt,",
+				"          UpdatedAt = tgt_UpdatedAt,",
+				"          CreatedBy = tgt_CreatedBy,",
+				"          UpdatedBy = tgt_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"SLCTsrccols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKtgtCustomer"
+				"     skipDuplicateMapOutputs: true) ~> SNKtgtCustomer",
+				"updatedAt sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtUpdate"
 			]
 		}
 	}
