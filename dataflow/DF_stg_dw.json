@@ -67,6 +67,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     preSQLs:['truncate table ;'],",
 				"     skipDuplicateMapInputs: true,",
