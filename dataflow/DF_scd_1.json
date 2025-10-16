@@ -1,0 +1,53 @@
+{
+	"name": "DF_scd_1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SRC"
+				},
+				{
+					"name": "TGT"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "Split"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NULL"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRC",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> TGT",
+				"TGT select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"SRC, SELECTtgt join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
+				"Split@InsertStream, Split@UpdateStream union(byName: true)~> UNIONstreams",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='int'), ERROR_FUNCTION('') = ERROR_FUNCTION(''))) ~> NULL"
+			]
+		}
+	}
+}
