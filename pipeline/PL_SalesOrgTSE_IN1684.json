@@ -1,9 +1,9 @@
 {
-	"name": "PL_SalesOrgCluster_IN1684",
+	"name": "PL_SalesOrgTSE_IN1684",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_SalesOrgCluster_to_stg_SalesOrgCluster",
+				"name": "CP_SalesOrgTSE_to_stg_SalesOrgTSE",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -58,7 +58,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table stg_Sales_Org_Cluster_IN1684;",
+						"preCopyScript": "truncate table stg_Sales_Org_TSE_IN1684;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -69,120 +69,204 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "Cluster Name",
+									"name": "TSE Territory Name",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterName",
+									"name": "TSETerritoryName",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster Code",
+									"name": "TSE Territory Code",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterCode",
+									"name": "TSETerritoryCode",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster ID",
+									"name": "TSE Territory ID",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterID",
-									"type": "Byte",
-									"physicalType": "tinyint"
+									"name": "TSETerritoryID",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster Head",
+									"name": "TSE",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterHead",
+									"name": "TSE",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster SFA Code",
+									"name": "TSE Code",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterSFACode",
+									"name": "TSECode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE SFA Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSESFACode",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster Head Email",
+									"name": "TSE Email",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterHeadEmail",
+									"name": "TSEEmail",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster  Head Mobile",
+									"name": "TSE Mobile",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterHeadMobile",
+									"name": "TSEMobile",
 									"type": "Int64",
 									"physicalType": "bigint"
 								}
 							},
 							{
 								"source": {
-									"name": "Active_flag",
+									"name": "TSE Call_Norm",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Active_flag",
+									"name": "TSECall_Norm",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "State",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster Start Date",
+									"name": "State_Code",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterStartDate",
+									"name": "State_Code",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "Cluster End Date",
+									"name": "DISTRICT",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ClusterEndDate",
+									"name": "DISTRICT",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Active Flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ActiveFlag",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEStartDate",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEEndDate",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Code",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -245,7 +329,7 @@
 						"referenceName": "DS_CSV_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_File": "Sales Org Cluster.csv"
+							"PR_File": "Sales Org TSE.csv"
 						}
 					}
 				],
@@ -255,7 +339,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Schema": "PMahendi",
-							"PR_TableName": "stg_Sales_Org_Cluster_IN1684",
+							"PR_TableName": "stg_Sales_Org_TSE_IN1684",
 							"PR_DB": "Target_ADF_B2025"
 						}
 					}
