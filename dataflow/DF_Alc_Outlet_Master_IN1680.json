@@ -1,0 +1,123 @@
+{
+	"name": "DF_Alc_Outlet_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgt"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKupdateTgt"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKinsert"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectTgt"
+				},
+				{
+					"name": "LeftStgandTgt"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "SLCTupdate"
+				},
+				{
+					"name": "SLCTinsert"
+				},
+				{
+					"name": "NullHandle"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgt",
+				"SRCtgt select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectTgt",
+				"SRCstg, SelectTgt join(OUTLET_CODE == tgt_OUTLET_CODE,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftStgandTgt",
+				"NullHandle split( !isNull(tgt_OUTLET_CODE) &&  (OUTLET_STATUS!=tgt_OUTLET_STATUS ||tgt_OWNER_CODE!=OWNER_CODE ||OWNER_NAME!=tgt_OWNER_NAME ),",
+				"     isNull(tgt_OUTLET_CODE) ||  !isNull(tgt_OUTLET_CODE) &&  (OUTLET_STATUS!=tgt_OUTLET_STATUS ||tgt_OWNER_CODE!=OWNER_CODE ||OWNER_NAME!=tgt_OWNER_NAME ),",
+				"     disjoint: true) ~> Insert@(update, insert)",
+				"Insert@update select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTupdate",
+				"Insert@insert select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTinsert",
+				"LeftStgandTgt derive(column1 = ERROR_FUNCTION(''),",
+				"          each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandle",
+				"SLCTupdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKupdateTgt",
+				"SLCTinsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKinsert"
+			]
+		}
+	}
+}
