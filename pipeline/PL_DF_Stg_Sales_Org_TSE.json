@@ -1,9 +1,9 @@
 {
-	"name": "PL_DF_Sales_Org_Cluster",
+	"name": "PL_DF_Stg_Sales_Org_TSE",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Sales_Org_Cluster",
+				"name": "DF_Stg_Sales_Org_TSE",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,16 +16,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SalesOrgCluster",
+						"referenceName": "DF_SalesOrgTSE",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SrcSalesOrgCluster": {
+							"SrcSalesOrgTSE": {
 								"Schema": "JSivakum",
-								"Table": "Stg_Sales_Org_Cluster_IN1677"
+								"Table": "Stg_Sales_Org_TSE_IN1677"
 							},
-							"SinkSalesOrgClusterIN1677": {
+							"SinkSalesOrgTL1N1677": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Sales_Org_Cluster_IN1677"
+								"Table": "Alc_Sales_Org_TSE_IN1677"
 							}
 						}
 					},

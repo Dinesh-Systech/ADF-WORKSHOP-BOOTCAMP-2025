@@ -1,9 +1,9 @@
 {
-	"name": "PL_Activation_Master",
+	"name": "PL_DF_Activation_Master",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_PL_Activation_Mapping",
+				"name": "DF_Activation_Mapping",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

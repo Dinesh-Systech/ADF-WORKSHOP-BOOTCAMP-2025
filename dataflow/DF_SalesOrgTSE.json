@@ -1,0 +1,89 @@
+{
+	"name": "DF_SalesOrgTSE",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesOrgTSE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SinkSalesOrgTL1N1677"
+				}
+			],
+			"transformations": [
+				{
+					"name": "TSETerritoryKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TSE_Territory_Name as string,",
+				"          TSE_Territory_Code as string,",
+				"          TSE_Territory_ID as integer,",
+				"          TSE as string,",
+				"          TSE_Code as integer,",
+				"          TSE_SFA_Code as string,",
+				"          TSE_Email as string,",
+				"          TSE_Mobile as long,",
+				"          TSE_Call_Norm as integer,",
+				"          State as string,",
+				"          State_Code as string,",
+				"          DISTRICT as string,",
+				"          DISTRICT_CODE as string,",
+				"          Active_Flag as integer,",
+				"          TSE_Start_Date as string,",
+				"          TSE_End_Date as string,",
+				"          TL_Code as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcSalesOrgTSE",
+				"Transformation keyGenerate(output(TSE_Territory_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> TSETerritoryKey",
+				"TSETerritoryKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"SrcSalesOrgTSE derive(UpdatedAt = toTimestamp(null()),",
+				"          TSE_Start_Date = toDate(TSE_Start_Date,'dd-MM-yyyy'),",
+				"          TSE_End_Date = toDate(TSE_End_Date,'dd-MM-yyyy')) ~> Transformation",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkSalesOrgTL1N1677"
+			]
+		}
+	}
+}
