@@ -1,5 +1,5 @@
 {
-	"name": "PL_GeographyMaster_copy1",
+	"name": "PL_GLAccountMaster",
 	"properties": {
 		"activities": [
 			{
@@ -21,10 +21,11 @@
 						"datasetParameters": {
 							"SrcGLAccountMaster": {
 								"Schema": "JSivakum",
-								"Table": "GLAccountMaster"
+								"Table": "Stg_GLAccountMaster_IN1677"
 							},
 							"SinkGLAccountMasterN1677": {
-								"Schema": "Jsivakum"
+								"Schema": "Jsivakum",
+								"Table": "Alc_GL_Account_Master_IN1677"
 							}
 						}
 					},
