@@ -1,5 +1,5 @@
 {
-	"name": "DF_Sales_Org_Cluster",
+	"name": "DF_Sales_Org_TL",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Tgt"
@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCSalesOrgCluster"
+					"name": "SRCSalesOrgTL"
 				}
 			],
 			"sinks": [
@@ -21,12 +21,12 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKSalesOrgCluster"
+					"name": "SNKSalesOrgTL"
 				}
 			],
 			"transformations": [
 				{
-					"name": "ClusterKey"
+					"name": "TLKey"
 				},
 				{
 					"name": "SelectOrder"
@@ -40,16 +40,20 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          ClusterName as string,",
-				"          ClusterCode as string,",
-				"          ClusterID as integer,",
-				"          ClusterHead as string,",
-				"          ClusterSFACode as string,",
-				"          ClusterHeadEmail as string,",
-				"          ClusterHeadMobile as long,",
+				"          TLTerritoryName as string,",
+				"          TLTerritoryCode as string,",
+				"          TLTerritoryID as integer,",
+				"          TL as string,",
+				"          TLSFACode as string,",
+				"          TLCode as integer,",
+				"          TLEmail as string,",
+				"          TLMobile as long,",
+				"          MarketWorkingNorms as integer,",
+				"          MinMarketWorkingwithTSE as integer,",
 				"          Active_flag as string,",
-				"          ClusterStartDate as string,",
-				"          ClusterEndDate as string,",
+				"          TLStartDate as string,",
+				"          TLEndDate as string,",
+				"          Cluster_code as string,",
 				"          {Created By} as string,",
 				"          {Created Date} as timestamp,",
 				"          {Updated By} as string,",
@@ -58,22 +62,26 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCSalesOrgCluster",
-				"NullHandling keyGenerate(output(ClusterKey as long),",
+				"     format: 'table') ~> SRCSalesOrgTL",
+				"NullHandling keyGenerate(output(TLKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> ClusterKey",
-				"ClusterKey select(mapColumn(",
-				"          ClusterName,",
-				"          ClusterCode,",
-				"          ClusterKey,",
-				"          ClusterID,",
-				"          ClusterHead,",
-				"          ClusterSFACode,",
-				"          ClusterHeadEmail,",
-				"          ClusterHeadMobile,",
+				"     stepValue: 1L) ~> TLKey",
+				"TLKey select(mapColumn(",
+				"          TLTerritoryName,",
+				"          TLTerritoryCode,",
+				"          TLKey,",
+				"          TLTerritoryID,",
+				"          TL,",
+				"          TLSFACode,",
+				"          TLCode,",
+				"          TLEmail,",
+				"          TLMobile,",
+				"          MarketWorkingNorms,",
+				"          MinMarketWorkingwithTSE,",
 				"          Active_flag,",
-				"          ClusterStartDate,",
-				"          ClusterEndDate,",
+				"          TLStartDate,",
+				"          TLEndDate,",
+				"          Cluster_code,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
@@ -84,8 +92,8 @@
 				"DateTypeChange derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type == 'int'), $$ = iifNull($#, -1)),",
 				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
-				"SRCSalesOrgCluster derive(ClusterStartDate = toDate(ClusterStartDate,\"dd-MM-yyyy\"),",
-				"          ClusterEndDate = toDate(ClusterEndDate,\"dd-MM-yyyy\")) ~> DateTypeChange",
+				"SRCSalesOrgTL derive(TLStartDate = toDate(TLStartDate),",
+				"          TLEndDate = toDate(TLEndDate)) ~> DateTypeChange",
 				"SelectOrder sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -98,22 +106,26 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          ClusterName,",
-				"          ClusterCode,",
-				"          ClusterKey,",
-				"          ClusterID,",
-				"          ClusterHead,",
-				"          ClusterSFACode,",
-				"          ClusterHeadEmail,",
-				"          ClusterHeadMobile,",
+				"          TLTerritoryName,",
+				"          TLTerritoryCode,",
+				"          TLKey,",
+				"          TLTerritoryID,",
+				"          TL,",
+				"          TLSFACode,",
+				"          TLCode,",
+				"          TLEmail,",
+				"          TLMobile,",
+				"          MarketWorkingNorms,",
+				"          MinMarketWorkingwithTSE,",
 				"          Active_flag,",
-				"          ClusterStartDate,",
-				"          ClusterEndDate,",
+				"          TLStartDate,",
+				"          TLEndDate,",
+				"          Cluster_code,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKSalesOrgCluster"
+				"     )) ~> SNKSalesOrgTL"
 			]
 		}
 	}

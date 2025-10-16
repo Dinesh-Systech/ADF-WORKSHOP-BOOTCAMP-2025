@@ -16,17 +16,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_GeographyMaster",
+						"referenceName": "DF_Sales_Org_Cluster",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCGeographyMaster": {
+							"SRCSalesOrgCluster": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "stg_Geography_IN1684",
+								"PR_TableName": "stg_Sales_Org_Cluster_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
-							"SNKGeography": {
+							"SNKSalesOrgCluster": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "Alc_Geography_Master_IN1684",
+								"PR_TableName": "Alc_Sales_Org_Cluster_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							}
 						}
