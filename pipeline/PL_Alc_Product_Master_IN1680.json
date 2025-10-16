@@ -20,15 +20,19 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SRCstgproduct": {
+								"schema": "KRavi",
 								"database": "Target_ADF_B2025"
 							},
 							"SRCtgtProduct": {
+								"schema": "KRavi",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKtgtProduct": {
+								"schema": "KRavi",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKtgtUpdate": {
+								"schema": "KRavi",
 								"database": "Target_ADF_B2025"
 							}
 						}
