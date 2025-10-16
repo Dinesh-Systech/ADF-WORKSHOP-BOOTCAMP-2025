@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "OrcSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "CreatedAt",
@@ -33,16 +33,16 @@
 								}
 							},
 							{
-								"name": "UpdatedAt",
+								"name": "UpdatedBy",
 								"value": {
 									"value": "null",
 									"type": "Expression"
 								}
 							},
 							{
-								"name": "UpdatedBy",
+								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							}
@@ -51,6 +51,9 @@
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {

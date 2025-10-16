@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "OrcSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "CreatedAt",
@@ -33,16 +33,16 @@
 								}
 							},
 							{
-								"name": "UpdatedAt",
+								"name": "UpdatedBy",
 								"value": {
 									"value": "null",
 									"type": "Expression"
 								}
 							},
 							{
-								"name": "UpdatedBy",
+								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							}
@@ -51,11 +51,14 @@
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table  Alc_GL_Account_Master_IN1680",
+						"preCopyScript": "truncate table  Alc_Sales_Org_TL_IN1680",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false

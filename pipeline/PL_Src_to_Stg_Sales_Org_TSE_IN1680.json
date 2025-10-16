@@ -15,44 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "OrcSource",
-						"additionalColumns": [
-							{
-								"name": "CreatedAt",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "CreatedBy",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "UpdatedAt",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "UpdatedBy",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
-							}
-						],
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						}
-					},
 					"sink": {
 						"type": "AzureSqlSink",
 						"preCopyScript": "truncate table  Alc_Sales_Org_TSE_IN1680",
@@ -60,27 +22,8 @@
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "DS_Blob_CSV_IN1680",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"folder": "IN1680/finalproject",
-							"file": "Sales Org TSE.csv"
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "DS_Azure_sql_IN1680",
