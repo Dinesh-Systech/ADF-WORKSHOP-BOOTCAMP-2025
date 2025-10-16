@@ -28,7 +28,7 @@
 							{
 								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -140,6 +140,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TSE Email",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TSE_Email",
 									"type": "String",
@@ -147,13 +152,23 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TSE Mobile",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TSE_Mobile",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "Int64",
+									"physicalType": "bigint"
 								}
 							},
 							{
+								"source": {
+									"name": "TSE Call_Norm",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TSE_Call_Norm",
 									"type": "Int32",
@@ -209,6 +224,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "Active Flag",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "Active_Flag",
 									"type": "Int32",
@@ -216,17 +236,27 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TSE Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TSE_Start_Date",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
+								"source": {
+									"name": "TSE End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TSE_End_Date",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
