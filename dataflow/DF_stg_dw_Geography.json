@@ -63,7 +63,7 @@
 				"     upsertable:false,",
 				"     truncate:true,",
 				"     format: 'table',",
-				"     preSQLs:['truncate table Alc_Geography_Master_IN1685;'],",
+				"     preSQLs:['truncate table RRamesh.Alc_Geography_Master_IN1685;'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
