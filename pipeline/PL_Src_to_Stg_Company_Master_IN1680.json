@@ -35,7 +35,7 @@
 							{
 								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -58,6 +58,122 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"sink": {
+									"name": "CompanyCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "CompanyName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "SalesOrgCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "SalesOrgName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyCode1",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyName1",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyCode2",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyName2",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyCode3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "ReportingHierarchyName3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
