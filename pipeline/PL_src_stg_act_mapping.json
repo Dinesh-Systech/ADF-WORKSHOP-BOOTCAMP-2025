@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CP",
+				"name": "CP_act_mapping",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -53,8 +53,7 @@
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
+						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -79,7 +78,11 @@
 				"outputs": [
 					{
 						"referenceName": "DS_AzureSQL_IN1685",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_ActivationMapping_IN1685"
+						}
 					}
 				]
 			}
