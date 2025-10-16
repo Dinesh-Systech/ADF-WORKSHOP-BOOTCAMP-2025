@@ -1,0 +1,44 @@
+{
+	"name": "DF_Incremental_PrimarySalesActuals",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Src to Stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTPrimarySalesActuals"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "AggMaxTransactionDate"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCPrimarySalesActuals",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTPrimarySalesActuals",
+				"TGTPrimarySalesActuals aggregate() ~> AggMaxTransactionDate"
+			]
+		}
+	}
+}
