@@ -1,9 +1,9 @@
 {
-	"name": "PL_Stg_Company_Master",
+	"name": "PL_Stg_Customer_Master",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_STG_Company_Master_AzureSQL",
+				"name": "CP_STG_Customer_Master_AzureSQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -73,7 +73,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "CompanyMaster",
+							"TableName": "CustomerMaster",
 							"DatabaseName": "Trainer"
 						}
 					}
@@ -84,7 +84,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "Stg_Company_Master_IN1675"
+							"TableName": "Stg_Customer_Master_IN1675"
 						}
 					}
 				]
