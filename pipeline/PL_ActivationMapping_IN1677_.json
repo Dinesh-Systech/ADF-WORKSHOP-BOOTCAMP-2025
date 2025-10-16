@@ -22,8 +22,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate table Alcobev.ActivationMapping;",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -47,10 +49,11 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_AzureSqlTable_IN1677",
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Schema": "Alcobev"
+							"Schema": "Alcobev",
+							"Table": "Alc_Activation_Mapping_IN1677"
 						}
 					}
 				]
