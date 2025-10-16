@@ -21,7 +21,7 @@
 							{
 								"name": "CreatedAt",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC', 'India Standard Time'), 'dd:MM:yyyy HH:mm:ss')",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
