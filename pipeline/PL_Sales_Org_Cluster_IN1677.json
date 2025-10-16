@@ -171,8 +171,8 @@
 								},
 								"sink": {
 									"name": "Cluster_Start_Date",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
@@ -183,8 +183,8 @@
 								},
 								"sink": {
 									"name": "Cluster_End_Date",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{

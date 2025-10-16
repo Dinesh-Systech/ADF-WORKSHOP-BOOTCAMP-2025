@@ -28,7 +28,7 @@
 							{
 								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -66,6 +66,220 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TL Territory Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Territory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Territory Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Territory_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Territory ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Territory_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TL",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL SFA Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_SFA_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Code",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Email",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Mobile",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Mobile",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "Market Working Norms",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Market_Working_Norms",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Min Market Working with TSE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Min_Market_Working_with_TSE",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Active_flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Active_flag",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TL Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Start_Date",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_End_Date",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Cluster_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Cluster_code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
