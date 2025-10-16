@@ -90,7 +90,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Stg_GLAccountMaster_IN1677"
+							"Table": "Stg_GLAccountMaster_IN1677",
+							"DB": "Target_ADF_B2025"
 						}
 					}
 				]

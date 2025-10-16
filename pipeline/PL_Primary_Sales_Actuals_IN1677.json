@@ -81,7 +81,9 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Schema": "JSivakum"
+							"Schema": "JSivakum",
+							"Table": "Stg_Primary_Sales_Actuals_IN1677",
+							"DB": "Target_ADF_B2025"
 						}
 					}
 				]

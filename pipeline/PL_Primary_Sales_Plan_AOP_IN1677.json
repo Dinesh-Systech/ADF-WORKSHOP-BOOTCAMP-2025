@@ -82,7 +82,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
+							"Table": "Stg_Primary_Sales_Plan_AOP_IN1677",
+							"DB": "Target_ADF_B2025"
 						}
 					}
 				]
