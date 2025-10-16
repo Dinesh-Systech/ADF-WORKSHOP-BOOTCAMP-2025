@@ -1,0 +1,47 @@
+{
+	"name": "PL_src_stg",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "created_date",
+								"value": ""
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "SRC - STG"
+		},
+		"annotations": []
+	}
+}
