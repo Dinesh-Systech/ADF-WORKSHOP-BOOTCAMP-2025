@@ -28,7 +28,7 @@
 							{
 								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate table JSivakum.Stg_ActivationMapping_IN1677;",
+						"preCopyScript": "Truncate table JSivakum.Stg_ActivationMapping_IN1677",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -117,8 +117,8 @@
 								},
 								"sink": {
 									"name": "EffectiveFrom",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
@@ -129,8 +129,8 @@
 								},
 								"sink": {
 									"name": "EffectiveTo",
-									"type": "Date",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{

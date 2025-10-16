@@ -90,8 +90,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Stg_Sales_Org_TL_IN1677",
-							"DB": "Target_ADF_B2025"
+							"Table": "Stg_Sales_Org_TL_IN1677"
 						}
 					}
 				]
