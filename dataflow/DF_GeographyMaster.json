@@ -69,20 +69,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          CountryCode,",
-				"          StateKey,",
-				"          CountryName,",
-				"          ZoneCode,",
-				"          ZoneName,",
-				"          StateCode,",
-				"          StateName,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy",
-				"     )) ~> SinkAlcGeographyMasterN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcGeographyMasterN1677"
 			]
 		}
 	}

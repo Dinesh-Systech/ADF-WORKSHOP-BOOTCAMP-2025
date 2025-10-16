@@ -16,14 +16,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Activation_Mapping",
+						"referenceName": "DF_GeographyMaster",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SrcActivationMapping": {
+							"SrcGeographyMaster": {
 								"Schema": "JSivakum",
 								"Table": "Stg_GeographyMaster_IN1677"
 							},
-							"SinkAlcActivationMappingIN1677": {
+							"SinkAlcGeographyMasterN1677": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Geography_Master_IN1677"
 							}
