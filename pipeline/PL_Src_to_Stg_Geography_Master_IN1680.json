@@ -52,8 +52,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Alc_Geography_Master_IN1680",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -78,7 +80,10 @@
 				"outputs": [
 					{
 						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"table": "Alc_Geography_Master_IN1680"
+						}
 					}
 				]
 			}
