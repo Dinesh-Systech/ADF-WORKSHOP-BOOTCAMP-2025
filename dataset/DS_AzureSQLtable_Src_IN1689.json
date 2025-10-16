@@ -1,0 +1,34 @@
+{
+	"name": "DS_AzureSQLtable_Src_IN1689",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AZURE_SQL_IN1689",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string",
+				"defaultValue": "Alcobev"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "WORKSHOP DATASETS"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
