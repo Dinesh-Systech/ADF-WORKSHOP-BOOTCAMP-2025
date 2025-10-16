@@ -71,20 +71,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          PromotionCode,",
-				"          PromotionKey,",
-				"          PromotionDescription,",
-				"          PromotionType,",
-				"          ProductLevelCode,",
-				"          EffectiveFrom,",
-				"          EffectiveTo,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy",
-				"     )) ~> SinkAlcActivationMasterN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcActivationMasterN1677"
 			]
 		}
 	}
