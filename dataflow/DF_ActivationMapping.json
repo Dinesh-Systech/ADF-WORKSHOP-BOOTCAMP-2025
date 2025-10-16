@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKActivationMappig"
+					"name": "SNKActivationMapping"
 				}
 			],
 			"transformations": [
@@ -107,7 +107,7 @@
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKActivationMappig"
+				"     )) ~> SNKActivationMapping"
 			]
 		}
 	}

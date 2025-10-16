@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCActivationMapping"
+					"name": "SRCActivationMaster"
 				}
 			],
 			"sinks": [
@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKActivationMappig"
+					"name": "SNKActivation"
 				}
 			],
 			"transformations": [
@@ -29,7 +29,7 @@
 					"name": "DatatypeCange"
 				},
 				{
-					"name": "ActivationMappingKey"
+					"name": "ActivationKey"
 				},
 				{
 					"name": "SelectOrder"
@@ -43,11 +43,9 @@
 				"          PromotionCode as string,",
 				"          PromotionDescription as string,",
 				"          PromotionType as string,",
-				"          RetailerCode as string,",
+				"          ProductLevelCode as string,",
 				"          EffectiveFrom as string,",
 				"          EffectiveTo as string,",
-				"          MappingLevel as string,",
-				"          IsActive as string,",
 				"          {Created By} as string,",
 				"          {Created Date} as timestamp,",
 				"          {Updated By} as string,",
@@ -56,22 +54,20 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCActivationMapping",
-				"SRCActivationMapping derive(EffectiveFrom = toDate(EffectiveFrom,\"dd-MM-yyyy\"),",
+				"     format: 'table') ~> SRCActivationMaster",
+				"SRCActivationMaster derive(EffectiveFrom = toDate(EffectiveFrom,\"dd-MM-yyyy\"),",
 				"          EffectiveTo = toDate(EffectiveTo,\"dd-MM-yyyy\")) ~> DatatypeCange",
-				"NullHandling keyGenerate(output(ActivationMappingKey as long),",
+				"NullHandling keyGenerate(output(ActivationKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> ActivationMappingKey",
-				"ActivationMappingKey select(mapColumn(",
+				"     stepValue: 1L) ~> ActivationKey",
+				"ActivationKey select(mapColumn(",
 				"          PromotionCode,",
-				"          ActivationMappingKey,",
+				"          ActivationKey,",
 				"          PromotionDescription,",
 				"          PromotionType,",
-				"          RetailerCode,",
+				"          ProductLevelCode,",
 				"          EffectiveFrom,",
 				"          EffectiveTo,",
-				"          MappingLevel,",
-				"          IsActive,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
@@ -95,19 +91,17 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          PromotionCode,",
-				"          ActivationMappingKey,",
+				"          ActivationKey,",
 				"          PromotionDescription,",
 				"          PromotionType,",
-				"          RetailerCode,",
+				"          ProductLevelCode,",
 				"          EffectiveFrom,",
 				"          EffectiveTo,",
-				"          MappingLevel,",
-				"          IsActive,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKActivationMappig"
+				"     )) ~> SNKActivation"
 			]
 		}
 	}
