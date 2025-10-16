@@ -1,16 +1,45 @@
 {
-	"name": "Alc_Primary_Sales_Actuals_IN1680",
+	"name": "DF_Alc_Primary_Sales_Actuals_IN1680",
 	"properties": {
 		"folder": {
 			"name": "stg - dw"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKstg"
+				}
+			],
 			"transformations": [],
 			"scriptLines": [
-				""
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"SRCstg sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstg"
 			]
 		}
 	}
