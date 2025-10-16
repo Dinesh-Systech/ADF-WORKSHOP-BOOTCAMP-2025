@@ -22,22 +22,132 @@
 					"name": "TGTPrimarySalesActuals"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKPrimarySalesActuals"
+				}
+			],
 			"transformations": [
 				{
 					"name": "AggMaxTransactionDate"
+				},
+				{
+					"name": "joinSRCPrimarySalesAndTgtPrimarySales"
+				},
+				{
+					"name": "filterNewData"
+				},
+				{
+					"name": "StringToDate"
+				},
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "RemoveSRC"
+				},
+				{
+					"name": "selectSRC"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as string,",
+				"          Division as string,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCPrimarySalesActuals",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TGTPrimarySalesActuals",
-				"TGTPrimarySalesActuals aggregate() ~> AggMaxTransactionDate"
+				"TGTPrimarySalesActuals aggregate(groupBy(SalesOrgCode),",
+				"     max_date = max(TransactionDate)) ~> AggMaxTransactionDate",
+				"selectSRC, AggMaxTransactionDate join(SRCSalesOrgCode == SalesOrgCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSRCPrimarySalesAndTgtPrimarySales",
+				"StringToDate filter(SRCTransactionDate > max_date) ~> filterNewData",
+				"joinSRCPrimarySalesAndTgtPrimarySales derive(SRCTransactionDate = toDate(SRCSalesOrgCode, \"dd-MM-yyyy\"),",
+				"          max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> StringToDate",
+				"filterNewData derive({Created By} = \"IN1684\",",
+				"          {Created Date} = currentTimestamp(),",
+				"          {Updated By} = \"UNK\",",
+				"          {Updated Date} = toTimestamp(\"1900-01-01 00:00:00\")) ~> AuditColumns",
+				"AuditColumns select(mapColumn(",
+				"          CompanyCode = SRCCompanyCode,",
+				"          SalesOrgCode = SRCSalesOrgCode,",
+				"          DistributionChannel = SRCDistributionChannel,",
+				"          Division = SRCDivision,",
+				"          CustomerCode = SRCCustomerCode,",
+				"          CustomerName = SRCCustomerName,",
+				"          CountryCode = SRCCountryCode,",
+				"          ZoneCode = SRCZoneCode,",
+				"          StateCode = SRCStateCode,",
+				"          SKUCode = SRCSKUCode,",
+				"          PlantCode = SRCPlantCode,",
+				"          TransactionDate = SRCTransactionDate,",
+				"          VolumeActualCase = SRCVolumeActualCase,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveSRC",
+				"SRCPrimarySalesActuals select(mapColumn(",
+				"          each(match(true()),",
+				"               \"SRC\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRC",
+				"RemoveSRC sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKPrimarySalesActuals"
 			]
 		}
 	}

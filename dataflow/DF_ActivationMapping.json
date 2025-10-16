@@ -1,0 +1,70 @@
+{
+	"name": "DF_ActivationMapping",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCActivationMapping"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKActivationMappig"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as string,",
+				"          EffectiveTo as string,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCActivationMapping",
+				"SRCActivationMapping select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive() ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKActivationMappig"
+			]
+		}
+	}
+}
