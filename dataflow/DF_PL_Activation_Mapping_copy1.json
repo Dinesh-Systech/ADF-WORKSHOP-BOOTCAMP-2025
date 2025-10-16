@@ -1,0 +1,81 @@
+{
+	"name": "DF_PL_Activation_Mapping_copy1",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcActivationMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SinkAlcActivationMappingIN1677"
+				}
+			],
+			"transformations": [
+				{
+					"name": "PromotionKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcActivationMaster",
+				"Transformation keyGenerate(output(PromotionKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PromotionKey",
+				"PromotionKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))\r",
+				"\r",
+				"),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"SrcActivationMaster derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
+				"          EffectiveTo = toDate(EffectiveTo,'dd-MM-yyyy'),",
+				"          UpdatedAt = toTimestamp(null())) ~> Transformation",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PromotionCode,",
+				"          PromotionKey,",
+				"          PromotionDescription,",
+				"          PromotionType,",
+				"          ProductLevelCode,",
+				"          EffectiveFrom,",
+				"          EffectiveTo,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     )) ~> SinkAlcActivationMappingIN1677"
+			]
+		}
+	}
+}
