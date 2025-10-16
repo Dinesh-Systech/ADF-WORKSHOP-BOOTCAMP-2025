@@ -6,13 +6,13 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
+			"Container": {
+				"type": "string"
+			},
 			"Directory": {
 				"type": "string"
 			},
 			"File": {
-				"type": "string"
-			},
-			"Container": {
 				"type": "string"
 			}
 		},

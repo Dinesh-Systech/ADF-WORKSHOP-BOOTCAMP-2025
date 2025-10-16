@@ -66,6 +66,148 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "GeneralLedgerCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "GeneralLedgerCode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "GeneralLedgerName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "GeneralLedgerName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "GLType",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "GLType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Currency",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Currency",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Reporting_Hierarchy_Name_L1",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reporting_Hierarchy_Name_L1",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Reporting_Hierarchy_Name_L2",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reporting_Hierarchy_Name_L2",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Reporting_Hierarchy_Name_L3",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reporting_Hierarchy_Name_L3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Reporting_Hierarchy_Name_L4",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reporting_Hierarchy_Name_L4",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "created_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -78,9 +220,9 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"Directory": "boootcamp25",
-							"File": "IN1685/alcobev",
-							"Container": "GLAccountMaster.csv"
+							"Container": "boootcamp25",
+							"Directory": "IN1685/alcobev_src",
+							"File": "GLAccountMaster.csv"
 						}
 					}
 				],
