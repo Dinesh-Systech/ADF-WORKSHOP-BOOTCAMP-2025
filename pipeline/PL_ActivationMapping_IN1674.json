@@ -47,12 +47,12 @@
 								}
 							}
 						],
-						"sqlReaderQuery": "truncate table ActivationMapping",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table STG_ActivationMapping_IN1674",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"tableOption": "autoCreate",
