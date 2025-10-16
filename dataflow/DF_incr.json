@@ -22,7 +22,15 @@
 					"name": "TGT"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				}
+			],
 			"transformations": [
 				{
 					"name": "AGGR"
@@ -127,6 +135,8 @@
 				"          PlantCode,",
 				"          TransactionDate,",
 				"          VolumeActualCase,",
+				"          t_SalesOrgCode,",
+				"          max_date,",
 				"          created_date,",
 				"          created_by,",
 				"          updated_date,",
@@ -136,7 +146,17 @@
 				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
 				"SRC derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFORMATION",
 				"TGT derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFdate",
-				"LEFTsrctgt derive() ~> NULL"
+				"LEFTsrctgt derive(max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> NULL",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
 			]
 		}
 	}
