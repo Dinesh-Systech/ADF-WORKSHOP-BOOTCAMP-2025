@@ -21,7 +21,7 @@
 							{
 								"name": "CreatedAT",
 								"value": {
-									"value": "utcNow()",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
