@@ -42,7 +42,7 @@
 							{
 								"name": "Updated Date",
 								"value": {
-									"value": "31/12/2999",
+									"value": "1990-01-01",
 									"type": "Expression"
 								}
 							},
@@ -57,7 +57,151 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table stg_Activation",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductLevelCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "ProductLevelCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline RunID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Pipeline_RunID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -66,6 +210,16 @@
 						"parameters": {
 							"Schema": "Alcobev",
 							"table": "ActivationMaster"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "SKomala",
+							"tablename": "stg_Activation"
 						}
 					}
 				]
