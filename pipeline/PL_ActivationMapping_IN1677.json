@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate table stg_Activation_Mapping;",
+						"preCopyScript": "Truncate table JSivakum.stg_Activation_Mapping;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -82,8 +82,8 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Schema": "Alcobev",
-							"Table": "Alc_Activation_Mapping_IN1677"
+							"Schema": "JSivakum",
+							"Table": "stg_Activation_Mapping"
 						}
 					}
 				]

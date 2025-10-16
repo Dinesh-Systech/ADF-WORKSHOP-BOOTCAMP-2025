@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate Table stg_ActivationMaster",
+						"preCopyScript": "Truncate Table JSivakum.stg_ActivationMaster;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -80,7 +80,11 @@
 				"outputs": [
 					{
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "JSivakum",
+							"Table": "stg_ActivationMaster"
+						}
 					}
 				]
 			}
