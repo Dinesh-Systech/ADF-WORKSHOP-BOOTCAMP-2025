@@ -1,0 +1,47 @@
+{
+	"name": "PL_Alc_Sales_Org_TL_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Alc_Sales_Org_TL",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Alc_Sales_Org_TL_IN1680",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCtl": {
+								"schema": "KRavi",
+								"table": "Stg_Sales_Org_TL_IN1680",
+								"database": "Target_ADF_B2025"
+							},
+							"SNKtl": {
+								"schema": "KRavi",
+								"table": "Alc_Sales_Org_TL_IN1680",
+								"database": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "stg_to_tgt"
+		},
+		"annotations": []
+	}
+}
