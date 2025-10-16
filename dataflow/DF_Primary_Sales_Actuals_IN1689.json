@@ -1,0 +1,124 @@
+{
+	"name": "DF_Primary_Sales_Actuals_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/SRC TO STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_SRC_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_SRC_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "TgtPrimarySalesActuals"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SinkStgPrimarySalesActualsIN1689"
+				},
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterTransactionDate"
+				},
+				{
+					"name": "AggMaxDate"
+				},
+				{
+					"name": "HandlingTransactionDate"
+				},
+				{
+					"name": "AuditColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as string,",
+				"          Division as string,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtPrimarySalesActuals",
+				"HandlingTransactionDate filter(TransactionDate>sink1#outputs()[1].TransactionDate) ~> FilterTransactionDate",
+				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = max(TransactionDate)) ~> AggMaxDate",
+				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
+				"FilterTransactionDate derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = toTimestamp(null()),",
+				"          CreatedBy = 'PL_ProductMaster_IN1689',",
+				"          UpdatedBy = toString(null())) ~> AuditColumns",
+				"AuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     )) ~> SinkStgPrimarySalesActualsIN1689",
+				"AggMaxDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          TransactionDate = MaxTransactionDate",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
