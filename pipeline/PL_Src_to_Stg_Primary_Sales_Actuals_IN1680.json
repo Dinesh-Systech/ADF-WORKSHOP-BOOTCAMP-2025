@@ -3,97 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CPY_Src_to_Stg_Primary_Sales_Actuals_IN1680",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"additionalColumns": [
-							{
-								"name": "CreatedAt",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "CreatedBy",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "UpdatedAt",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "UpdatedBy",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
-							}
-						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference",
-						"parameters": {
-							"schema": "Alcobev",
-							"table": "Primary_Sales_Actuals",
-							"database": "Trainer"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference",
-						"parameters": {
-							"schema": "KRavi",
-							"table": "Stg_Primary_Sales_Actuals_IN1680(",
-							"database": "Target_ADF_B2025"
-						}
-					}
-				]
-			},
-			{
 				"name": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -113,9 +24,9 @@
 								"table": "Primary_Sales_Actuals",
 								"database": "Trainer"
 							},
-							"Srcstgactuals": {
+							"SRCstg": {
 								"schema": "KRavi",
-								"table": "Stg_Primary_Sales_Actuals_IN1680(",
+								"table": "Stg_Primary_Sales_Actuals_IN1680",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKstgActuals": {
@@ -133,11 +44,6 @@
 				}
 			}
 		],
-		"variables": {
-			"MaxDate": {
-				"type": "String"
-			}
-		},
 		"folder": {
 			"name": "src_to_stg"
 		},

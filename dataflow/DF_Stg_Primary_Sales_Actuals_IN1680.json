@@ -19,7 +19,7 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "Srcstgactuals"
+					"name": "SRCstg"
 				}
 			],
 			"sinks": [
@@ -29,23 +29,23 @@
 						"type": "DatasetReference"
 					},
 					"name": "SNKstgActuals"
+				},
+				{
+					"name": "SNK"
 				}
 			],
 			"transformations": [
 				{
-					"name": "LeftSrcAndStg"
+					"name": "max"
 				},
 				{
-					"name": "SLCTall"
+					"name": "MaxRecords"
 				},
 				{
-					"name": "maxStgdate"
+					"name": "TTransformation"
 				},
 				{
-					"name": "selectonlyDate"
-				},
-				{
-					"name": "handleNull"
+					"name": "HandleTransactionDate"
 				}
 			],
 			"scriptLines": [
@@ -90,27 +90,12 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> Srcstgactuals",
-				"Srcsrcactuals, SLCTall join(CompanyCode == stg_CompanyCode,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> LeftSrcAndStg",
-				"Srcstgactuals select(mapColumn(",
-				"          each(match(true()),",
-				"               'stg_'+$$ = $$)",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTall",
-				"SLCTall window(asc(stg_TransactionDate, true),",
-				"     maxStgDate = max(stg_TransactionDate)) ~> maxStgdate",
-				"maxStgdate select(mapColumn(",
-				"          maxStgDate",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectonlyDate",
-				"selectonlyDate derive(maxStgDateHandled = coalesce(maxStgDate,toDate('01-01-1990','yyyy-MM-dd' ))) ~> handleNull",
-				"LeftSrcAndStg sink(allowSchemaDrift: true,",
+				"     format: 'table') ~> SRCstg",
+				"SRCstg aggregate(TransactionDate = max(TransactionDate)) ~> max",
+				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
+				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
+				"max derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"MaxRecords sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -119,7 +104,14 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgActuals"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgActuals",
+				"HandleTransactionDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNK"
 			]
 		}
 	}
