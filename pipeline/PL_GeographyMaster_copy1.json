@@ -1,9 +1,9 @@
 {
-	"name": "PL_Activation_Master",
+	"name": "PL_GeographyMaster_copy1",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_PL_Activation_Mapping",
+				"name": "DF_PL_GeographyMaster",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,8 +16,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Activation_Master",
-						"type": "DataFlowReference"
+						"referenceName": "DF_GLAccountMaster",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcGLAccountMaster": {
+								"Schema": "JSivakum",
+								"Table": "GLAccountMaster"
+							},
+							"SinkGLAccountMasterN1677": {
+								"Schema": "Jsivakum"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
