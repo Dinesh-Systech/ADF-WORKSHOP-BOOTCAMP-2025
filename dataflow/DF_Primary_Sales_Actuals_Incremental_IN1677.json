@@ -1,5 +1,5 @@
 {
-	"name": "DF_Primary_Sales_Actuals_IN1677",
+	"name": "DF_Primary_Sales_Actuals_Incremental_IN1677",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Src to Stg"
@@ -29,23 +29,23 @@
 						"type": "DatasetReference"
 					},
 					"name": "SinkStgPrimarySalesActualsIN1677"
+				},
+				{
+					"name": "sink1"
 				}
 			],
 			"transformations": [
 				{
-					"name": "AuditColumns"
+					"name": "FilterTransactionDate"
 				},
 				{
 					"name": "AggMaxDate"
 				},
 				{
-					"name": "joinSrcTgt"
+					"name": "HandlingTransactionDate"
 				},
 				{
-					"name": "filter1"
-				},
-				{
-					"name": "select1"
+					"name": "AuditColumns"
 				}
 			],
 			"scriptLines": [
@@ -61,7 +61,7 @@
 				"          StateCode as string,",
 				"          SKUCode as integer,",
 				"          PlantCode as string,",
-				"          TransactionDate as date,",
+				"          TransactionDate as string,",
 				"          VolumeActualCase as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
@@ -91,42 +91,14 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TgtPrimarySalesActuals",
-				"SrcPrimarySalesActuals derive(CreatedAt = currentTimestamp(),",
+				"HandlingTransactionDate filter(TransactionDate>sink1#outputs()[1].TransactionDate) ~> FilterTransactionDate",
+				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = max(TransactionDate)) ~> AggMaxDate",
+				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
+				"FilterTransactionDate derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = toTimestamp(null()),",
-				"          CreatedBy = 'PL_Primary_Sales_Actuals_IN1677',",
+				"          CreatedBy = 'PL_ProductMaster_IN1677',",
 				"          UpdatedBy = toString(null())) ~> AuditColumns",
-				"TgtPrimarySalesActuals aggregate(groupBy(SalesOrgCode),",
-				"     TransactionDate = max(TransactionDate)) ~> AggMaxDate",
-				"AuditColumns, AggMaxDate join(SrcPrimarySalesActuals@SalesOrgCode == AggMaxDate@SalesOrgCode,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinSrcTgt",
-				"joinSrcTgt filter(SrcPrimarySalesActuals@TransactionDate>AggMaxDate@TransactionDate) ~> filter1",
-				"filter1 select(mapColumn(",
-				"          CompanyCode,",
-				"          SalesOrgCode = SrcPrimarySalesActuals@SalesOrgCode,",
-				"          DistributionChannel,",
-				"          Division,",
-				"          CustomerCode,",
-				"          CustomerName,",
-				"          CountryCode,",
-				"          ZoneCode,",
-				"          StateCode,",
-				"          SKUCode,",
-				"          PlantCode,",
-				"          TransactionDate = SrcPrimarySalesActuals@TransactionDate,",
-				"          VolumeActualCase,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy,",
-				"          SalesOrgCode = AggMaxDate@SalesOrgCode,",
-				"          TransactionDate = AggMaxDate@TransactionDate",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"AuditColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -154,7 +126,17 @@
 				"          UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy",
-				"     )) ~> SinkStgPrimarySalesActualsIN1677"
+				"     )) ~> SinkStgPrimarySalesActualsIN1677",
+				"AggMaxDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          TransactionDate = MaxTransactionDate",
+				"     )) ~> sink1"
 			]
 		}
 	}
