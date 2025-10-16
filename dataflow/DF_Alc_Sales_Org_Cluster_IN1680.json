@@ -1,0 +1,97 @@
+{
+	"name": "DF_Alc_Sales_Org_Cluster_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCStgCluster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcCluster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandle"
+				},
+				{
+					"name": "outletKey"
+				},
+				{
+					"name": "SLCTcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Cluster_Name as string,",
+				"          Cluster_Code as string,",
+				"          Cluster_ID as integer,",
+				"          Cluster_Head as string,",
+				"          Cluster_SFA_Code as string,",
+				"          Cluster_Head_Email as string,",
+				"          Cluster_Head_Mobile as long,",
+				"          Active_flag as integer,",
+				"          Cluster_Start_Date as string,",
+				"          Cluster_End_Date as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCStgCluster",
+				"SRCStgCluster derive(each(match(type =='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type =='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> NullHandle",
+				"SLCTcols keyGenerate(output(OUTLET_KEY as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> outletKey",
+				"NullHandle select(mapColumn(",
+				"          Cluster_Name,",
+				"          Cluster_Code,",
+				"          Cluster_ID,",
+				"          Cluster_Head,",
+				"          Cluster_SFA_Code,",
+				"          Cluster_Head_Email,",
+				"          Cluster_Head_Mobile,",
+				"          Active_flag,",
+				"          Cluster_Start_Date,",
+				"          Cluster_End_Date,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTcols",
+				"outletKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcCluster"
+			]
+		}
+	}
+}
