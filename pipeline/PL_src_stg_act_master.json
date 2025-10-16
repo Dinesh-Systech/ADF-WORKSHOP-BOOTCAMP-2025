@@ -1,9 +1,9 @@
 {
-	"name": "PL_src_stg_copy1",
+	"name": "PL_src_stg_act_master",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP",
+				"name": "CP_act_master",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table ;",
+						"preCopyScript": "truncate table stg_ALC_ActivationMaster_IN1685;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -60,6 +60,124 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductLevelCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "ProductLevelCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "created_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -73,6 +191,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
+							"Table": "ActivationMaster",
 							"DB_Name": "Trainer"
 						}
 					}
@@ -83,6 +202,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_ActivationMaster_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					}
