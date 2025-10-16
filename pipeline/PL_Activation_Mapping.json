@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_PL_Activation_Mapping",
+						"referenceName": "DF_Activation_Mapping",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcActivationMapping": {

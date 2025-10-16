@@ -1,5 +1,5 @@
 {
-	"name": "DF_Activation_Mapping",
+	"name": "DF_GeographyMaster",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Dw"
@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SrcActivationMapping"
+					"name": "SrcGeographyMaster"
 				}
 			],
 			"sinks": [
@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcActivationMappingIN1677"
+					"name": "SinkAlcGeographyMasterN1677"
 				}
 			],
 			"transformations": [
@@ -40,11 +40,9 @@
 				"          PromotionCode as string,",
 				"          PromotionDescription as string,",
 				"          PromotionType as string,",
-				"          RetailerCode as string,",
+				"          ProductLevelCode as string,",
 				"          EffectiveFrom as string,",
 				"          EffectiveTo as string,",
-				"          MappingLevel as string,",
-				"          IsActive as integer,",
 				"          CreatedAt as timestamp,",
 				"          UpdatedAt as timestamp,",
 				"          CreatedBy as string,",
@@ -53,14 +51,16 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcActivationMapping",
+				"     format: 'table') ~> SrcGeographyMaster",
 				"Transformation keyGenerate(output(PromotionKey as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> PromotionKey",
 				"PromotionKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
-				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))\r",
+				"\r",
+				"),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
-				"SrcActivationMapping derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
+				"SrcGeographyMaster derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
 				"          EffectiveTo = toDate(EffectiveTo,'dd-MM-yyyy'),",
 				"          UpdatedAt = toTimestamp(null())) ~> Transformation",
 				"NullHandling sink(allowSchemaDrift: true,",
@@ -76,19 +76,17 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          PromotionCode,",
-				"          PromotionKey,",
 				"          PromotionDescription,",
 				"          PromotionType,",
-				"          RetailerCode,",
+				"          ProductLevelCode,",
 				"          EffectiveFrom,",
 				"          EffectiveTo,",
-				"          MappingLevel,",
-				"          IsActive,",
 				"          CreatedAt,",
 				"          UpdatedAt,",
 				"          CreatedBy,",
-				"          UpdatedBy",
-				"     )) ~> SinkAlcActivationMappingIN1677"
+				"          UpdatedBy,",
+				"          PromotionKey",
+				"     )) ~> SinkAlcGeographyMasterN1677"
 			]
 		}
 	}
