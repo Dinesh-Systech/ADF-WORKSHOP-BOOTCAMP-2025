@@ -1,0 +1,99 @@
+{
+	"name": "PL_src_stg_Outlet",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_Outlet",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "created_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created_by",
+								"value": {
+									"value": "IN1685",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_date",
+								"value": {
+									"value": "1900-01-01 00:00:00",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_by",
+								"value": {
+									"value": "UNK",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table stg_ALC_Outlet_IN1685;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev",
+							"Table": "OutletMaster",
+							"DB_Name": "Trainer"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_Outlet_IN1685",
+							"DB_Name": "Target_ADF_B2025"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "SRC - STG"
+		},
+		"annotations": []
+	}
+}
