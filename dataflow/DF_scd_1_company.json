@@ -1,0 +1,153 @@
+{
+	"name": "DF_scd_1_company",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "Split"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NULL"
+				},
+				{
+					"name": "SKEY"
+				},
+				{
+					"name": "SELECTcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          Company_Key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT select(mapColumn(",
+				"          t_CompanyCode = CompanyCode,",
+				"          t_SalesOrgCode = SalesOrgCode,",
+				"          t_SalesOrgName = SalesOrgName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"SRCstg, SELECTtgt join(CompanyCode == t_CompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(isNull(t_CompanyCode),",
+				"     (CompanyCode == t_CompanyCode) && ( (SalesOrgCode != t_SalesOrgCode )||(SalesOrgName != SalesOrgName) ),",
+				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
+				"Split@InsertStream, Split@UpdateStream union(byName: true)~> UNIONstreams",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='int'), ERROR_FUNCTION('') = ERROR_FUNCTION('')),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
+				"NULL keyGenerate(output(Company_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKEY",
+				"SKEY select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          Company_Key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
+			]
+		}
+	}
+}
