@@ -24,7 +24,8 @@
 								"Table": "Stg_Sales_Org_Cluster_IN1677"
 							},
 							"SinkGLAccountMasterN1677": {
-								"Schema": "JSivakum"
+								"Schema": "JSivakum",
+								"Table": "Alc_Sales_Org_Cluster_IN1677"
 							}
 						}
 					},
