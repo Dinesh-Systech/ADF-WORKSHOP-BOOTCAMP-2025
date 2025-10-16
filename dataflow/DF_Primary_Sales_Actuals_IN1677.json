@@ -1,0 +1,161 @@
+{
+	"name": "DF_Primary_Sales_Actuals_IN1677",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Src to Stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Src_IN1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "TgtPrimarySalesActuals"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SinkStgPrimarySalesActualsIN1677"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "AggMaxDate"
+				},
+				{
+					"name": "joinSrcTgt"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtPrimarySalesActuals",
+				"SrcPrimarySalesActuals derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = toTimestamp(null()),",
+				"          CreatedBy = 'PL_Primary_Sales_Actuals_IN1677',",
+				"          UpdatedBy = toString(null())) ~> AuditColumns",
+				"TgtPrimarySalesActuals aggregate(groupBy(SalesOrgCode),",
+				"     TransactionDate = max(TransactionDate)) ~> AggMaxDate",
+				"AuditColumns, AggMaxDate join(SrcPrimarySalesActuals@SalesOrgCode == AggMaxDate@SalesOrgCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSrcTgt",
+				"joinSrcTgt filter(SrcPrimarySalesActuals@TransactionDate>AggMaxDate@TransactionDate) ~> filter1",
+				"filter1 select(mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode = SrcPrimarySalesActuals@SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate = SrcPrimarySalesActuals@TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          SalesOrgCode = AggMaxDate@SalesOrgCode,",
+				"          TransactionDate = AggMaxDate@TransactionDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     )) ~> SinkStgPrimarySalesActualsIN1677"
+			]
+		}
+	}
+}

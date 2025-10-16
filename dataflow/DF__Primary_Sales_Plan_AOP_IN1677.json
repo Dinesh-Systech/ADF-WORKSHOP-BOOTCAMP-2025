@@ -1,0 +1,17 @@
+{
+	"name": "DF__Primary_Sales_Plan_AOP_IN1677",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Src to Stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
