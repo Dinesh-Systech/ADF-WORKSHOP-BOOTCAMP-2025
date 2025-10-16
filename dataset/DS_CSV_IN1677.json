@@ -7,10 +7,12 @@
 		},
 		"parameters": {
 			"Container": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "boootcamp25"
 			},
 			"Directory": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "IN1677/End To End Workshop/Src"
 			},
 			"Filename": {
 				"type": "string"
