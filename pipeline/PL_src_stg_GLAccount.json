@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CPcsv",
+				"name": "CP_GLAccount",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -58,7 +58,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table ;",
+						"preCopyScript": "truncate table stg_ALC_GL_Account_IN1685;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -79,7 +79,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Directory": "boootcamp25",
-							"File": "IN1685/alcobev"
+							"File": "IN1685/alcobev",
+							"Container": "GLAccountMaster.csv"
 						}
 					}
 				],
@@ -89,6 +90,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_GL_Account_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					}
