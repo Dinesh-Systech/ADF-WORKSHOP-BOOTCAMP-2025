@@ -86,7 +86,8 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "KRavi"
+							"schema": "KRavi",
+							"database": "Target_ADF_B2025"
 						}
 					}
 				]

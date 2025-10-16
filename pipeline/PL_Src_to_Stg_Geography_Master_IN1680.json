@@ -73,7 +73,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "Alcobev",
-							"table": "GeographyMaster"
+							"table": "GeographyMaster",
+							"database": "Trainer"
 						}
 					}
 				],
@@ -83,7 +84,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "KRavi",
-							"table": "Alc_Geography_Master_IN1680"
+							"table": "Stg_GeographyMaster_IN1680",
+							"database": "Target_ADF_B2025"
 						}
 					}
 				]
