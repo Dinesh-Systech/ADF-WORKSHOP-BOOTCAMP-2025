@@ -55,7 +55,7 @@
 							}
 						],
 						"sqlReaderQuery": {
-							"value": "select * from [Alcobev].[Primary_Sales_Plan_AOP]\nwhere cast('01-'+Month as Date)='@{activity('Lookup for month').output.firstRow.LsMonthdate}'",
+							"value": "select * from Primary_Sales_Plan_AOP \nwhere\ncast('01-'+Month as date ) = '@{activity('Lookup for month').output.firstRow.LsMonthdate}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -63,10 +63,6 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": {
-							"value": "select * from Primary_Sales_Plan_AOP \nwhere\ncast('01-'+Month as date ) = '@{activity('Lookup for month').output.firstRow.LsMonthdate}'",
-							"type": "Expression"
-						},
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -310,7 +306,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "delete from [CKumaram].[Stg_Primary_Sales_Plan_AOP_IN1674] \nwhere \ncast \n('01-'+Month as date)='@{activity('Lookup for month').output.firstRow.LsMonthdate}",
+								"value": "delete from [CKumaram].[Stg_Primary_Sales_Plan_AOP_IN1674] \nwhere \ncast \n('01-'+Month as date)='@{activity('Lookup for month').output.firstRow.LsMonthdate}'",
 								"type": "Expression"
 							}
 						}
