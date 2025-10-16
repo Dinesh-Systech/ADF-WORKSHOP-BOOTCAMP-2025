@@ -80,7 +80,10 @@
 				"outputs": [
 					{
 						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "KRavi"
+						}
 					}
 				]
 			}

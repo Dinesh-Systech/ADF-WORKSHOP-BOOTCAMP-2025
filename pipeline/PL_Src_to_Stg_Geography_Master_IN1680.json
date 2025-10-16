@@ -82,6 +82,7 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
+							"schema": "KRavi",
 							"table": "Alc_Geography_Master_IN1680"
 						}
 					}
