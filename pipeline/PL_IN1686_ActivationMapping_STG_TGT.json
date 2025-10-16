@@ -27,13 +27,6 @@
 								"schema": "SKomala",
 								"tablename": "Alc_Activation_Mapping"
 							}
-						},
-						"linkedServiceParameters": {
-							"SNKAlcActivationMapping": {
-								"schemaLinkedService": {
-									"schema": "SKomala"
-								}
-							}
 						}
 					},
 					"compute": {
