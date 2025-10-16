@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_scd_1_Product",
+				"name": "DF_scd_1_CompProduct",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
