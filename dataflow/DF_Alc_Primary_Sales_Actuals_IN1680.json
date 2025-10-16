@@ -24,13 +24,39 @@
 					"name": "SNKstg"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "NullHandle"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCstg",
-				"SRCstg sink(allowSchemaDrift: true,",
+				"SRCstg derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type=='datetime'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> NullHandle",
+				"NullHandle sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
