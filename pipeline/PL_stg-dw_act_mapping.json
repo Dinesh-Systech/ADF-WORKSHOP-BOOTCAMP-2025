@@ -20,7 +20,14 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SRC": {
-								"SchemaName": "RRamesh"
+								"SchemaName": "RRamesh",
+								"Table": "stg_ALC_ActivationMapping_IN1685",
+								"DB_Name": "Target_ADF_B2025"
+							},
+							"SNK": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_Activation_Mapping_IN1685",
+								"DB_Name": "Target_ADF_B2025"
 							}
 						}
 					},
