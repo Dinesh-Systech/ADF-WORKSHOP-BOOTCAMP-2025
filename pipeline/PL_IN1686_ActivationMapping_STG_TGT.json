@@ -1,0 +1,52 @@
+{
+	"name": "PL_IN1686_ActivationMapping_STG_TGT",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_ActivationMapping",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Activation_Mapping_STG_TGT_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCActivationMapping": {
+								"schema": "SKomala",
+								"tablename": "stg_Activation_Mapping"
+							},
+							"SNKAlcActivationMapping": {
+								"schema": "SKomala",
+								"tablename": "Alc_Activation_Mapping"
+							}
+						},
+						"linkedServiceParameters": {
+							"SNKAlcActivationMapping": {
+								"schemaLinkedService": {
+									"schema": "SKomala"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"annotations": []
+	}
+}
