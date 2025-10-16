@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_AL_Account",
+				"name": "DF_GL_Account",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

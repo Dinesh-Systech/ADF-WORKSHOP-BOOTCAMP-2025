@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCGeographyMaster"
+					"name": "SRCSalesOrgCluster"
 				}
 			],
 			"sinks": [
@@ -21,28 +21,35 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKGeography"
+					"name": "SNKSalesOrgCluster"
 				}
 			],
 			"transformations": [
 				{
-					"name": "GeographyKey"
+					"name": "ClusterKey"
 				},
 				{
 					"name": "SelectOrder"
 				},
 				{
 					"name": "NullHandling"
+				},
+				{
+					"name": "DateTypeChange"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          CountryCode as string,",
-				"          CountryName as string,",
-				"          ZoneCode as string,",
-				"          ZoneName as string,",
-				"          StateCode as string,",
-				"          StateName as string,",
+				"          ClusterName as string,",
+				"          ClusterCode as string,",
+				"          ClusterID as integer,",
+				"          ClusterHead as string,",
+				"          ClusterSFACode as string,",
+				"          ClusterHeadEmail as string,",
+				"          ClusterHeadMobile as long,",
+				"          Active_flag as string,",
+				"          ClusterStartDate as string,",
+				"          ClusterEndDate as string,",
 				"          {Created By} as string,",
 				"          {Created Date} as timestamp,",
 				"          {Updated By} as string,",
@@ -51,18 +58,22 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCGeographyMaster",
-				"NullHandling keyGenerate(output(GeographyKey as long),",
+				"     format: 'table') ~> SRCSalesOrgCluster",
+				"NullHandling keyGenerate(output(ClusterKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> GeographyKey",
-				"GeographyKey select(mapColumn(",
-				"          CountryCode,",
-				"          GeographyKey,",
-				"          CountryName,",
-				"          ZoneCode,",
-				"          ZoneName,",
-				"          StateCode,",
-				"          StateName,",
+				"     stepValue: 1L) ~> ClusterKey",
+				"ClusterKey select(mapColumn(",
+				"          ClusterName,",
+				"          ClusterCode,",
+				"          ClusterKey,",
+				"          ClusterID,",
+				"          ClusterHead,",
+				"          ClusterSFACode,",
+				"          ClusterHeadEmail,",
+				"          ClusterHeadMobile,",
+				"          Active_flag,",
+				"          ClusterStartDate,",
+				"          ClusterEndDate,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
@@ -70,9 +81,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectOrder",
-				"SRCGeographyMaster derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"DateTypeChange derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type == 'int'), $$ = iifNull($#, -1)),",
 				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"SRCSalesOrgCluster derive(ClusterStartDate = toDate(ClusterStartDate),",
+				"          ClusterEndDate = toDate(ClusterEndDate)) ~> DateTypeChange",
 				"SelectOrder sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -96,7 +109,7 @@
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKGeography"
+				"     )) ~> SNKSalesOrgCluster"
 			]
 		}
 	}
