@@ -17,6 +17,36 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAt",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAT",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
