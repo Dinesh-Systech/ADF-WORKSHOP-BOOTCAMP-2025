@@ -9,14 +9,14 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_Blob_CSV_IN1680",
+						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
 					"name": "SRCstgcustomer"
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_Blob_CSV_IN1680",
+						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
 					"name": "SRCtgtCustomer"
@@ -25,7 +25,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DS_Blob_CSV_IN1680",
+						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
 					"name": "SNKtgtCustomer"
@@ -62,45 +62,14 @@
 				}
 			],
 			"scriptLines": [
-				"source(output(",
-				"          CompanyCode as string,",
-				"          CompanyName as string,",
-				"          SalesOrgCode as string,",
-				"          SalesOrgName as string,",
-				"          ReportingHierarchyCode1 as string,",
-				"          ReportingHierarchyName1 as string,",
-				"          ReportingHierarchyCode2 as string,",
-				"          ReportingHierarchyName2 as string,",
-				"          ReportingHierarchyCode3 as string,",
-				"          ReportingHierarchyName3 as string,",
-				"          CreatedAt as string,",
-				"          UpdatedAt as string,",
-				"          CreatedBy as string,",
-				"          UpdatedBy as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCstgcustomer",
-				"source(output(",
-				"          CompanyCode as string,",
-				"          CompanyKey as string,",
-				"          CompanyName as string,",
-				"          SalesOrgCode as string,",
-				"          SalesOrgName as string,",
-				"          ReportingHierarchyCode1 as string,",
-				"          ReportingHierarchyName1 as string,",
-				"          ReportingHierarchyCode2 as string,",
-				"          ReportingHierarchyName2 as string,",
-				"          ReportingHierarchyCode3 as string,",
-				"          ReportingHierarchyName3 as string,",
-				"          CreatedAt as string,",
-				"          UpdatedAt as string,",
-				"          CreatedBy as string,",
-				"          UpdatedBy as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstgcustomer",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCtgtCustomer",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtCustomer",
 				"SRCtgtCustomer select(mapColumn(",
 				"          each(match(true()),",
 				"               'tgt_'+$$ = $$)",
@@ -159,8 +128,14 @@
 				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
 				"SLCTsrccols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKtgtCustomer",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtCustomer",
 				"updatedAt sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
