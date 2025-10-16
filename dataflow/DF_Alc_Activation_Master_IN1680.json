@@ -29,7 +29,7 @@
 					"name": "NullHandle"
 				},
 				{
-					"name": "CustomerKey"
+					"name": "PromotionKey"
 				},
 				{
 					"name": "SLCTcols"
@@ -57,9 +57,9 @@
 				"          each(match(type =='string'), $$ = iifNull($$,'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
 				"          each(match(type =='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> NullHandle",
-				"SLCTcols keyGenerate(output(CompanyKey as long),",
+				"SLCTcols keyGenerate(output(PromotionKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> CustomerKey",
+				"     stepValue: 1L) ~> PromotionKey",
 				"NullHandle select(mapColumn(",
 				"          PromotionCode,",
 				"          PromotionDescription,",
@@ -74,7 +74,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SLCTcols",
-				"CustomerKey sink(allowSchemaDrift: true,",
+				"PromotionKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",

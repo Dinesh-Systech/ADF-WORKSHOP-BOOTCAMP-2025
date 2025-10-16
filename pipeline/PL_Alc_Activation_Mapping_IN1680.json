@@ -1,0 +1,47 @@
+{
+	"name": "PL_Alc_Activation_Mapping_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Alc_Activation_Mapping_IN1680",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Alc_Activation_Mapping_IN1680",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCStgActivationMapping": {
+								"schema": "KRavi",
+								"table": "Stg_ActivationMapping_IN1680",
+								"database": "Target_ADF_B2025"
+							},
+							"SNKtgt": {
+								"schema": "KRavi",
+								"table": "Alc_Activation_Mapping_IN1680",
+								"database": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "stg_to_tgt"
+		},
+		"annotations": []
+	}
+}
