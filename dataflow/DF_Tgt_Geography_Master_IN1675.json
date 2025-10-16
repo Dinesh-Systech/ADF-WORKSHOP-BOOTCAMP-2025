@@ -1,0 +1,70 @@
+{
+	"name": "DF_Tgt_Geography_Master_IN1675",
+	"properties": {
+		"folder": {
+			"name": "DF_Stg_to_Tgt_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcGeographyMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtGeographyMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "GeographyKey"
+				},
+				{
+					"name": "NullHandling"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcGeographyMaster",
+				"SrcGeographyMaster keyGenerate(output(GeographyKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> GeographyKey",
+				"GeographyKey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TgtGeographyMaster"
+			]
+		}
+	}
+}

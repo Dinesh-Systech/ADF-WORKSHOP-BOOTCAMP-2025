@@ -1,0 +1,79 @@
+{
+	"name": "DF_Tg_Sales_Org_Cluster_IN1675",
+	"properties": {
+		"folder": {
+			"name": "DF_Stg_to_Tgt_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesClusterMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtSalesClusterMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ClusterKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "DataTypeConversion"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Cluster_Name as string,",
+				"          Cluster_Code as string,",
+				"          Cluster_ID as integer,",
+				"          Cluster_Head as string,",
+				"          Cluster_SFA_Code as string,",
+				"          Cluster_Head_Email as string,",
+				"          Cluster_Head_Mobile as string,",
+				"          Active_flag as string,",
+				"          Cluster_Start_Date as string,",
+				"          Cluster_End_Date as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcSalesClusterMaster",
+				"DataTypeConversion keyGenerate(output(ClusterKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> ClusterKey",
+				"ClusterKey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"SrcSalesClusterMaster derive(Cluster_Start_Date = toDate(Cluster_Start_Date,'yyyy-MM-dd'),",
+				"          Cluster_End_Date = toDate(Cluster_End_Date,'yyyy-MM-dd')) ~> DataTypeConversion",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TgtSalesClusterMaster"
+			]
+		}
+	}
+}

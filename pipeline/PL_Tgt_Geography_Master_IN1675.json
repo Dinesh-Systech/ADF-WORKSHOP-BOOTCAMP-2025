@@ -1,0 +1,47 @@
+{
+	"name": "PL_Tgt_Geography_Master_IN1675",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Alc_Geography_Master",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Tgt_Geography_Master_IN1675",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcGeographyMaster": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Stg_Geography_master_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							},
+							"TgtGeographyMaster": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Alc_Geography_master_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PL_Stg_Tgt"
+		},
+		"annotations": []
+	}
+}
