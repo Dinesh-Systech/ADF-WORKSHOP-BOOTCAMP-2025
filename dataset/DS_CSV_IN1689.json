@@ -7,10 +7,12 @@
 		},
 		"parameters": {
 			"Container": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "boootcamp25"
 			},
 			"foldername": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "IN1689/END_TO_END_WORKSHOP_IN1689/SRC"
 			},
 			"filename": {
 				"type": "string"
@@ -23,7 +25,19 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation"
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().foldername",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Container",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

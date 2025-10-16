@@ -1,0 +1,104 @@
+{
+	"name": "PL_Stg_GLAccountMaster_IN1689_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_Src_to_Stg",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAT",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAT",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBY",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBY",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Stg_GLAccountMaster_IN1689",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"foldername": "IN1689/END_TO_END_WORKSHOP_IN1689/SRC",
+							"filename": "GLAccountMaster.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "VSri",
+							"tablename": "Stg_GLAccountMaster_IN1689"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "END TO END WORKSHOP/SRC_TO_TGT_IN1689"
+		},
+		"annotations": []
+	}
+}
