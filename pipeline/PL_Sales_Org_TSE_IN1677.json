@@ -66,6 +66,226 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TSE Territory Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE_Territory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Territory Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE_Territory_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Territory ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE_Territory_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE_Code",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE SFA Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSE_SFA_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "TSE_Email",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "TSE_Mobile",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"sink": {
+									"name": "TSE_Call_Norm",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "State_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "State_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DISTRICT",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DISTRICT",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "Active_Flag",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"sink": {
+									"name": "TSE_Start_Date",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"sink": {
+									"name": "TSE_End_Date",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "TL_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TL_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedAt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedAt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -90,8 +310,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Stg_Sales_Org_TSE_IN1677",
-							"DB": "Target_ADF_B2025"
+							"Table": "Stg_Sales_Org_TSE_IN1677"
 						}
 					}
 				]
