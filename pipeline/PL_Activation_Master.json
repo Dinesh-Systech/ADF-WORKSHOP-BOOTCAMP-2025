@@ -1,0 +1,45 @@
+{
+	"name": "PL_Activation_Master",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_PL_Activation_Mapping",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_PL_Activation_Mapping",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcActivationMapping": {
+								"Schema": "JSivakum",
+								"Table": "Stg_ActivationMaster_IN1677"
+							},
+							"SinkAlcActivationMappingIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Activation_Master_IN1677"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Stg to Dw"
+		},
+		"annotations": []
+	}
+}
