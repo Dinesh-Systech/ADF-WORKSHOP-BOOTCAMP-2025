@@ -1,0 +1,89 @@
+{
+	"name": "DF_Alc_Geography_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCStgGeography"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcActivationMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandle"
+				},
+				{
+					"name": "StateKey"
+				},
+				{
+					"name": "SLCTcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCStgGeography",
+				"SRCStgGeography derive(each(match(type =='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type =='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> NullHandle",
+				"SLCTcols keyGenerate(output(StateKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> StateKey",
+				"NullHandle select(mapColumn(",
+				"          CountryCode,",
+				"          CountryName,",
+				"          ZoneCode,",
+				"          ZoneName,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTcols",
+				"StateKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcActivationMaster"
+			]
+		}
+	}
+}

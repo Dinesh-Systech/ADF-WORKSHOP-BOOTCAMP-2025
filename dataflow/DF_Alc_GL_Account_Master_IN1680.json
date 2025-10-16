@@ -1,0 +1,93 @@
+{
+	"name": "DF_Alc_GL_Account_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCGLAccountMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcAccountMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandle"
+				},
+				{
+					"name": "StateKey"
+				},
+				{
+					"name": "SLCTcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          GeneralLedgerCode as integer,",
+				"          GeneralLedgerName as string,",
+				"          GLType as string,",
+				"          Currency as string,",
+				"          Reporting_Hierarchy_Name_L1 as string,",
+				"          Reporting_Hierarchy_Name_L2 as string,",
+				"          Reporting_Hierarchy_Name_L3 as string,",
+				"          Reporting_Hierarchy_Name_L4 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCGLAccountMaster",
+				"SRCGLAccountMaster derive(each(match(type =='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type =='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> NullHandle",
+				"SLCTcols keyGenerate(output(StateKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> StateKey",
+				"NullHandle select(mapColumn(",
+				"          GeneralLedgerCode,",
+				"          GeneralLedgerName,",
+				"          GLType,",
+				"          Currency,",
+				"          Reporting_Hierarchy_Name_L1,",
+				"          Reporting_Hierarchy_Name_L2,",
+				"          Reporting_Hierarchy_Name_L3,",
+				"          Reporting_Hierarchy_Name_L4,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTcols",
+				"StateKey sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcAccountMaster"
+			]
+		}
+	}
+}
