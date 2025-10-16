@@ -42,7 +42,7 @@
 							{
 								"name": "Updated Date",
 								"value": {
-									"value": "31/12/2999",
+									"value": "1990-01-01",
 									"type": "Expression"
 								}
 							},
@@ -57,7 +57,177 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "DELETE FROM stg_Primary_Sales_Plan_AOP;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SKUCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "SKUCode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandPackType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandPackType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandPackSize",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandPackSize",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedMonth",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CreatedMonth",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Plan Qty",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Plan Qty",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 0,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Created By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline RunID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Pipeline_RunID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -66,6 +236,16 @@
 						"parameters": {
 							"Schema": "Alcobev",
 							"table": "Primary_Sales_Plan_AOP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "SKomala",
+							"tablename": "stg_Primary_Sales_Plan_AOP"
 						}
 					}
 				]
