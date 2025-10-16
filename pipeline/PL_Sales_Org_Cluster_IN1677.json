@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "CreatedAt",
@@ -47,18 +47,25 @@
 								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_AzureSqlTable_Src_IN1677",
+						"referenceName": "DS_CSV_IN1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Schema": "Alcobev",
-							"Table": "Sales Org Cluster"
+							"Container": "boootcamp25",
+							"Directory": "IN1677/End To End Workshop/Src",
+							"Filename": "Sales Org Cluster"
 						}
 					}
 				]

@@ -33,7 +33,9 @@
 						"referenceName": "DS_CSV_IN1677",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25"
+							"Container": "boootcamp25",
+							"Directory": "IN1677/End To End Workshop/Src",
+							"Filename": "GLAccountMaster"
 						}
 					}
 				]
