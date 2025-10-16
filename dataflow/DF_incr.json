@@ -1,0 +1,131 @@
+{
+	"name": "DF_incr",
+	"properties": {
+		"folder": {
+			"name": "SRC - STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "AGGR"
+				},
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "FILTERdate"
+				},
+				{
+					"name": "AUDIT"
+				},
+				{
+					"name": "SELECTcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRC",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT aggregate(groupBy(SalesOrgCode),",
+				"     max_date = max(TransactionDate)) ~> AGGR",
+				"AGGR select(mapColumn(",
+				"          t_SalesOrgCode = SalesOrgCode,",
+				"          max_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"SRC, SELECTtgt join(SalesOrgCode == t_SalesOrgCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt filter(TransactionDate > max_date) ~> FILTERdate",
+				"FILTERdate derive(created_date = currentUTC(toString(currentTimestamp())),",
+				"          created_by = \"IN1685\",",
+				"          updated_date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),",
+				"          updated_by = \"UNK\") ~> AUDIT",
+				"AUDIT select(mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SELECTcols"
+			]
+		}
+	}
+}

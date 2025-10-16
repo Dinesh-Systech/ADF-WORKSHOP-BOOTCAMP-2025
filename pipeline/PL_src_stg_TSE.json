@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_",
+				"name": "CP_TSE",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -58,7 +58,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate table ;",
+						"preCopyScript": "truncate table stg_ALC_Sales_Org_TSE_IN1685 ;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -66,6 +66,256 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TSE Territory Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSETerritoryName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Territory Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSETerritoryCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Territory ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSETerritoryID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSECode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE SFA Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSESFACode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEEmail",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Mobile",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEMobile",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Call_Norm",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSECall_Norm",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "State_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DISTRICT",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DISTRICT",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DISTRICT_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Active Flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Active_Flag",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE Start Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEStartDate",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TSE End Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TSEEndDate",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TL_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TLCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "created_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "updated_by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated_by",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -79,7 +329,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
-							"Directory": "IN1685/alcobev"
+							"Directory": "IN1685/alcobev_src",
+							"File": "Sales Org TSE.csv"
 						}
 					}
 				],
@@ -89,6 +340,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_Sales_Org_TSE_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					}

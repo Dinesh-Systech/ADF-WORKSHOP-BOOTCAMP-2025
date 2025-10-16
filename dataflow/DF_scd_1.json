@@ -1,6 +1,9 @@
 {
 	"name": "DF_scd_1",
 	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
