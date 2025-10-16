@@ -55,7 +55,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCStgActivationMapping",
 				"Transformation derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
-				"          each(match(type=='integer'), $$ = iifNull($#, -1)),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandle",
 				"NullHandle keyGenerate(output(PromotionMappingKey as long),",
 				"     startAt: 1L,",
