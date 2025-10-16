@@ -16,9 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "DelimitedTextSink",
@@ -43,12 +49,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Azure_sql_IN1680",
+						"referenceName": "DS_Blob_CSV_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "KRavi",
-							"table": "Stg_CompetitorProductMaster_IN1680",
-							"database": "Target_ADF_B2025"
+							"container": "boootcamp25",
+							"folder": "IN1680/finalProjectscd",
+							"file": "Stg_CompanyMaster_IN1680"
 						}
 					}
 				],
@@ -59,7 +65,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/finalProjectscd",
-							"file": "Stg_CompetitorProductMaster_IN1680"
+							"file": "tgt_CompanyMaster_IN1680"
 						}
 					}
 				]

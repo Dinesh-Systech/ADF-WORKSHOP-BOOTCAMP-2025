@@ -1,0 +1,9 @@
+{
+	"name": "PL_Alc_Company_Master_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg_to_tgt"
+		},
+		"annotations": []
+	}
+}

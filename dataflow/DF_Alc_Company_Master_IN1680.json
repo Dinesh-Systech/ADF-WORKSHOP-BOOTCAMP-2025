@@ -8,14 +8,19 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "DS_Blob_CSV_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgcustomer"
 				}
 			],
 			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCstgcustomer"
 			]
 		}
 	}
