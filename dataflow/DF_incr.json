@@ -41,6 +41,15 @@
 				},
 				{
 					"name": "SELECTcols"
+				},
+				{
+					"name": "TRANSFORMATION"
+				},
+				{
+					"name": "TRANSFdate"
+				},
+				{
+					"name": "NULL"
 				}
 			],
 			"scriptLines": [
@@ -86,7 +95,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TGT",
-				"TGT aggregate(groupBy(SalesOrgCode),",
+				"TRANSFdate aggregate(groupBy(SalesOrgCode),",
 				"     max_date = max(TransactionDate)) ~> AGGR",
 				"AGGR select(mapColumn(",
 				"          t_SalesOrgCode = SalesOrgCode,",
@@ -94,12 +103,12 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
-				"SRC, SELECTtgt join(SalesOrgCode == t_SalesOrgCode,",
+				"TRANSFORMATION, SELECTtgt join(SalesOrgCode == t_SalesOrgCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LEFTsrctgt",
-				"LEFTsrctgt filter(TransactionDate > max_date) ~> FILTERdate",
+				"NULL filter(TransactionDate > max_date) ~> FILTERdate",
 				"FILTERdate derive(created_date = currentUTC(toString(currentTimestamp())),",
 				"          created_by = \"IN1685\",",
 				"          updated_date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),",
@@ -124,7 +133,10 @@
 				"          updated_by",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> SELECTcols"
+				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
+				"SRC derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFORMATION",
+				"TGT derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFdate",
+				"LEFTsrctgt derive() ~> NULL"
 			]
 		}
 	}
