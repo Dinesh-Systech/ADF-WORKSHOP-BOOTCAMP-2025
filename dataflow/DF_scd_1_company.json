@@ -113,7 +113,7 @@
 				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
 				"Split@InsertStream, Split@UpdateStream union(byName: true)~> UNIONstreams",
 				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
-				"          each(match(type=='int'), ERROR_FUNCTION('') = ERROR_FUNCTION('')),",
+				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
 				"NULL keyGenerate(output(Company_Key as long),",
 				"     startAt: 1L,",
