@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_stg_dw",
+						"referenceName": "DF_stg_dw_act_mapping",
 						"type": "DataFlowReference"
 					},
 					"compute": {

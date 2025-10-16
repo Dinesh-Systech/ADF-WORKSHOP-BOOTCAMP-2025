@@ -16,15 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_stg_dw",
+						"referenceName": "DF_stg_dw_act_mapping",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRC": {
+							"SRCstg": {
 								"SchemaName": "RRamesh",
 								"Table": "stg_ALC_ActivationMapping_IN1685",
 								"DB_Name": "Target_ADF_B2025"
 							},
-							"SNK": {
+							"SNKtgt": {
 								"SchemaName": "RRamesh",
 								"Table": "Alc_Activation_Mapping_IN1685",
 								"DB_Name": "Target_ADF_B2025"

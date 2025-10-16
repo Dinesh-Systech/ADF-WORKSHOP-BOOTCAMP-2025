@@ -1,5 +1,5 @@
 {
-	"name": "DF_stg_dw_act_mapping",
+	"name": "DF_stg_dw",
 	"properties": {
 		"folder": {
 			"name": "stg - dw"
@@ -57,11 +57,10 @@
 				"TRANSFORMATIONS derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
-				"NULL keyGenerate(output(Promotion_mapping_Key as long),",
+				"NULL keyGenerate(output({} as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> SKEY",
-				"SRCstg derive(EffectiveFrom = toDate(EffectiveFrom, 'dd-MM-yyyy'),",
-				"          EffectiveTo = toDate(EffectiveTo, 'dd-MM-yyyy')) ~> TRANSFORMATIONS",
+				"SRCstg derive() ~> TRANSFORMATIONS",
 				"SKEY sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -69,7 +68,7 @@
 				"     updateable:false,",
 				"     upsertable:false,",
 				"     format: 'table',",
-				"     preSQLs:['truncate table Alc_Activation_Mapping_IN1685;'],",
+				"     preSQLs:['truncate table ;'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
