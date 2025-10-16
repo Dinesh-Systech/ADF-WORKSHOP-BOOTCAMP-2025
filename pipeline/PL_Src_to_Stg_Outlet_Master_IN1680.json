@@ -41,7 +41,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "Alcobev",
-							"table": "CustomerMaster"
+							"table": "OutletMaster"
 						}
 					}
 				],
