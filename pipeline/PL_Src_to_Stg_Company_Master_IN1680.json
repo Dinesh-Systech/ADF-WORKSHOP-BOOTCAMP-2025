@@ -52,14 +52,21 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Stg_CompanyMaster_IN1680",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"source": {
+									"name": "CompanyCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "CompanyCode",
 									"type": "String",
@@ -67,6 +74,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "CompanyName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "CompanyName",
 									"type": "String",
@@ -74,6 +86,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "SalesOrgCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "SalesOrgCode",
 									"type": "String",
@@ -81,6 +98,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "SalesOrgName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "SalesOrgName",
 									"type": "String",
@@ -88,6 +110,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyCode1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyCode1",
 									"type": "String",
@@ -95,6 +122,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyName1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyName1",
 									"type": "String",
@@ -102,6 +134,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyCode2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyCode2",
 									"type": "String",
@@ -109,6 +146,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyName2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyName2",
 									"type": "String",
@@ -116,6 +158,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyCode3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyCode3",
 									"type": "String",
@@ -123,6 +170,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ReportingHierarchyName3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
 								"sink": {
 									"name": "ReportingHierarchyName3",
 									"type": "String",
