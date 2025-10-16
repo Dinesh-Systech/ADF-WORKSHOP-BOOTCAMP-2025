@@ -1,0 +1,266 @@
+{
+	"name": "PL_CompanyMaster_IN1684",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_CompanyMaster_to_stg_CompanyMaster",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "Created Date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created By",
+								"value": {
+									"value": "IN1684",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated Date",
+								"value": {
+									"value": "1990-01-01 00:00:00",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated By",
+								"value": {
+									"value": "UNK",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table stg_Company_IN1684;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CompanyCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "CompanyCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CompanyName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "CompanyName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SalesOrgCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "SalesOrgCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SalesOrgName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "SalesOrgName",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyCode1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyCode1",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyName1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyName1",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyCode2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyCode2",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyName2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyName2",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyCode3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyCode3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ReportingHierarchyName3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "ReportingHierarchyName3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Updated Date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false,
+							"dateFormat": "dd-MM-yyyy"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Schema": "Alcobev",
+							"PR_TableName": "CompanyMaster",
+							"PR_DB": "Trainer"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Schema": "PMahendi",
+							"PR_TableName": "stg_Company_IN1684",
+							"PR_DB": "Target_ADF_B2025"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Workshop/SRC to STG"
+		},
+		"annotations": []
+	}
+}

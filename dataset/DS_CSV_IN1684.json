@@ -1,0 +1,32 @@
+{
+	"name": "DS_CSV_IN1684",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureBlob_IN1684",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"PR_File": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().PR_File",
+					"type": "Expression"
+				},
+				"folderPath": "IN1684/End to End Workshop/SRC",
+				"container": "boootcamp25"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
