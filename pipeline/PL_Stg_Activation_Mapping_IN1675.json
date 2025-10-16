@@ -35,14 +35,14 @@
 							{
 								"name": "UpdatedBy",
 								"value": {
-									"value": "@pipeline().Pipeline",
+									"value": "UNK",
 									"type": "Expression"
 								}
 							},
 							{
 								"name": "UpdatedDate",
 								"value": {
-									"value": "utcNow",
+									"value": "1900-01-01 00:00:00",
 									"type": "Expression"
 								}
 							}
@@ -60,6 +60,148 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionDescription",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PromotionType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RetailerCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RetailerCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveFrom",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "EffectiveTo",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MappingLevel",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "MappingLevel",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "IsActive",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "IsActive",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UpdatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -83,8 +225,9 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "Alcobev",
-							"TableName": "Stg_Activation_Mapping_IN1675"
+							"SchemaName": "DMuthuku",
+							"TableName": "Stg_Activation_Mapping_IN1675",
+							"DatabaseName": "Target_ADF_B2025 "
 						}
 					}
 				]
