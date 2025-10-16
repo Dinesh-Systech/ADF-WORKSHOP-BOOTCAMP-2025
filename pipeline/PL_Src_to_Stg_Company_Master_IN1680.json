@@ -187,7 +187,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "Alcobev",
-							"table": "ActivationMaster",
+							"table": "CompanyMaster",
 							"database": "Trainer"
 						}
 					}
