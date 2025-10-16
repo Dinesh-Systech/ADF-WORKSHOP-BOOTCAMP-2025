@@ -20,19 +20,20 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SRCstgcompetitors": {
-								"container": "boootcamp25",
-								"folder": "IN1680/finalProjectscd",
-								"file": "Stg_CompetitorProductMaster_IN1680"
+								"schema": "KRavi",
+								"database": "Target_ADF_B2025"
 							},
 							"SRCtgtCustomer": {
-								"container": "boootcamp25",
-								"folder": "IN1680/finalProjectscd",
-								"file": "tgt_CompanyMaster_IN1680"
+								"schema": "KRavi",
+								"database": "Target_ADF_B2025"
 							},
 							"SNKtgtCustomer": {
-								"container": "boootcamp25",
-								"folder": "IN1680/finalProjectscd",
-								"file": "tgt_CompanyMaster_IN1680"
+								"schema": "KRavi",
+								"database": "Target_ADF_B2025"
+							},
+							"SNKtgtUpdate": {
+								"schema": "KRavi",
+								"database": "Target_ADF_B2025"
 							}
 						}
 					},
