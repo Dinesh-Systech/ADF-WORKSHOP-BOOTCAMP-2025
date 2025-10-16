@@ -1,0 +1,72 @@
+{
+	"name": "PL_CompetitorProductMaster_IN1689",
+	"properties": {
+		"activities": [
+			{
+				"name": "CD_Src_to_Stg",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedAT",
+								"value": {
+									"value": "utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedAT",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBY",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBY",
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSQLtable_SRC_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "Alcobev",
+							"tablename": "CompetitorProductMaster"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "END TO END WORKSHOP"
+		},
+		"annotations": []
+	}
+}
