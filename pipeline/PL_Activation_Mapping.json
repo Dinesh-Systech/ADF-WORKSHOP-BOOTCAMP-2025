@@ -15,6 +15,20 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_PL_Activation_Mapping",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcActivationMapping": {
+								"Schema": "JSivakum",
+								"Table": "Stg_ActivationMaster_IN1677"
+							},
+							"SinkAlcActivationMappingIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Activation_Mapping_IN1677"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
