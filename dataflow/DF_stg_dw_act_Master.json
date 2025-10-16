@@ -1,5 +1,5 @@
 {
-	"name": "DF_stg_dw_copy1",
+	"name": "DF_stg_dw_act_Master",
 	"properties": {
 		"folder": {
 			"name": "stg - dw"
@@ -40,11 +40,9 @@
 				"          PromotionCode as string,",
 				"          PromotionDescription as string,",
 				"          PromotionType as string,",
-				"          RetailerCode as string,",
+				"          ProductLevelCode as string,",
 				"          EffectiveFrom as string,",
 				"          EffectiveTo as string,",
-				"          MappingLevel as string,",
-				"          IsActive as string,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",
@@ -57,18 +55,20 @@
 				"TRANSFORMATIONS derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
-				"NULL keyGenerate(output({} as long),",
+				"NULL keyGenerate(output(Promotion_master_Key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> SKEY",
-				"SRCstg derive() ~> TRANSFORMATIONS",
+				"SRCstg derive(EffectiveFrom = toDate(EffectiveFrom, 'dd-MM-yyyy'),",
+				"          EffectiveTo = toDate(EffectiveTo, 'dd-MM-yyyy')) ~> TRANSFORMATIONS",
 				"SKEY sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
-				"     preSQLs:['truncate table ;'],",
+				"     preSQLs:['truncate table Alc_Activation_Master_IN1685;'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
