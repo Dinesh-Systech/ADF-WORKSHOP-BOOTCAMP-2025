@@ -1,5 +1,5 @@
 {
-	"name": "DF_PL_Activation_Mapping_copy1",
+	"name": "DF_PL_Activation_Master",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Dw"
@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcActivationMappingIN1677"
+					"name": "SinkAlcActivationMasterN1677"
 				}
 			],
 			"transformations": [
@@ -36,7 +36,19 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          ProductLevelCode as string,",
+				"          EffectiveFrom as string,",
+				"          EffectiveTo as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcActivationMaster",
@@ -74,7 +86,7 @@
 				"          UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy",
-				"     )) ~> SinkAlcActivationMappingIN1677"
+				"     )) ~> SinkAlcActivationMasterN1677"
 			]
 		}
 	}
