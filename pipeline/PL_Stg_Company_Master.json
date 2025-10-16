@@ -23,7 +23,9 @@
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -41,7 +43,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"TableName": "CompanyMaster"
+							"TableName": "CompanyMaster",
+							"DatabaseName": "Trainer"
 						}
 					}
 				],
@@ -50,6 +53,7 @@
 						"referenceName": "DS_Azure_SQL",
 						"type": "DatasetReference",
 						"parameters": {
+							"SchemaName": "Alcobev",
 							"TableName": "Stg_Company_Master"
 						}
 					}
