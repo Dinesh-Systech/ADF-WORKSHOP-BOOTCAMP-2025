@@ -54,7 +54,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/finalProjectscd",
-							"file": "Stg_CompanyMaster_IN1680"
+							"file": "Stg_CompetitorProductMaster_IN1680"
 						}
 					}
 				],
@@ -65,7 +65,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/finalProjectscd",
-							"file": "tgt_CompanyMaster_IN1680"
+							"file": "tgt_CompetitorProductMaster_IN1680"
 						}
 					}
 				]

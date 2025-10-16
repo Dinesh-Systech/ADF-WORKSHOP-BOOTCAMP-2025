@@ -1,0 +1,52 @@
+{
+	"name": "PL_Alc_Competitor_Product_Master_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Alc_Competitor_Product_Master",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Alc_Competitor_Product_Master_IN1680",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstgcompetitors": {
+								"container": "boootcamp25",
+								"folder": "IN1680/finalProjectscd",
+								"file": "Stg_CompetitorProductMaster_IN1680"
+							},
+							"SRCtgtCustomer": {
+								"container": "boootcamp25",
+								"folder": "IN1680/finalProjectscd",
+								"file": "tgt_CompanyMaster_IN1680"
+							},
+							"SNKtgtCustomer": {
+								"container": "boootcamp25",
+								"folder": "IN1680/finalProjectscd",
+								"file": "tgt_CompanyMaster_IN1680"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "stg_to_tgt"
+		},
+		"annotations": []
+	}
+}
