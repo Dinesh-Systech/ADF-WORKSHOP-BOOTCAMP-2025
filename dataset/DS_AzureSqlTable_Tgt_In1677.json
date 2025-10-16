@@ -7,7 +7,8 @@
 		},
 		"parameters": {
 			"Schema": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "JSivakum"
 			},
 			"Table": {
 				"type": "string"

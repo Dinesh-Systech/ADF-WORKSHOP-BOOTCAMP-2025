@@ -52,7 +52,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate table Alcobev.ActivationMapping;",
+						"preCopyScript": "Truncate table stg_Activation_Mapping;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false

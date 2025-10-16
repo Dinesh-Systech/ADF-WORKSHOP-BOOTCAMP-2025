@@ -50,7 +50,22 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate Table stg_ActivationMaster",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -60,6 +75,12 @@
 							"Schema": "Alcobev",
 							"Table": "ActivationMaster"
 						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
 					}
 				]
 			}
