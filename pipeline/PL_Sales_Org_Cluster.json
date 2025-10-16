@@ -1,9 +1,9 @@
 {
-	"name": "PL_GLAccountMaster",
+	"name": "PL_Sales_Org_Cluster",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_GLAccountMaster",
+				"name": "DF_Sales_Org_Cluster",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,16 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_GLAccountMaster",
+						"referenceName": "DF_SalesOrgCluster",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SrcGLAccountMaster": {
+							"SrcSalesOrgCluster": {
 								"Schema": "JSivakum",
-								"Table": "Stg_GLAccountMaster_IN1677"
+								"Table": "Stg_Sales_Org_Cluster_IN1677"
 							},
 							"SinkGLAccountMasterN1677": {
-								"Schema": "Jsivakum",
-								"Table": "Alc_GL_Account_Master_IN1677"
+								"Schema": "JSivakum"
 							}
 						}
 					},
