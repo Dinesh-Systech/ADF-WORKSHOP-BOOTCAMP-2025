@@ -1,0 +1,402 @@
+{
+	"name": "DF_Alc_Primary_Sales_Actuals_IN1680",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "Srcsrcactuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtCompany"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtState"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtItem"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtPlant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKstgActuals"
+				},
+				{
+					"name": "SNK"
+				}
+			],
+			"transformations": [
+				{
+					"name": "max"
+				},
+				{
+					"name": "MaxRecords"
+				},
+				{
+					"name": "TTransformation"
+				},
+				{
+					"name": "HandleTransactionDate"
+				},
+				{
+					"name": "InnerCompany"
+				},
+				{
+					"name": "SLCTCompanyKey"
+				},
+				{
+					"name": "SLCTStateKey"
+				},
+				{
+					"name": "SLCTItemKey"
+				},
+				{
+					"name": "SLCTPlantKey"
+				},
+				{
+					"name": "InnerState"
+				},
+				{
+					"name": "InnerItem"
+				},
+				{
+					"name": "InnerPlant"
+				},
+				{
+					"name": "SLCTKeys"
+				},
+				{
+					"name": "SLCTCustomerKey"
+				},
+				{
+					"name": "InnerCustomer"
+				},
+				{
+					"name": "AuditCols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Srcsrcactuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtCompany",
+				"source(output(",
+				"          CountryCode as string,",
+				"          StateKey as integer,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtState",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtItem",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantKey as integer,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtPlant",
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerKey as integer,",
+				"          CustomerLocation as string,",
+				"          CustomerName as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          Market_Type as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string,",
+				"          effective_start_date as timestamp,",
+				"          effective_end_date as timestamp,",
+				"          IsActive as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtCustomers",
+				"SRCstg aggregate(TransactionDate = max(TransactionDate)) ~> max",
+				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
+				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
+				"max derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"MaxRecords, SLCTCompanyKey join(CompanyCode == tgt_CompanyCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerCompany",
+				"SRCtgtCompany select(mapColumn(",
+				"          tgt_CompanyCode = CompanyCode,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTCompanyKey",
+				"SRCtgtState select(mapColumn(",
+				"          StateKey,",
+				"          tgt_StateCode = StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTStateKey",
+				"SRCtgtItem select(mapColumn(",
+				"          tgt_SKUCode = SKUCode,",
+				"          ItemKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTItemKey",
+				"SRCtgtPlant select(mapColumn(",
+				"          tgt_PlantCode = PlantCode,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTPlantKey",
+				"InnerCompany, SLCTStateKey join(StateCode == tgt_StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerState",
+				"InnerState, SLCTItemKey join(SKUCode == tgt_SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerItem",
+				"InnerItem, SLCTPlantKey join(PlantCode == tgt_PlantCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerPlant",
+				"InnerCustomer select(mapColumn(",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerName = tgt_CustomerName,",
+				"          CountryKey = CountryCode,",
+				"          ZoneCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CompanyKey,",
+				"          StateKey,",
+				"          ItemKey,",
+				"          PlantKey,",
+				"          CustomerKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTKeys",
+				"SRCtgtCustomers select(mapColumn(",
+				"          tgt_CustomerCode = CustomerCode,",
+				"          CustomerKey,",
+				"          tgt_CustomerName = CustomerName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTCustomerKey",
+				"InnerPlant, SLCTCustomerKey join(CustomerCode == tgt_CustomerCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerCustomer",
+				"SLCTKeys derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = currentTimestamp(),",
+				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
+				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
+				"AuditCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgActuals",
+				"HandleTransactionDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNK"
+			]
+		}
+	}
+}
