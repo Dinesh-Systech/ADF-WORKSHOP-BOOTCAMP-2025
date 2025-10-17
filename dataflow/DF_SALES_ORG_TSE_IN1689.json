@@ -2,7 +2,7 @@
 	"name": "DF_SALES_ORG_TSE_IN1689",
 	"properties": {
 		"folder": {
-			"name": "END TO END WORKSHOP/STG TO TGT"
+			"name": "END TO END WORKSHOP/STG TO DW"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

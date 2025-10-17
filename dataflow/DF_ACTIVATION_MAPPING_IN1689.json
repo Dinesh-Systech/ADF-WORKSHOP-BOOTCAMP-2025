@@ -1,0 +1,96 @@
+{
+	"name": "DF_ACTIVATION_MAPPING_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/STG TO DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SrcActivationMapping"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SinkActivationMappingIN1689"
+				}
+			],
+			"transformations": [
+				{
+					"name": "PromotionKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as string,",
+				"          EffectiveTo as string,",
+				"          MappingLevel as string,",
+				"          IsActive as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcActivationMapping",
+				"Transformation keyGenerate(output(PromotionKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PromotionKey",
+				"PromotionKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull(UpdatedAt), toTimestamp('2999-12-31T00:00:00Z'), UpdatedAt)\r",
+				")) ~> NullHandling",
+				"SrcActivationMapping derive(EffectiveFrom = toDate(EffectiveFrom,'dd-MM-yyyy'),",
+				"          EffectiveTo = toDate(EffectiveTo,'dd-MM-yyyy'),",
+				"          UpdatedAt = iif(isNull(UpdatedAt), toTimestamp('2999-12-31T00:00:00Z'), UpdatedAt)) ~> Transformation",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PromotionCode,",
+				"          PromotionDescription,",
+				"          PromotionType,",
+				"          RetailerCode,",
+				"          EffectiveFrom,",
+				"          EffectiveTo,",
+				"          MappingLevel,",
+				"          IsActive,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          PromotionKey",
+				"     )) ~> SinkActivationMappingIN1689"
+			]
+		}
+	}
+}
