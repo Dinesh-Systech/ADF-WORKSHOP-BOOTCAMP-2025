@@ -1,0 +1,143 @@
+{
+	"name": "DF_OrgTSE_IN1674",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCSalesOrgTSE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcSalesOrgTSE"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKSalesOrgTSE"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "DataTypeConversion"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {TSE Territory Name} as string,",
+				"          {TSE Territory Code} as string,",
+				"          {TSE Territory ID} as integer,",
+				"          TSE as string,",
+				"          {TSE Code} as integer,",
+				"          {TSE SFA Code} as string,",
+				"          {TSE Email} as string,",
+				"          {TSE Mobile} as integer,",
+				"          {TSE Call_Norm} as integer,",
+				"          State as string,",
+				"          State_Code as string,",
+				"          DISTRICT as string,",
+				"          DISTRICT_CODE as string,",
+				"          {Active Flag} as string,",
+				"          {TSE Start Date} as string,",
+				"          {TSE End Date} as string,",
+				"          TL_Code as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCSalesOrgTSE",
+				"NullHandling keyGenerate(output({TSE Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKSalesOrgTSE",
+				"DataTypeConversion derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
+				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
+				"          each(match(type=='date'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
+				"SKSalesOrgTSE select(mapColumn(",
+				"          {TSE Territory Name},",
+				"          {TSE Territory Code},",
+				"          {TSE Territory ID},",
+				"          TSE,",
+				"          {TSE Code},",
+				"          {TSE SFA Code},",
+				"          {TSE Email},",
+				"          {TSE Mobile},",
+				"          {TSE Call_Norm},",
+				"          State,",
+				"          State_Code,",
+				"          DISTRICT,",
+				"          DISTRICT_CODE,",
+				"          {Active Flag},",
+				"          {TSE Start Date},",
+				"          {TSE End Date},",
+				"          TL_Code,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          {TSE Key}",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"SRCSalesOrgTSE derive({TSE Start Date} = toDate({TSE Start Date},'dd-MM-yyyy'),",
+				"          {TSE End Date} = toDate({TSE End Date},'dd-MM-yyyy')) ~> DataTypeConversion",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {TSE Territory Name},",
+				"          {TSE Territory Code},",
+				"          {TSE Territory ID},",
+				"          TSE,",
+				"          {TSE Code},",
+				"          {TSE SFA Code},",
+				"          {TSE Email},",
+				"          {TSE Mobile},",
+				"          {TSE Call_Norm},",
+				"          State,",
+				"          State_Code,",
+				"          DISTRICT,",
+				"          DISTRICT_CODE,",
+				"          {Active Flag},",
+				"          {TSE Start Date},",
+				"          {TSE End Date},",
+				"          TL_Code,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          {TSE Key}",
+				"     )) ~> SNKAlcSalesOrgTSE"
+			]
+		}
+	}
+}
