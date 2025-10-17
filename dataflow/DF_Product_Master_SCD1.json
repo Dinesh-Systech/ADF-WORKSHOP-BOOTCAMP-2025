@@ -1,5 +1,5 @@
 {
-	"name": "DF_Plant_Master_SCD1_copy1",
+	"name": "DF_Product_Master_SCD1",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Dw"
@@ -12,14 +12,14 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SrcPlantMaster"
+					"name": "SrcProductMaster"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "TgtPlantMaster"
+					"name": "TgtProductMaster"
 				}
 			],
 			"sinks": [
@@ -91,7 +91,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcPlantMaster",
+				"     format: 'table') ~> SrcProductMaster",
 				"source(output(",
 				"          CompanyCode as string,",
 				"          CompanyKey as integer,",
@@ -112,8 +112,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TgtPlantMaster",
-				"SrcPlantMaster, TransformationTgt join(CompanyCode == tgt_CompanyCode,",
+				"     format: 'table') ~> TgtProductMaster",
+				"SrcProductMaster, TransformationTgt join(CompanyCode == tgt_CompanyCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -141,7 +141,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols",
-				"TgtPlantMaster select(mapColumn(",
+				"TgtProductMaster select(mapColumn(",
 				"          each(match(true()),",
 				"               'tgt_'+$$ = $$)",
 				"     ),",
@@ -203,8 +203,8 @@
 				"selectCols2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
