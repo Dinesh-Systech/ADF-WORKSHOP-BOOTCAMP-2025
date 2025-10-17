@@ -1,0 +1,52 @@
+{
+	"name": "PL_Tgt_Product_IN1675",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Tgt_Product_Master",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Tgt_SCD1_Product_IN1675",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcProduct": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Stg_Product_Master_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							},
+							"TgtProduct": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Alc_Product_Master_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							},
+							"AlcProduct": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Alc_Product_Master_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PL_Stg_Tgt"
+		},
+		"annotations": []
+	}
+}
