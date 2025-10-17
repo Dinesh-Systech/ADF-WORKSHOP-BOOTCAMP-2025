@@ -1,0 +1,47 @@
+{
+	"name": "PL_Tgt_TL_IN1675",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Tgt_SalesOrgTL",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Tg_Sales_Org_TL_IN1675",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcSalesTLMaster": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Stg_Sales_Org_TL_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							},
+							"TgtSalesTLMaster": {
+								"SchemaName": "DMuthuku",
+								"TableName": "Alc_Sales_Org_TL_IN1675",
+								"DatabaseName": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PL_Stg_Tgt"
+		},
+		"annotations": []
+	}
+}

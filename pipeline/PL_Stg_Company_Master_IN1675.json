@@ -258,7 +258,7 @@
 			}
 		],
 		"folder": {
-			"name": "PL_Src_Stg"
+			"name": "PL_Stg_Tgt/PL_Src_Stg"
 		},
 		"annotations": []
 	}

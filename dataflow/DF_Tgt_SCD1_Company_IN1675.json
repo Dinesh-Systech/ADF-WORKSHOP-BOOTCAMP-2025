@@ -57,7 +57,7 @@
 					"name": "newRecords"
 				},
 				{
-					"name": "OldRecords"
+					"name": "ChangedRecords"
 				},
 				{
 					"name": "union"
@@ -115,7 +115,15 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TgtCompany",
 				"JoinSrcAndTgt split(isNull(select6@CompanyCode),",
-				"     !isNull(select6@CompanyCode)&&(SrcCompany@CompanyCode==select6@CompanyCode&&SrcCompany@SalesOrgCode!=select6@SalesOrgCode||SrcCompany@SalesOrgName!=select6@SalesOrgName),",
+				"     !isNull(select6@CompanyCode) &&\r",
+				"(\r",
+				"  (SrcCompany@CompanyCode == select6@CompanyCode) &&\r",
+				"  (\r",
+				"    SrcCompany@SalesOrgCode != select6@SalesOrgCode ||\r",
+				"    SrcCompany@SalesOrgName != select6@SalesOrgName\r",
+				"  )\r",
+				")\r",
+				",",
 				"     SrcCompany@CompanyCode==select6@CompanyCode && SrcCompany@SalesOrgCode==select6@SalesOrgCode&&SrcCompany@SalesOrgName==select6@SalesOrgName,",
 				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
 				"CompanyKey, select6 join(SrcCompany@CompanyCode == select6@CompanyCode,",
@@ -143,7 +151,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"OldRecords select(mapColumn(",
+				"ChangedRecords select(mapColumn(",
 				"          CompanyCode = split1@Update@CompanyCode,",
 				"          CompanyKey,",
 				"          CompanyName = split1@Update@CompanyName,",
@@ -186,10 +194,10 @@
 				"split1@Update derive(UpdatedDate = currentTimestamp(),",
 				"          UpdatedBy = 'IN1675') ~> derivedColumn2",
 				"derivedColumn1 alterRow(insertIf(true())) ~> newRecords",
-				"derivedColumn2 alterRow(updateIf(true())) ~> OldRecords",
+				"derivedColumn2 alterRow(updateIf(true())) ~> ChangedRecords",
 				"select3 union(byName: true)~> union",
 				"union derive(each(match(type=='string'), $$ = iif(isNull($$),'UNK',$$)),",
-				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,$$)),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$)),",
 				"          each(match(type=='datetime'), $$ = iif(isNull($$), toTimestamp('2999-12-31 00:00:00','yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
 				"TgtCompany select(mapColumn(",
 				"          CompanyCode,",

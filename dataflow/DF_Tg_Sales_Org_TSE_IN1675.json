@@ -1,0 +1,87 @@
+{
+	"name": "DF_Tg_Sales_Org_TSE_IN1675",
+	"properties": {
+		"folder": {
+			"name": "DF_Stg_to_Tgt_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesOrgTSE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtSalesOrgTSE"
+				}
+			],
+			"transformations": [
+				{
+					"name": "TSEKey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "DataTypeConversion"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TSE_Territory_Name as string,",
+				"          TSE_Territory_Code as string,",
+				"          TSE_Territory_ID as integer,",
+				"          TSE as string,",
+				"          TSE_Code as integer,",
+				"          TSE_SFA_Code as string,",
+				"          TSE_Email as string,",
+				"          TSE_Mobile as string,",
+				"          TSE_Call_Norm as integer,",
+				"          State as string,",
+				"          State_Code as string,",
+				"          District as string,",
+				"          District_Code as string,",
+				"          Active_Flag as string,",
+				"          TSE_Start_Date as string,",
+				"          TSE_End_Date as string,",
+				"          TL_Code as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcSalesOrgTSE",
+				"DataTypeConversion keyGenerate(output({ TSEKey} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> TSEKey",
+				"TSEKey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$))) ~> NullHandling",
+				"SrcSalesOrgTSE derive(TSE_Start_Date = toDate(TSE_Start_Date,\"dd-MM-yyyy\"),",
+				"          TSE_End_Date = toDate(TSE_End_Date,\"dd-MM-yyyy\")) ~> DataTypeConversion",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TgtSalesOrgTSE"
+			]
+		}
+	}
+}
