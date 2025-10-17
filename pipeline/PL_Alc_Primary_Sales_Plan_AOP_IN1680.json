@@ -49,6 +49,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "stg_to_tgt"
+		},
 		"annotations": []
 	}
 }

@@ -22,7 +22,11 @@
 					},
 					"dataset": {
 						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "Alcobev",
+							"database": "Trainer"
+						}
 					}
 				}
 			},
@@ -68,6 +72,9 @@
 			"tgt_count": {
 				"type": "Integer"
 			}
+		},
+		"folder": {
+			"name": "Testing/RowCount"
 		},
 		"annotations": []
 	}
