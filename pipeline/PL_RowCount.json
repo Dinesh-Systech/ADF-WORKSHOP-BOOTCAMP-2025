@@ -1,0 +1,176 @@
+{
+	"name": "PL_RowCount",
+	"properties": {
+		"activities": [
+			{
+				"name": "LK_SRC_rowcount",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom stg_ALC_ActivationMapping_IN1685;\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "RRamesh",
+							"Table": "stg_ALC_ActivationMapping_IN1685",
+							"DB_Name": "Trainer"
+						}
+					}
+				}
+			},
+			{
+				"name": "LK_TGT_rowcount",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SETsrc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom Alc_Activation_Mapping_IN1685;\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "RRamesh",
+							"Table": "Alc_Activation_Mapping_IN1685",
+							"DB_Name": "Target_ADF_B2025"
+						}
+					}
+				}
+			},
+			{
+				"name": "SETsrc",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LK_SRC_rowcount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "src_row_count",
+					"value": {
+						"value": "@activity('LK_SRC_rowcount').output.firstRow",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SETtgt",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LK_TGT_rowcount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "tgt_row_count",
+					"value": {
+						"value": "@activity('LK_TGT_rowcount').output.firstRow",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "IFrowcount",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "SETtgt",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src_row_count'), variables('tgt_row_count'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FAILrowcount",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Row count mismatch",
+								"errorCode": "ERROR1"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "WAITrowcount",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 5
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"src_row_count": {
+				"type": "Integer"
+			},
+			"tgt_row_count": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "Testing"
+		},
+		"annotations": []
+	}
+}
