@@ -1,0 +1,222 @@
+{
+	"name": "DF_CompetitorProduct",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCCompetitor"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTCompetitor"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKCompetitor"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectSRC"
+				},
+				{
+					"name": "selectTGT"
+				},
+				{
+					"name": "joinSRCComapetitorAndTGTCompetitor"
+				},
+				{
+					"name": "alterInsert"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "CompetitorKey"
+				},
+				{
+					"name": "SelectSRCOrder"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterUpdate"
+				},
+				{
+					"name": "Default"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCCompetitor",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          CompetitorProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTCompetitor",
+				"SRCCompetitor select(mapColumn(",
+				"          each(match(true()),",
+				"               \"SRC_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRC",
+				"TGTCompetitor select(mapColumn(",
+				"          each(match(true()),",
+				"               \"TGT_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"selectSRC, selectTGT join(SRC_SKUCode == TGT_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSRCComapetitorAndTGTCompetitor",
+				"split1@Insert alterRow(insertIf(true())) ~> alterInsert",
+				"union derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'int'), $$ = iifNull($#, -1)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"alterInsert, alterUpdate union(byName: true)~> union",
+				"Default keyGenerate(output(CompetitorKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CompetitorKey",
+				"CompetitorKey select(mapColumn(",
+				"          SKUCode = SRC_SKUCode,",
+				"          CompetitorKey,",
+				"          ItemName = SRC_ItemName,",
+				"          CompanyCode = SRC_CompanyCode,",
+				"          IndustryName = SRC_IndustryName,",
+				"          BrandFamily = SRC_BrandFamily,",
+				"          BrandCode = SRC_BrandCode,",
+				"          BrandName = SRC_BrandName,",
+				"          ReportingSegment = SRC_ReportingSegment,",
+				"          BrandPackSize = SRC_BrandPackSize,",
+				"          PackTypeCode = SRC_PackTypeCode,",
+				"          BrandPackType = SRC_BrandPackType,",
+				"          StateCode = SRC_StateCode,",
+				"          State = SRC_State,",
+				"          ProductCategory = SRC_ProductCategory,",
+				"          ProductSegment = SRC_ProductSegment,",
+				"          Flavour = SRC_Flavour,",
+				"          SubFlavour = SRC_SubFlavour,",
+				"          Division = SRC_Division,",
+				"          {Created By} = {SRC_Created By},",
+				"          {Created Date} = {SRC_Created Date},",
+				"          {Updated By} = {SRC_Updated By},",
+				"          {Updated Date} = {SRC_Updated Date}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectSRCOrder",
+				"joinSRCComapetitorAndTGTCompetitor split(isNull(TGT_SKUCode),",
+				"     SRC_SKUCode == TGT_SKUCode && (SRC_ReportingSegment != TGT_ReportingSegment || SRC_ProductSegment !=TGT_ProductSegment),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Update alterRow(updateIf(true())) ~> alterUpdate",
+				"NullHandling derive({SRC_Updated Date} = toTimestamp(\"2999-12-31 00:00:00\",\"yyyy-MM-dd HH:mm:ss\")) ~> Default",
+				"SelectSRCOrder sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          SKUCode,",
+				"          CompetitorKey,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          StateCode,",
+				"          State,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          Division,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date}",
+				"     )) ~> SNKCompetitor"
+			]
+		}
+	}
+}
