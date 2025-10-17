@@ -133,7 +133,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
-				"LeftJoinStgAndTgt split(isNull(SKUCode),",
+				"LeftJoinStgAndTgt split(isNull(tgt_SKUCode),",
 				"     !isNull(tgt_SKUCode) && (ReportingSegment!=tgt_ReportingSegment ||ProductSegment!=tgt_ProductSegment),",
 				"     disjoint: true) ~> insert@(insert, update)",
 				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
