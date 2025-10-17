@@ -33,6 +33,21 @@
 			"transformations": [
 				{
 					"name": "AGGRmaxdate"
+				},
+				{
+					"name": "TRANSFORMATIONS"
+				},
+				{
+					"name": "JOINsrc"
+				},
+				{
+					"name": "FILTERdate"
+				},
+				{
+					"name": "SELECTsrc2cols"
+				},
+				{
+					"name": "TRANSFORMATIONStgt"
 				}
 			],
 			"scriptLines": [
@@ -74,12 +89,42 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TGTfct",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRC2",
-				"SRCstg aggregate(latest_month = max(toDate(Month, 'MMM-yy'))\r",
-				") ~> AGGRmaxdate"
+				"SRCstg aggregate(groupBy(SKUCode),",
+				"     latest_month = max(toDate(Month, 'MMM-yy'))\r",
+				") ~> AGGRmaxdate",
+				"SRC2 derive(current_month_date = toDate(Month, 'MMM-yy')) ~> TRANSFORMATIONS",
+				"AGGRmaxdate, SELECTsrc2cols join(SKUCode == t_SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JOINsrc",
+				"JOINsrc filter(latest_month == t_current_month_date) ~> FILTERdate",
+				"TRANSFORMATIONS select(mapColumn(",
+				"          t_Month = Month,",
+				"          t_SKUCode = SKUCode,",
+				"          t_current_month_date = current_month_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTsrc2cols",
+				"TGTfct derive(tgt_date = toDate(Month, 'MMM-yy')) ~> TRANSFORMATIONStgt"
 			]
 		}
 	}
