@@ -219,6 +219,7 @@
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date},",
+				"          Pipeline_RunID,",
 				"          CustomerKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
