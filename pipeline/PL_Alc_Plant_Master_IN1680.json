@@ -39,13 +39,6 @@
 								"table": "Alc_Plant_Master_IN1680",
 								"database": "Target_ADF_B2025"
 							}
-						},
-						"linkedServiceParameters": {
-							"SRCstgplant": {
-								"schemaLinkedService": {
-									"schema": "KRavi"
-								}
-							}
 						}
 					},
 					"compute": {
