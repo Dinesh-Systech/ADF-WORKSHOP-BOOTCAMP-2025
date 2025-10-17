@@ -2,7 +2,7 @@
 	"name": "DF_Alc_Primary_Sales_Plan_AOP_IN1680",
 	"properties": {
 		"folder": {
-			"name": "src_to_stg"
+			"name": "stg - dw"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,14 +12,14 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SRCPlan"
+					"name": "SRCstg"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SRCstg"
+					"name": "SRCtgt"
 				}
 			],
 			"sinks": [
@@ -28,7 +28,7 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKstg"
+					"name": "SNKtgt"
 				},
 				{
 					"dataset": {
@@ -36,6 +36,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "SNKtgtDel"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKdate"
 				}
 			],
 			"transformations": [
@@ -56,16 +63,45 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCPlan",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCstg",
-				"SRCstg aggregate() ~> maxDate",
-				"SRCPlan derive() ~> Transformation",
+				"source(output(",
+				"          StateKey as string,",
+				"          Month as date,",
+				"          ItemKey as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgt",
+				"SRCtgt aggregate() ~> maxDate",
+				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
+				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
 				"Insert@Insert alterRow() ~> AlterInsert",
 				"Transformation split(ERROR_FUNCTION(''),",
 				"     ERROR_FUNCTION(''),",
@@ -80,7 +116,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstg",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
 				"AlterDelete sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:true,",
@@ -90,7 +126,17 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtDel"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtDel",
+				"maxDate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKdate"
 			]
 		}
 	}
