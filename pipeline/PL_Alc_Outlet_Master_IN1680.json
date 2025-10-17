@@ -39,13 +39,6 @@
 								"table": "Alc_Outlet_Master_IN1680",
 								"database": "Target_ADF_B2025"
 							}
-						},
-						"linkedServiceParameters": {
-							"SRCstg": {
-								"schemaLinkedService": {
-									"database": "Target_ADF_B2025"
-								}
-							}
 						}
 					},
 					"compute": {
