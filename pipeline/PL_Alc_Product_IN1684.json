@@ -21,14 +21,17 @@
 						"datasetParameters": {
 							"SRCProduct": {
 								"PR_Schema": "PMahendi",
+								"PR_TableName": "stg_Product_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
 							"TGTProduct": {
 								"PR_Schema": "PMahendi",
+								"PR_TableName": "Alc_Product_Master_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
 							"SNKProduct": {
 								"PR_Schema": "PMahendi",
+								"PR_TableName": "Alc_Product_Master_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							}
 						}
