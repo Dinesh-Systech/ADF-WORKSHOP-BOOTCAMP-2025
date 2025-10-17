@@ -1,5 +1,5 @@
 {
-	"name": "DF_Sales_Org_TSE_STG_TGT_IN1686_copy1",
+	"name": "DF_Sales_Org_TL_STG_TGT_IN1686",
 	"properties": {
 		"folder": {
 			"name": "Final_Project/STG_TGT"
@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
 						"type": "DatasetReference"
 					},
-					"name": "SRCSalesOrgTSE"
+					"name": "SRCSalesOrgTL"
 				}
 			],
 			"sinks": [
@@ -21,12 +21,12 @@
 						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
 						"type": "DatasetReference"
 					},
-					"name": "SNKAlcSalesOrgTSE"
+					"name": "SNKAlcSalesOrgTL"
 				}
 			],
 			"transformations": [
 				{
-					"name": "SKSalesOrgTSE"
+					"name": "SKSalesOrgTL"
 				},
 				{
 					"name": "NullHandling"
@@ -40,23 +40,20 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          {TSE Territory Name} as string,",
-				"          {TSE Territory Code} as string,",
-				"          {TSE Territory ID} as integer,",
-				"          TSE as string,",
-				"          {TSE Code} as integer,",
-				"          {TSE SFA Code} as string,",
-				"          {TSE Email} as string,",
-				"          {TSE Mobile} as long,",
-				"          {TSE Call_Norm} as integer,",
-				"          State as string,",
-				"          State_Code as string,",
-				"          DISTRICT as string,",
-				"          DISTRICT_CODE as string,",
-				"          {Active Flag} as string,",
-				"          {TSE Start Date} as string,",
-				"          {TSE End Date} as string,",
-				"          TL_Code as string,",
+				"          {TL Territory Name} as string,",
+				"          {TL Territory Code} as string,",
+				"          {TL Territory ID} as integer,",
+				"          TL as string,",
+				"          {TL SFA Code} as string,",
+				"          {TL Code} as integer,",
+				"          {TL Email} as string,",
+				"          {TL Mobile} as long,",
+				"          {Market Working Norms} as integer,",
+				"          {Min Market Working with TSE} as integer,",
+				"          Active_flag as string,",
+				"          {TL Start Date} as string,",
+				"          {TL End Date} as string,",
+				"          Cluster_code as string,",
 				"          {Created By} as string,",
 				"          {Created Date} as timestamp,",
 				"          {Updated By} as string,",
@@ -66,33 +63,30 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCSalesOrgTSE",
-				"NullHandling keyGenerate(output(TSE_Key as long),",
+				"     format: 'table') ~> SRCSalesOrgTL",
+				"NullHandling keyGenerate(output(TL_Key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> SKSalesOrgTSE",
+				"     stepValue: 1L) ~> SKSalesOrgTL",
 				"DataTypeConversion derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
 				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
 				"          each(match(type=='date'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
-				"SKSalesOrgTSE select(mapColumn(",
-				"          TSE_Key,",
-				"          {TSE Territory Name},",
-				"          {TSE Territory Code},",
-				"          {TSE Territory ID},",
-				"          TSE,",
-				"          {TSE Code},",
-				"          {TSE SFA Code},",
-				"          {TSE Email},",
-				"          {TSE Mobile},",
-				"          {TSE Call_Norm},",
-				"          State,",
-				"          State_Code,",
-				"          DISTRICT,",
-				"          DISTRICT_CODE,",
-				"          {Active Flag},",
-				"          {TSE Start Date},",
-				"          {TSE End Date},",
-				"          TL_Code,",
+				"SKSalesOrgTL select(mapColumn(",
+				"          TL_Key,",
+				"          {TL Territory Name},",
+				"          {TL Territory Code},",
+				"          {TL Territory ID},",
+				"          TL,",
+				"          {TL SFA Code},",
+				"          {TL Code},",
+				"          {TL Email},",
+				"          {TL Mobile},",
+				"          {Market Working Norms},",
+				"          {Min Market Working with TSE},",
+				"          Active_flag,",
+				"          {TL Start Date},",
+				"          {TL End Date},",
+				"          Cluster_code,",
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
@@ -102,8 +96,8 @@
 				"     partitionBy('hash', 1),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"SRCSalesOrgTSE derive({TSE Start Date} = toDate({TSE Start Date},'dd-MM-yyyy'),",
-				"          {TSE End Date} = toDate({TSE End Date},'dd-MM-yyyy')) ~> DataTypeConversion",
+				"SRCSalesOrgTL derive({TL Start Date} = toDate({TL Start Date},'dd-MM-yyyy'),",
+				"          {TL End Date} = toDate({TL End Date},'dd-MM-yyyy')) ~> DataTypeConversion",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -128,7 +122,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcSalesOrgTSE"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcSalesOrgTL"
 			]
 		}
 	}
