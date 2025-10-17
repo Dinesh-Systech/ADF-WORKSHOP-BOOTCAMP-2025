@@ -55,6 +55,12 @@
 				},
 				{
 					"name": "SELECTcols"
+				},
+				{
+					"name": "ALTERinsert"
+				},
+				{
+					"name": "ALTERupdate"
 				}
 			],
 			"scriptLines": [
@@ -101,9 +107,9 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LEFTsrctgt",
 				"LEFTsrctgt split(isNull(t_PlantCode),",
-				"     (PlantCode == t_PlantCode) && (PlantName != t_PlantName) ,",
+				"     (PlantCode == t_PlantCode) && (PlantName != t_PlantName),",
 				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
-				"Split@InsertStream, Split@UpdateStream union(byName: true)~> UNIONstreams",
+				"ALTERinsert, Split@UpdateStream union(byName: true)~> UNIONstreams",
 				"TRANSFORMATIONS derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
 				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
@@ -125,6 +131,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"Split@InsertStream alterRow(insertIf(true())) ~> ALTERinsert",
+				"Split@UpdateStream alterRow(updateIf(true())) ~> ALTERupdate",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
