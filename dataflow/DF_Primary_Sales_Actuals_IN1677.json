@@ -276,7 +276,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinAlcPlantMasterIN1677",
-				"JoinAlcPlantMasterIN1677, selectCustomer join(SrcPrimarySalesActuals@CompanyCode == selectCustomer@CustomerCode,",
+				"JoinAlcPlantMasterIN1677, selectCustomer join(SrcPrimarySalesActuals@CustomerCode == selectCustomer@CustomerCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
