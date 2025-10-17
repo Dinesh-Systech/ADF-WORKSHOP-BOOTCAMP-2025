@@ -1,0 +1,53 @@
+{
+	"name": "PL_IN1686_Company_STG_TGT_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Company",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Company_Master_SCD1_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCompanyMaster": {
+								"schema": "SKomala",
+								"tablename": "stg_Company"
+							},
+							"TgtCompanyMaster": {
+								"schema": "SKomala",
+								"tablename": "Alc_Company_Master"
+							},
+							"SnkCompanyMasterInsert": {
+								"schema": "SKomala",
+								"tablename": "Alc_Company_Master"
+							},
+							"SnkCompanyMasterUpdate": {
+								"schema": "SKomala",
+								"tablename": "Alc_Company_Master"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"annotations": []
+	}
+}

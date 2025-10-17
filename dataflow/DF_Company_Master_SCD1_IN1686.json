@@ -1,0 +1,249 @@
+{
+	"name": "DF_Company_Master_SCD1_IN1686",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCompanyMaster"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCompanyMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SnkCompanyMasterInsert"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SnkCompanyMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "CompanyKey"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "selectCols2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCompanyMaster",
+				"source(output(",
+				"          CompanyKey as integer,",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtCompanyMaster",
+				"SrcCompanyMaster, TransformationTgt join(CompanyCode == tgtCompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"CompanyKey split(CompanyCode!=tgtCompanyCode,",
+				"     (CompanyName==tgtCompanyCode && SalesOrgCode!=tgtSalesOrgCode || SalesOrgName!=tgtSalesOrgName),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive({Updated Date} = toTimestamp(null()),",
+				"          {Updated By} = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive({tgtUpdated Date} = currentTimestamp(),",
+				"          {tgtUpdated By} = {Created By},",
+				"          tgtSalesOrgCode = SalesOrgCode,",
+				"          tgtSalesOrgName = SalesOrgName) ~> AuditColumns2",
+				"AuditColumns1 select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          Pipeline_RunID,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtCompanyMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"JoinSrcTgt derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"NullHandling keyGenerate(output(CompanyKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CompanyKey",
+				"AuditColumns2 select(mapColumn(",
+				"          tgtCompanyKey,",
+				"          tgtCompanyCode,",
+				"          tgtCompanyName,",
+				"          tgtSalesOrgCode,",
+				"          tgtSalesOrgName,",
+				"          tgtReportingHierarchyCode1,",
+				"          tgtReportingHierarchyName1,",
+				"          tgtReportingHierarchyCode2,",
+				"          tgtReportingHierarchyName2,",
+				"          tgtReportingHierarchyCode3,",
+				"          tgtReportingHierarchyName3,",
+				"          {tgtCreated By},",
+				"          {tgtCreated Date},",
+				"          {tgtUpdated By},",
+				"          {tgtUpdated Date},",
+				"          tgtPipeline_RunID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"selectCols1 select(mapColumn(",
+				"          each(match(true()),",
+				"               replace($$,'tgt','') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompanyMasterInsert",
+				"selectCols2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['CompanyCode'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompanyMasterUpdate"
+			]
+		}
+	}
+}
