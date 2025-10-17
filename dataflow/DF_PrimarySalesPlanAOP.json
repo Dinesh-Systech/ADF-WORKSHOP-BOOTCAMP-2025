@@ -1,0 +1,132 @@
+{
+	"name": "DF_PrimarySalesPlanAOP",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCPrimarySalesAop"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCALCPrimarySales"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCGeography"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProduct"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKtgt"
+				},
+				{
+					"name": "SNKstgDel"
+				},
+				{
+					"name": "SNKdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "maxDate"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "AlterInsert"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "AlterDelete"
+				},
+				{
+					"name": "TransformationDate"
+				},
+				{
+					"name": "innerProduct"
+				},
+				{
+					"name": "innerState"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCPrimarySalesAop",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCALCPrimarySales",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCGeography",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCProduct",
+				"SRCALCPrimarySales aggregate(maxdate = max(Month)) ~> maxDate",
+				"SRCPrimarySalesAop derive(Month = toDate(Month,'MMM-yy'),",
+				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
+				"innerState alterRow(insertIf(true())) ~> AlterInsert",
+				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
+				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1),",
+				"     disjoint: true) ~> Insert@(Insert, delete)",
+				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
+				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
+				"Insert@Insert join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerProduct",
+				"innerProduct join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerState",
+				"AlterInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKtgt",
+				"AlterDelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKstgDel",
+				"TransformationDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKdate"
+			]
+		}
+	}
+}

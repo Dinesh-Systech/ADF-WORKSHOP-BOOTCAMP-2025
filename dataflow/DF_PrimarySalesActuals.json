@@ -1,0 +1,303 @@
+{
+	"name": "DF_PrimarySalesActuals",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCPriamryActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCCompany"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCPlant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCGeography"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKPrimaryActuals"
+				}
+			],
+			"transformations": [
+				{
+					"name": "leftPrimaryActualsAndCompany"
+				},
+				{
+					"name": "leftPlant"
+				},
+				{
+					"name": "leftProduct"
+				},
+				{
+					"name": "leftGeograpghy"
+				},
+				{
+					"name": "selectKeyColumns"
+				},
+				{
+					"name": "selectColumns1"
+				},
+				{
+					"name": "selectColumns2"
+				},
+				{
+					"name": "selectColumns3"
+				},
+				{
+					"name": "selectColumns4"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCPriamryActuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCCompany",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantKey as integer,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCPlant",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCProduct",
+				"source(output(",
+				"          CountryCode as string,",
+				"          GeographyKey as integer,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCGeography",
+				"SRCPriamryActuals, selectColumns1 join(SRCPriamryActuals@CompanyCode == selectColumns1@CompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftPrimaryActualsAndCompany",
+				"leftPrimaryActualsAndCompany, selectColumns2 join(SRCPriamryActuals@PlantCode == selectColumns2@PlantCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftPlant",
+				"leftPlant, selectColumns3 join(SRCPriamryActuals@SKUCode == selectColumns3@SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftProduct",
+				"leftProduct, selectColumns4 join(SRCPriamryActuals@StateCode == selectColumns4@StateCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftGeograpghy",
+				"leftGeograpghy select(mapColumn(",
+				"          CompanyCode = SRCPriamryActuals@CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode = SRCPriamryActuals@StateCode,",
+				"          SKUCode = SRCPriamryActuals@SKUCode,",
+				"          PlantCode = SRCPriamryActuals@PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          CompanyKey,",
+				"          PlantKey,",
+				"          ProductKey,",
+				"          GeographyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectKeyColumns",
+				"SRCCompany select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns1",
+				"SRCPlant select(mapColumn(",
+				"          PlantCode,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns2",
+				"SRCProduct select(mapColumn(",
+				"          SKUCode,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns3",
+				"SRCGeography select(mapColumn(",
+				"          GeographyKey,",
+				"          StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns4",
+				"selectKeyColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          CompanyKey,",
+				"          PlantKey,",
+				"          ProductKey,",
+				"          GeographyKey",
+				"     )) ~> SNKPrimaryActuals"
+			]
+		}
+	}
+}
