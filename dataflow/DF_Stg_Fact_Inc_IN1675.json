@@ -28,7 +28,7 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "SNKPrimarySalesActuals"
+					"name": "FactPrimarySalesActuals"
 				}
 			],
 			"transformations": [
@@ -55,11 +55,46 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as string,",
+				"          Division as string,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcPrimarySalesActuals",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesActualsKey as integer,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TgtPrimarySalesActuals",
@@ -73,7 +108,7 @@
 				"DTypeConversion filter(SRCTransactionDate > max_date) ~> filterNewData",
 				"joinSRCAndTgt derive(SRCTransactionDate = toDate(SRCTransactionDate, \"dd-MM-yyyy\"),",
 				"          max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> DTypeConversion",
-				"filterNewData derive({Created By} = \"IN1684\",",
+				"filterNewData derive({Created By} = \"IN1675\",",
 				"          {Created Date} = currentTimestamp(),",
 				"          {Updated By} = \"UNK\",",
 				"          {Updated Date} = toTimestamp(\"1900-01-01 00:00:00\")) ~> AuditColumns",
@@ -132,7 +167,7 @@
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> SNKPrimarySalesActuals"
+				"     )) ~> FactPrimarySalesActuals"
 			]
 		}
 	}
