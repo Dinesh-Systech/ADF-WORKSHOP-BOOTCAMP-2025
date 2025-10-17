@@ -1,0 +1,125 @@
+{
+	"name": "DF_delta_Plan_AOP_copy1",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTfct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtdelete"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JOINsrctgt"
+				},
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "ALTERROWdelete"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          State_Key as string,",
+				"          SKU_Key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTfct",
+				"SRCstg, SELECTtgt join(SRCstg@SKUCode == t_SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JOINsrctgt",
+				"derivedColumn1 select(mapColumn(",
+				"          StateCode,",
+				"          Month,",
+				"          SKUCode,",
+				"          BrandPackType,",
+				"          BrandPackSize,",
+				"          BrandCode,",
+				"          CreatedMonth,",
+				"          PlanQty,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          State_Key,",
+				"          SKU_Key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"JOINsrctgt alterRow(deleteIf(true())) ~> ALTERROWdelete",
+				"TGTfct derive(Month = toDate(Month, 'MMM-yy')) ~> derivedColumn1",
+				"ALTERROWdelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtdelete"
+			]
+		}
+	}
+}
