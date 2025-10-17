@@ -1,0 +1,60 @@
+{
+	"name": "DF_Dup_Act_Mapping",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGR"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          Promotion_mapping_Key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT aggregate(groupBy(PromotionCode),",
+				"     cnt_tgt = count(PromotionCode)) ~> AGGR",
+				"AGGR split(cnt_tgt > 1,",
+				"     cnt_tgt <= 1,",
+				"     disjoint: true) ~> split1@(Duplicates, NonDuplicates)",
+				"split1@Duplicates sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNKtgt"
+			]
+		}
+	}
+}
