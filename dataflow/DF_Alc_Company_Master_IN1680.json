@@ -49,9 +49,6 @@
 					"name": "insert"
 				},
 				{
-					"name": "nullHandling"
-				},
-				{
 					"name": "updatedAt"
 				},
 				{
@@ -62,6 +59,9 @@
 				},
 				{
 					"name": "AlterUpdate"
+				},
+				{
+					"name": "NullHandle"
 				}
 			],
 			"scriptLines": [
@@ -117,15 +117,12 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
-				"nullHandling split(isNull(tgt_CompanyCode),",
+				"LeftJoinStgAndTgt split(isNull(tgt_CompanyCode),",
 				"     !isNull(tgt_CompanyCode) && (SalesOrgCode!=tgt_SalesOrgCode ||SalesOrgName!=tgt_SalesOrgName),",
 				"     disjoint: true) ~> insert@(insert, update)",
-				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
-				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
 				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
 				"          UpdatedBy = 'PL_Alc_Company_Master_IN1680') ~> updatedAt",
-				"insert@insert select(mapColumn(",
+				"NullHandle select(mapColumn(",
 				"          CompanyCode,",
 				"          CompanyName,",
 				"          SalesOrgCode,",
@@ -149,7 +146,6 @@
 				"          UpdatedAt,",
 				"          UpdatedBy,",
 				"          CompanyCode = tgt_CompanyCode,",
-				"          CompanyKey = tgt_CompanyKey,",
 				"          CompanyName = tgt_CompanyName,",
 				"          ReportingHierarchyCode1 = tgt_ReportingHierarchyCode1,",
 				"          ReportingHierarchyName1 = tgt_ReportingHierarchyName1,",
@@ -163,6 +159,9 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
 				"updatedAt alterRow(updateIf(true())) ~> AlterUpdate",
+				"insert@insert derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandle",
 				"SLCTsrccols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
