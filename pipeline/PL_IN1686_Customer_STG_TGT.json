@@ -1,9 +1,9 @@
 {
-	"name": "PL_IN1686_Outlet_STG_TGT",
+	"name": "PL_IN1686_Customer_STG_TGT",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Outlet",
+				"name": "DF_Customer",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
