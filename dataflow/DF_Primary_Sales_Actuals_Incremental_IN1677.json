@@ -46,6 +46,9 @@
 				},
 				{
 					"name": "AuditColumns"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -98,6 +101,7 @@
 				"          UpdatedAt = toTimestamp(null()),",
 				"          CreatedBy = 'PL_ProductMaster_IN1677',",
 				"          UpdatedBy = toString(null())) ~> AuditColumns",
+				"AggMaxDate derive(MaxTransactionDate = coalesce(MaxTransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> derivedColumn1",
 				"AuditColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -127,7 +131,7 @@
 				"          CreatedBy,",
 				"          UpdatedBy",
 				"     )) ~> SinkStgPrimarySalesActualsIN1677",
-				"AggMaxDate sink(validateSchema: false,",
+				"derivedColumn1 sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     store: 'cache',",
