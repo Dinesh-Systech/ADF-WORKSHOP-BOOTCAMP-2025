@@ -1,0 +1,216 @@
+{
+	"name": "DF_Plant_Master_SCD1",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPlantMaster"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "TgtPlantMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SnkPlantMasterInsert"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SnkPlantMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "PlantKey"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "selectCols2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPlantMaster",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtPlantMaster",
+				"SrcPlantMaster, TransformationTgt join(CompanyCode == tgt_CompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"PlantKey split(isNull(PlantCode)||(PlantCode !=tgt_PlantCode && PlantName!=tgtPlantName),",
+				"     (CompanyName==tgtCompanyCode && SalesOrgCode!=tgtSalesOrgCode || SalesOrgName!=tgtSalesOrgName),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
+				"          UpdatedBy = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive(tgtUpdatedAt = currentTimestamp(),",
+				"          tgtUpdatedBy = tgtUpdatedBy) ~> AuditColumns2",
+				"AuditColumns1 select(mapColumn(",
+				"          PlantCode,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtPlantMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"JoinSrcTgt derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"NullHandling keyGenerate(output(PlantKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PlantKey",
+				"AuditColumns2 select(mapColumn(",
+				"          PlantCode,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          tgt_CompanyCode,",
+				"          tgt_CompanyKey,",
+				"          tgt_CompanyName,",
+				"          tgt_SalesOrgCode,",
+				"          tgt_SalesOrgName,",
+				"          tgt_ReportingHierarchyCode1,",
+				"          tgt_ReportingHierarchyName1,",
+				"          tgt_ReportingHierarchyCode2,",
+				"          tgt_ReportingHierarchyName2,",
+				"          tgt_ReportingHierarchyCode3,",
+				"          tgt_ReportingHierarchyName3,",
+				"          tgt_CreatedAt,",
+				"          tgt_UpdatedAt,",
+				"          tgt_CreatedBy,",
+				"          tgt_UpdatedBy,",
+				"          PlantKey,",
+				"          tgtUpdatedAt,",
+				"          tgtUpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"selectCols1 select(mapColumn(",
+				"          each(match(true()),",
+				"               replace($$, 'tgt_', ' ') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkPlantMasterInsert",
+				"selectCols2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkPlantMasterUpdate"
+			]
+		}
+	}
+}
