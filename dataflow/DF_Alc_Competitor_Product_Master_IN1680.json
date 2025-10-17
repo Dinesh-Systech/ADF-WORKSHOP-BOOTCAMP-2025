@@ -49,9 +49,6 @@
 					"name": "insert"
 				},
 				{
-					"name": "nullHandling"
-				},
-				{
 					"name": "updatedAt"
 				},
 				{
@@ -62,6 +59,9 @@
 				},
 				{
 					"name": "AlterUpdate"
+				},
+				{
+					"name": "NullHandling"
 				}
 			],
 			"scriptLines": [
@@ -133,15 +133,12 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
-				"nullHandling split(isNull(SKUCode),",
+				"LeftJoinStgAndTgt split(isNull(SKUCode),",
 				"     !isNull(tgt_SKUCode) && (ReportingSegment!=tgt_ReportingSegment ||ProductSegment!=tgt_ProductSegment),",
 				"     disjoint: true) ~> insert@(insert, update)",
-				"LeftJoinStgAndTgt derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
-				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> nullHandling",
 				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
 				"          UpdatedBy = 'PL_Alc_Competitor_Product_Master_IN1680') ~> updatedAt",
-				"insert@insert select(mapColumn(",
+				"NullHandling select(mapColumn(",
 				"          SKUCode,",
 				"          ItemName,",
 				"          CompanyCode,",
@@ -194,6 +191,9 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
 				"updatedAt alterRow(updateIf(true())) ~> AlterUpdate",
+				"insert@insert derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
 				"SLCTsrccols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
