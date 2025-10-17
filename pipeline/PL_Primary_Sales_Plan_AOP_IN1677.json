@@ -28,7 +28,7 @@
 							{
 								"name": "UpdatedAT",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
