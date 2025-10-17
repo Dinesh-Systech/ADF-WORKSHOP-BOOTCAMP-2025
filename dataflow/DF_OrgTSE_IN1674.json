@@ -21,7 +21,11 @@
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SNKAlcSalesOrgTSE"
+					"name": "SNKAlcSalesOrgTSE",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_AzureBlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -92,7 +96,7 @@
 				"          {TSE End Date},",
 				"          TL_Code,",
 				"          CreatedAt,",
-				"          UpdatedAt,",
+				"          UpdatedAt = NullHandling@UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy,",
 				"          {TSE Key}",
@@ -132,7 +136,6 @@
 				"          {TSE End Date},",
 				"          TL_Code,",
 				"          CreatedAt,",
-				"          UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy,",
 				"          {TSE Key}",
