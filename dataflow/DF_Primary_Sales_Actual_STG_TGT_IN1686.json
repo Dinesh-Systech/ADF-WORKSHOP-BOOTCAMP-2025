@@ -94,10 +94,10 @@
 					"name": "JOINfctplant"
 				},
 				{
-					"name": "SELECTcols"
+					"name": "surrogateKey"
 				},
 				{
-					"name": "surrogateKey"
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -262,7 +262,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCplant",
-				"JOINfctplant derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"select1 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type=='integer'), $$ = iifNull($#, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
 				"SRCcompany select(mapColumn(",
@@ -321,13 +321,16 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JOINfctplant",
-				"surrogateKey select(mapColumn(",
+				"NULL keyGenerate(output(SalesActualKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey",
+				"JOINfctplant select(mapColumn(",
 				"          CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
 				"          Division,",
 				"          CustomerCode,",
-				"          CustomerName,",
+				"          CustomerName = SRCstg@CustomerName,",
 				"          CountryCode,",
 				"          ZoneCode,",
 				"          StateCode,",
@@ -338,15 +341,11 @@
 				"          {Created By},",
 				"          {Created Date},",
 				"          {Updated By},",
-				"          {Updated Date},",
-				"          SalesActualKey",
+				"          {Updated Date}",
 				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
-				"NULL keyGenerate(output(SalesActualKey as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey",
-				"SELECTcols sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"surrogateKey sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          PromotionCode as string,",
