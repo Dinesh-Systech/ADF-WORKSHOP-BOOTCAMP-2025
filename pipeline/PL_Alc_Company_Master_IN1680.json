@@ -39,26 +39,6 @@
 								"table": "Alc_Company_Master_IN1680",
 								"database": "Target_ADF_B2025"
 							}
-						},
-						"linkedServiceParameters": {
-							"SRCstgcustomer": {
-								"schemaLinkedService": {
-									"schema": "KRavi",
-									"table": "Alc_Company_Master_IN1680",
-									"database": "Target_ADF_B2025"
-								}
-							},
-							"SRCtgtCustomer": {
-								"schemaLinkedService": {
-									"schema": "KRavi",
-									"database": "Target_ADF_B2025"
-								}
-							},
-							"SNKtgtCustomer": {
-								"schemaLinkedService": {
-									"schema": "KRavi"
-								}
-							}
 						}
 					},
 					"compute": {
