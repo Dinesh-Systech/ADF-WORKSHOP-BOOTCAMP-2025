@@ -1,0 +1,175 @@
+{
+	"name": "PL_rowcount_Alc_Activation_Master_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "LKP_src_count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "Alcobev",
+							"table": "ActivationMaster",
+							"database": "Trainer"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LKP_tgt_count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "KRavi",
+							"table": "Alc_Activation_Master_IN1680",
+							"database": "Target_ADF_B2025"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "setSrcCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_src_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "src_count",
+					"value": {
+						"value": "@activity('LKP_src_count').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "setTgtCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_tgt_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "tgt_count",
+					"value": {
+						"value": "@activity('LKP_tgt_count').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "IFCountCheck",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "setSrcCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "setTgtCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src_count'),variables('tgt_count'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FalseNotMatch",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "count not match",
+								"errorCode": "ERROR 1"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "TrueWait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 2
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"src_count": {
+				"type": "Integer"
+			},
+			"tgt_count": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "Testing/RowCount"
+		},
+		"annotations": []
+	}
+}
