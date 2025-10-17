@@ -20,20 +20,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "SRCtgt"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
-					},
-					"name": "SRCproduct"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
-					},
-					"name": "SRCState"
 				}
 			],
 			"sinks": [
@@ -78,12 +64,6 @@
 					"name": "innerProduct"
 				},
 				{
-					"name": "SLCTproductkey"
-				},
-				{
-					"name": "SLCTStatekey"
-				},
-				{
 					"name": "innerState"
 				}
 			],
@@ -124,14 +104,6 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCtgt",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCproduct",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCState",
 				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
@@ -141,16 +113,12 @@
 				"     disjoint: true) ~> Insert@(Insert, delete)",
 				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
 				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
-				"Insert@Insert, SLCTproductkey join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"Insert@Insert join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> innerProduct",
-				"SRCproduct select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTproductkey",
-				"SRCState select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTStatekey",
-				"innerProduct, SLCTStatekey join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"innerProduct join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
