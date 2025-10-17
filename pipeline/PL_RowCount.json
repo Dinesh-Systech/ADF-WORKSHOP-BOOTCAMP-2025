@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom ActivationMapping;\n",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom Alcobev.ActivationMapping;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -25,7 +25,7 @@
 						"referenceName": "DS_AzureSQL_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "RRamesh",
+							"SchemaName": "Alcobev",
 							"Table": "ActivationMapping",
 							"DB_Name": "Trainer"
 						}
@@ -54,7 +54,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom stg_ALC_ActivationMapping_IN1685;\n",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom RRamesh.stg_ALC_ActivationMapping_IN1685;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
