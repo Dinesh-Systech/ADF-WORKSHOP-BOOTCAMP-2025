@@ -1,0 +1,202 @@
+{
+	"name": "DF_Competitor_Product_SCD1_IN1686",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "Split"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NULL"
+				},
+				{
+					"name": "SKEY"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "ALTERinsert"
+				},
+				{
+					"name": "ALTERupdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          {State Code} as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          CompetitorProductKey as integer,",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          {State Code} as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT select(mapColumn(",
+				"          t_SKUCode = SKUCode,",
+				"          t_ReportingSegment = ReportingSegment,",
+				"          t_ProductSegment = ProductSegment",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SELECTtgt",
+				"SRCstg, SELECTtgt join(SKUCode == t_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(isNull(t_SKUCode),",
+				"     (SKUCode == t_SKUCode) && ((ReportingSegment != t_ReportingSegment) || (ProductSegment != t_ProductSegment)),",
+				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
+				"ALTERinsert, ALTERupdate union(byName: true)~> UNIONstreams",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
+				"NULL keyGenerate(output(CompetitorProductKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKEY",
+				"SKEY select(mapColumn(",
+				"          SKUCode,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          {State Code},",
+				"          State,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          Division,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          Pipeline_RunID,",
+				"          CompetitorProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"Split@InsertStream alterRow(insertIf(true())) ~> ALTERinsert",
+				"Split@UpdateStream alterRow(updateIf(true())) ~> ALTERupdate",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
+			]
+		}
+	}
+}
