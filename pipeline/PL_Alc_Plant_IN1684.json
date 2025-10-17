@@ -1,9 +1,9 @@
 {
-	"name": "PL_Alc_Competitor_IN1684",
+	"name": "PL_Alc_Plant_IN1684",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Competitor",
+				"name": "DF_Plant",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,22 +16,22 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_CompetitorProduct",
+						"referenceName": "DF_PlantMaster",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCCompetitor": {
+							"SRCPlant": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "stg_Competitor_Product_IN1684",
+								"PR_TableName": "stg_Plant_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
-							"TGTCompetitor": {
+							"TGTPlant": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "Alc_Competitor_Product_Master_IN1684",
+								"PR_TableName": "Alc_Plant_Master_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							},
-							"SNKCompetitor": {
+							"SNKPlant": {
 								"PR_Schema": "PMahendi",
-								"PR_TableName": "Alc_Competitor_Product_Master_IN1684",
+								"PR_TableName": "Alc_Plant_Master_IN1684",
 								"PR_DB": "Target_ADF_B2025"
 							}
 						}
