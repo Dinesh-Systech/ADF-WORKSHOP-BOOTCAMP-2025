@@ -199,7 +199,6 @@
 				"          MICRO_CHANNEL,",
 				"          GROUP_OUTLET_CODE,",
 				"          OUTLET_TIER,",
-				"          IS_ACTIVE,",
 				"          BUSINESS_UNIT,",
 				"          SALES_REPRESENTATIVE_CODE,",
 				"          SALES_TERRITORY,",
