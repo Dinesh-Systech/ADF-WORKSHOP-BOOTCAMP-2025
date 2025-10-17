@@ -95,6 +95,9 @@
 				},
 				{
 					"name": "SELECTcols"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -271,7 +274,8 @@
 				"     broadcast: 'auto')~> JOINfctcompany",
 				"SRCcustomer select(mapColumn(",
 				"          t_CustomerCode = CustomerCode,",
-				"          Customer_Key",
+				"          Customer_Key,",
+				"          Customer_Full_Name",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTcustomer",
@@ -313,7 +317,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JOINfctplant",
-				"NULL select(mapColumn(",
+				"derivedColumn1 select(mapColumn(",
 				"          CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
@@ -339,6 +343,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
+				"NULL derive(CustomerName = Customer_Full_Name) ~> derivedColumn1",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
