@@ -1,5 +1,5 @@
 {
-	"name": "DF_CustomerMaster",
+	"name": "DF_OutletMaster",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Tgt"
@@ -12,14 +12,14 @@
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCCustomer"
+					"name": "SRCOutlet"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSql_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "TGTCustomer"
+					"name": "TGTOutlet"
 				}
 			],
 			"sinks": [
@@ -114,7 +114,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCCustomer",
+				"     format: 'table') ~> SRCOutlet",
 				"source(output(",
 				"          CustomerCode as string,",
 				"          CustomerKey as integer,",
@@ -157,14 +157,14 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TGTCustomer",
-				"SRCCustomer select(mapColumn(",
+				"     format: 'table') ~> TGTOutlet",
+				"SRCOutlet select(mapColumn(",
 				"          each(match(true()),",
 				"               \"SRC_\"+$$ = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectSRC",
-				"TGTCustomer select(mapColumn(",
+				"TGTOutlet select(mapColumn(",
 				"          each(match(true()),",
 				"               \"TGT_\"+$$ = $$)",
 				"     ),",
