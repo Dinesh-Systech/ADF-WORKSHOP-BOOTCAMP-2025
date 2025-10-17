@@ -61,12 +61,6 @@
 					"name": "TransformationDate"
 				},
 				{
-					"name": "innerProduct"
-				},
-				{
-					"name": "innerState"
-				},
-				{
 					"name": "SLCTKey"
 				}
 			],
@@ -116,17 +110,7 @@
 				"     disjoint: true) ~> Insert@(Insert, delete)",
 				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
 				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
-				"Insert@Insert join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> innerProduct",
-				"innerProduct join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> innerState",
-				"innerState select(mapColumn(",
+				"Insert@Insert select(mapColumn(",
 				"          StateKey = StateCode,",
 				"          Month,",
 				"          ItemKey = SKUCode,",
