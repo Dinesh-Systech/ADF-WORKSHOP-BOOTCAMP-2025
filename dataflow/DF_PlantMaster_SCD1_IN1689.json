@@ -1,0 +1,169 @@
+{
+	"name": "DF_PlantMaster_SCD1_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/STG TO DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SrcPlantMaster"
+				},
+				{
+					"name": "TgtPlantMaster"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SnkPlantMasterInsert"
+				},
+				{
+					"name": "SnkPlantMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "PlantKey"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "selectCols2"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SrcPlantMaster",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantKey as integer,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> TgtPlantMaster",
+				"SrcPlantMaster, TransformationTgt join(PlantCode == tgt_PlantCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"PlantKey split(PlantCode!=tgt_PlantCode,",
+				"     (PlantCode ==tgt_PlantCode && PlantName!=tgt_PlantName),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
+				"          UpdatedBy = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive(tgt_UpdatedAt = currentTimestamp(),",
+				"          tgt_UpdatedBy = tgt_CreatedBy,",
+				"          tgt_PlantName = PlantName) ~> AuditColumns2",
+				"Transformation select(mapColumn(",
+				"          PlantCode,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtPlantMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"JoinSrcTgt derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"NullHandling keyGenerate(output(PlantKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PlantKey",
+				"AuditColumns2 select(mapColumn(",
+				"          tgt_PlantCode,",
+				"          tgt_PlantKey,",
+				"          tgt_PlantName,",
+				"          tgt_CompanyCode,",
+				"          tgt_StateCode,",
+				"          tgt_StateName,",
+				"          tgt_CreatedAt,",
+				"          tgt_UpdatedAt,",
+				"          tgt_CreatedBy,",
+				"          tgt_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"selectCols1 select(mapColumn(",
+				"          each(match(true()),",
+				"               replace($$,'tgt_','') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"AuditColumns1 derive(PlantCode = iif(length(PlantCode)==6, PlantCode, rpad(PlantCode, 6, '0'))) ~> Transformation",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkPlantMasterInsert",
+				"selectCols2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkPlantMasterUpdate"
+			]
+		}
+	}
+}

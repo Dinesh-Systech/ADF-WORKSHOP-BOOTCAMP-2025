@@ -1,0 +1,186 @@
+{
+	"name": "DF_CompanyMaster_SCD1_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/STG TO DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SrcCompanyMaster"
+				},
+				{
+					"name": "TgtCompanyMaster"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SnkCompanyMasterInsert"
+				},
+				{
+					"name": "SnkCompanyMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "CompanyKey"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "selectCols2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SrcCompanyMaster",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> TgtCompanyMaster",
+				"SrcCompanyMaster, TransformationTgt join(CompanyCode == tgtCompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"CompanyKey split(CompanyCode!=tgtCompanyCode,",
+				"     (CompanyName==tgtCompanyCode && SalesOrgCode!=tgtSalesOrgCode || SalesOrgName!=tgtSalesOrgName),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
+				"          UpdatedBy = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive(tgtUpdatedAt = currentTimestamp(),",
+				"          tgtUpdatedBy = tgtUpdatedBy,",
+				"          tgtSalesOrgCode = SalesOrgCode,",
+				"          tgtSalesOrgName = SalesOrgName) ~> AuditColumns2",
+				"AuditColumns1 select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtCompanyMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"JoinSrcTgt derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"NullHandling keyGenerate(output(CompanyKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CompanyKey",
+				"AuditColumns2 select(mapColumn(",
+				"          tgtCompanyCode,",
+				"          tgtCompanyKey,",
+				"          tgtCompanyName,",
+				"          tgtSalesOrgCode,",
+				"          tgtSalesOrgName,",
+				"          tgtReportingHierarchyCode1,",
+				"          tgtReportingHierarchyName1,",
+				"          tgtReportingHierarchyCode2,",
+				"          tgtReportingHierarchyName2,",
+				"          tgtReportingHierarchyCode3,",
+				"          tgtReportingHierarchyName3,",
+				"          tgtCreatedAt,",
+				"          tgtUpdatedAt,",
+				"          tgtCreatedBy,",
+				"          tgtUpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"selectCols1 select(mapColumn(",
+				"          each(match(true()),",
+				"               replace($$,'tgt','') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkCompanyMasterInsert",
+				"selectCols2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkCompanyMasterUpdate"
+			]
+		}
+	}
+}

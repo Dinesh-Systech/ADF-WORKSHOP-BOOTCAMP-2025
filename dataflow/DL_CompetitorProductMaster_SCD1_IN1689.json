@@ -1,0 +1,218 @@
+{
+	"name": "DL_CompetitorProductMaster_SCD1_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/STG TO DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SrcCompetitorProductMaster"
+				},
+				{
+					"name": "TgtCompetitorProductMaster"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SnkCompetitorProductMasterInsert"
+				},
+				{
+					"name": "SnkCompetitorProductMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "CompetitorProductKey"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "selectCols2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SrcCompetitorProductMaster",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          CompetitorProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> TgtCompetitorProductMaster",
+				"SrcCompetitorProductMaster, TransformationTgt join(SKUCode == tgt_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"CompetitorProductKey split(SKUCode!=tgt_SKUCode,",
+				"     (SKUCode ==tgt_SKUCode && ReportingSegment!=tgt_ReportingSegment || ProductSegment!=tgt_ProductSegment),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
+				"          UpdatedBy = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive(tgt_UpdatedAt = currentTimestamp(),",
+				"          tgt_UpdatedBy = tgt_CreatedBy,",
+				"          tgt_ReportingSegment = ReportingSegment,",
+				"          tgt_ProductSegment = ProductSegment) ~> AuditColumns2",
+				"AuditColumns1 select(mapColumn(",
+				"          SKUCode,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          State_Code,",
+				"          State,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          Division,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          CompetitorProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtCompetitorProductMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"JoinSrcTgt derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"NullHandling keyGenerate(output(CompetitorProductKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CompetitorProductKey",
+				"AuditColumns2 select(mapColumn(",
+				"          tgt_SKUCode,",
+				"          tgt_CompetitorProductKey,",
+				"          tgt_ItemName,",
+				"          tgt_CompanyCode,",
+				"          tgt_IndustryName,",
+				"          tgt_BrandFamily,",
+				"          tgt_BrandCode,",
+				"          tgt_BrandName,",
+				"          tgt_ReportingSegment,",
+				"          tgt_BrandPackSize,",
+				"          tgt_PackTypeCode,",
+				"          tgt_BrandPackType,",
+				"          tgt_State_Code,",
+				"          tgt_State,",
+				"          tgt_ProductCategory,",
+				"          tgt_ProductSegment,",
+				"          tgt_Flavour,",
+				"          tgt_SubFlavour,",
+				"          tgt_Division,",
+				"          tgt_CreatedAt,",
+				"          tgt_UpdatedAt,",
+				"          tgt_CreatedBy,",
+				"          tgt_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"selectCols1 select(mapColumn(",
+				"          each(match(true()),",
+				"               replace($$,'tgt_','') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkCompetitorProductMasterInsert",
+				"selectCols2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SnkCompetitorProductMasterUpdate"
+			]
+		}
+	}
+}

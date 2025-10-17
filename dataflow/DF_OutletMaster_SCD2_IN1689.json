@@ -1,0 +1,227 @@
+{
+	"name": "DF_OutletMaster_SCD2_IN1689",
+	"properties": {
+		"folder": {
+			"name": "END TO END WORKSHOP/STG TO DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SRCstg"
+				},
+				{
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "Split"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NULL"
+				},
+				{
+					"name": "SKEY"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "INSERTderived"
+				},
+				{
+					"name": "UPDATEderived"
+				},
+				{
+					"name": "ALTERinsert"
+				},
+				{
+					"name": "ALTERupdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OUTLET_KEY as integer,",
+				"          OUTLET_CODE as string,",
+				"          OUTLET_NAME as string,",
+				"          GEO_KEY as integer,",
+				"          STREET as string,",
+				"          CITY as string,",
+				"          GEO_LONGITUDE as decimal(18,0),",
+				"          GEO_LATITUDE as decimal(18,0),",
+				"          OUTLET_STATUS as string,",
+				"          OWNER_CODE as string,",
+				"          OWNER_NAME as string,",
+				"          DISTRUBUTOR_CODE as string,",
+				"          MARKET_TYPE as string,",
+				"          HUB as string,",
+				"          CHANNEL as string,",
+				"          MICRO_CHANNEL as string,",
+				"          GROUP_OUTLET_CODE as string,",
+				"          OUTLET_TIER as string,",
+				"          IS_ACTIVE as string,",
+				"          BUSINESS_UNIT as string,",
+				"          SALES_REPRESENTATIVE_CODE as string,",
+				"          SALES_TERRITORY as string,",
+				"          CONTACT_NAME as string,",
+				"          CONTACT_EMAIL as string,",
+				"          LICENSE_TYPE as string,",
+				"          ACTIVE_FLAG as string,",
+				"          DW_CREATED_DATE as timestamp,",
+				"          DW_UPDATED_DATE as timestamp,",
+				"          DW_CREATED_BY as string,",
+				"          DW_UPDATED_BY as string,",
+				"          TERRITORY_CODE as string,",
+				"          OUTLET_SEGMENT as string,",
+				"          OUTLET_START_DATE as timestamp,",
+				"          OUTLET_END_DATE as timestamp,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCstg",
+				"source(output(",
+				"          OUTLET_KEY as integer,",
+				"          OUTLET_CODE as string,",
+				"          OUTLET_NAME as string,",
+				"          GEO_KEY as integer,",
+				"          STREET as string,",
+				"          CITY as string,",
+				"          GEO_LONGITUDE as decimal(18,0),",
+				"          GEO_LATITUDE as decimal(18,0),",
+				"          OUTLET_STATUS as string,",
+				"          OWNER_CODE as string,",
+				"          OWNER_NAME as string,",
+				"          DISTRUBUTOR_CODE as string,",
+				"          MARKET_TYPE as string,",
+				"          HUB as string,",
+				"          CHANNEL as string,",
+				"          MICRO_CHANNEL as string,",
+				"          GROUP_OUTLET_CODE as string,",
+				"          OUTLET_TIER as string,",
+				"          IS_ACTIVE as string,",
+				"          BUSINESS_UNIT as string,",
+				"          SALES_REPRESENTATIVE_CODE as string,",
+				"          SALES_TERRITORY as string,",
+				"          CONTACT_NAME as string,",
+				"          CONTACT_EMAIL as string,",
+				"          LICENSE_TYPE as string,",
+				"          ACTIVE_FLAG as string,",
+				"          DW_CREATED_DATE as timestamp,",
+				"          DW_UPDATED_DATE as timestamp,",
+				"          DW_CREATED_BY as string,",
+				"          DW_UPDATED_BY as string,",
+				"          TERRITORY_CODE as string,",
+				"          OUTLET_SEGMENT as string,",
+				"          OUTLET_START_DATE as timestamp,",
+				"          OUTLET_END_DATE as timestamp,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> TGT",
+				"TGT select(mapColumn(",
+				"          T_OUTLET_CODE = OUTLET_CODE,",
+				"          T_OUTLET_STATUS = OUTLET_STATUS,",
+				"          T_OWNER_CODE = OWNER_CODE,",
+				"          T_OWNER_NAME = OWNER_NAME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"SRCstg, SELECTtgt join(OUTLET_CODE == T_OUTLET_CODE,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(isNull(T_OUTLET_CODE) || ((OUTLET_CODE == T_OUTLET_CODE) && (OUTLET_STATUS != T_OUTLET_STATUS) || (OWNER_CODE != T_OWNER_CODE) || (OWNER_NAME != T_OWNER_NAME)),",
+				"     (OUTLET_CODE == T_OUTLET_CODE) && (OUTLET_STATUS != T_OUTLET_STATUS) || (OWNER_CODE != T_OWNER_CODE) || (OWNER_NAME != T_OWNER_NAME),",
+				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
+				"INSERTderived, UPDATEderived union(byName: true)~> UNIONstreams",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
+				"NULL keyGenerate(output(OUTLET_KEY as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKEY",
+				"SKEY select(mapColumn(",
+				"          OUTLET_KEY,",
+				"          OUTLET_CODE,",
+				"          OUTLET_NAME,",
+				"          GEO_KEY,",
+				"          STREET,",
+				"          CITY,",
+				"          GEO_LONGITUDE,",
+				"          GEO_LATITUDE,",
+				"          OUTLET_STATUS,",
+				"          OWNER_CODE,",
+				"          OWNER_NAME,",
+				"          DISTRUBUTOR_CODE,",
+				"          MARKET_TYPE,",
+				"          HUB,",
+				"          CHANNEL,",
+				"          MICRO_CHANNEL,",
+				"          GROUP_OUTLET_CODE,",
+				"          OUTLET_TIER,",
+				"          BUSINESS_UNIT,",
+				"          SALES_REPRESENTATIVE_CODE,",
+				"          SALES_TERRITORY,",
+				"          CONTACT_NAME,",
+				"          CONTACT_EMAIL,",
+				"          LICENSE_TYPE,",
+				"          ACTIVE_FLAG,",
+				"          DW_CREATED_DATE,",
+				"          DW_UPDATED_DATE,",
+				"          DW_CREATED_BY,",
+				"          DW_UPDATED_BY,",
+				"          TERRITORY_CODE,",
+				"          OUTLET_SEGMENT,",
+				"          OUTLET_START_DATE,",
+				"          OUTLET_END_DATE,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          Pipeline_RunID,",
+				"          created_date,",
+				"          updated_date,",
+				"          scd_flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"ALTERinsert derive(created_date = currentUTC(toString(currentTimestamp())),",
+				"          updated_date = toTimestamp(\"31-12-2999 00:00:00\", \"dd-MM-yyyy HH:mm:ss\"),",
+				"          scd_flag = \"Y\") ~> INSERTderived",
+				"ALTERupdate derive(updated_date = currentUTC(toString(currentTimestamp())),",
+				"          scd_flag = \"N\") ~> UPDATEderived",
+				"Split@InsertStream alterRow(insertIf(true())) ~> ALTERinsert",
+				"Split@UpdateStream alterRow(updateIf(true())) ~> ALTERupdate",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKtgt"
+			]
+		}
+	}
+}
