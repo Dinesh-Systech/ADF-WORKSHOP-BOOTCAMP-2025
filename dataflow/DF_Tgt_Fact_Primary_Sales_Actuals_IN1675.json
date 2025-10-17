@@ -6,11 +6,48 @@
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCompany"
+				}
+			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "SalesKey"
+				},
+				{
+					"name": "join"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActals",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCompany",
+				"SrcPrimarySalesActals keyGenerate(output(SalesKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SalesKey",
+				"SalesKey, SrcCompany join(SalesKey == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join"
 			]
 		}
 	}

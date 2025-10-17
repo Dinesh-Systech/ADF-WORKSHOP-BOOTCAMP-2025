@@ -1,0 +1,35 @@
+{
+	"name": "DF_Stg_Fact_Primary_sales_Actuals",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Fact_IN1675",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Stg_Fact_Inc_IN1675",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "PL_Stg_Tgt/PL_Src_Stg"
+		},
+		"annotations": []
+	}
+}

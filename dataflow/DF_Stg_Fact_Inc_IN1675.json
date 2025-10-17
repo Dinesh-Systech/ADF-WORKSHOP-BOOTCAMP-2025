@@ -12,14 +12,14 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "SrcPrimarySalesActuals"
+					"name": "SRCPrimarySalesActuals"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "TgtPrimarySalesActuals"
+					"name": "TGTPrimarySalesActuals"
 				}
 			],
 			"sinks": [
@@ -28,7 +28,7 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "FactPrimarySalesActuals"
+					"name": "SNKPrimarySalesActuals"
 				}
 			],
 			"transformations": [
@@ -36,13 +36,13 @@
 					"name": "AggMaxTransactionDate"
 				},
 				{
-					"name": "joinSRCAndTgt"
+					"name": "joinSRCPrimarySalesAndTgtPrimarySales"
 				},
 				{
 					"name": "filterNewData"
 				},
 				{
-					"name": "DTypeConversion"
+					"name": "StringToDate"
 				},
 				{
 					"name": "AuditColumns"
@@ -73,42 +73,22 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcPrimarySalesActuals",
-				"source(output(",
-				"          CompanyCode as string,",
-				"          SalesActualsKey as integer,",
-				"          SalesOrgCode as string,",
-				"          DistributionChannel as integer,",
-				"          Division as integer,",
-				"          CustomerCode as string,",
-				"          CustomerName as string,",
-				"          CountryCode as string,",
-				"          ZoneCode as string,",
-				"          StateCode as string,",
-				"          SKUCode as integer,",
-				"          PlantCode as string,",
-				"          TransactionDate as date,",
-				"          VolumeActualCase as integer,",
-				"          CreatedBy as string,",
-				"          CreatedDate as timestamp,",
-				"          UpdatedBy as string,",
-				"          UpdatedDate as timestamp",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"     format: 'table') ~> SRCPrimarySalesActuals",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TgtPrimarySalesActuals",
-				"TgtPrimarySalesActuals aggregate(groupBy(SalesOrgCode),",
+				"     format: 'table') ~> TGTPrimarySalesActuals",
+				"TGTPrimarySalesActuals aggregate(groupBy(SalesOrgCode),",
 				"     max_date = max(TransactionDate)) ~> AggMaxTransactionDate",
 				"selectSRC, AggMaxTransactionDate join(SRCSalesOrgCode == SalesOrgCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinSRCAndTgt",
-				"DTypeConversion filter(SRCTransactionDate > max_date) ~> filterNewData",
-				"joinSRCAndTgt derive(SRCTransactionDate = toDate(SRCTransactionDate, \"dd-MM-yyyy\"),",
-				"          max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> DTypeConversion",
-				"filterNewData derive({Created By} = \"IN1675\",",
+				"     broadcast: 'auto')~> joinSRCPrimarySalesAndTgtPrimarySales",
+				"StringToDate filter(SRCTransactionDate > max_date) ~> filterNewData",
+				"joinSRCPrimarySalesAndTgtPrimarySales derive(SRCTransactionDate = toDate(SRCTransactionDate, \"dd-MM-yyyy\"),",
+				"          max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> StringToDate",
+				"filterNewData derive({Created By} = \"IN1684\",",
 				"          {Created Date} = currentTimestamp(),",
 				"          {Updated By} = \"UNK\",",
 				"          {Updated Date} = toTimestamp(\"1900-01-01 00:00:00\")) ~> AuditColumns",
@@ -133,7 +113,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RemoveSRC",
-				"SrcPrimarySalesActuals select(mapColumn(",
+				"SRCPrimarySalesActuals select(mapColumn(",
 				"          each(match(true()),",
 				"               \"SRC\"+$$ = $$)",
 				"     ),",
@@ -167,7 +147,7 @@
 				"          {Created Date},",
 				"          {Updated By},",
 				"          {Updated Date}",
-				"     )) ~> FactPrimarySalesActuals"
+				"     )) ~> SNKPrimarySalesActuals"
 			]
 		}
 	}
