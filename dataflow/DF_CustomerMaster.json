@@ -1,0 +1,237 @@
+{
+	"name": "DF_CustomerMaster",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKCustomer"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectSRC"
+				},
+				{
+					"name": "selectTGT"
+				},
+				{
+					"name": "joinSRCComapnyAndTGTCompany"
+				},
+				{
+					"name": "alterInsert"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "PlantKey"
+				},
+				{
+					"name": "SelectSRCOrder"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterUpdate"
+				},
+				{
+					"name": "Default"
+				},
+				{
+					"name": "auditcolumns1"
+				},
+				{
+					"name": "auditcolumns2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          IsActive as string,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          MarketType as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCCustomer",
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerKey as integer,",
+				"          CustomerName as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          IsActive as string,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          MarketType as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTCustomer",
+				"SRCCustomer select(mapColumn(",
+				"          each(match(true()),",
+				"               \"SRC_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRC",
+				"TGTCustomer select(mapColumn(",
+				"          each(match(true()),",
+				"               \"TGT_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"selectSRC, selectTGT join(SRC_CustomerCode == TGT_CustomerCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSRCComapnyAndTGTCompany",
+				"split1@Insert alterRow(insertIf(true())) ~> alterInsert",
+				"union derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iifNull($#, -1)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"auditcolumns1, alterUpdate union(byName: true)~> union",
+				"Default keyGenerate(output(PlantKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> PlantKey",
+				"PlantKey select(mapColumn(",
+				"          PlantCode = SRC_PlantCode,",
+				"          PlantKey,",
+				"          PlantName = SRC_PlantName,",
+				"          CompanyCode = SRC_CompanyCode,",
+				"          StateCode = SRC_StateCode,",
+				"          StateName = SRC_StateName,",
+				"          {Created By} = NullHandling@{SRC_Created By},",
+				"          {Created Date} = NullHandling@{SRC_Created Date},",
+				"          {Updated By} = NullHandling@{SRC_Updated By},",
+				"          {Updated Date} = {SRC_Updated Date}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectSRCOrder",
+				"joinSRCComapnyAndTGTCompany split(isNull(TGT_CustomerCode) || (SRC_CustomerCode == TGT_CustomerCode && (SRC_Address1 != TGT_Address1 || SRC_Address2 != TGT_Address2 || SRC_Address3 != TGT_Address3)),",
+				"     (SRC_CustomerCode == TGT_CustomerCode && (SRC_Address1 != TGT_Address1 || SRC_Address2 != TGT_Address2 || SRC_Address3 != TGT_Address3)),",
+				"     disjoint: true) ~> split1@(Insert, Update)",
+				"split1@Update alterRow(updateIf(true())) ~> alterUpdate",
+				"NullHandling derive({SRC_Updated Date} = toTimestamp(\"2999-12-31 00:00:00\",\"yyyy-MM-dd HH:mm:ss\"),",
+				"          SRC_PlantCode = iif(length(SRC_PlantCode) == 6, SRC_PlantCode, lpad(toString(SRC_PlantCode), 6, '0'))) ~> Default",
+				"alterInsert derive({SRC_Created By} = \"IN1684\",",
+				"          {SRC_Created Date} = currentTimestamp(),",
+				"          {SRC_Updated By} = \"UNK\",",
+				"          {SRC_Updated Date} = toTimestamp(\"2999-12-31 00:00:00\", \"yyyy-MM-dd HH:mm:ss\")) ~> auditcolumns1",
+				"alterUpdate derive({SRC_Updated By} = \"IN1684\",",
+				"          {SRC_Updated Date} = currentTimestamp()) ~> auditcolumns2",
+				"SelectSRCOrder sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PlantCode,",
+				"          PlantKey,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date}",
+				"     )) ~> SNKCustomer"
+			]
+		}
+	}
+}
