@@ -16,19 +16,27 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Stg_Primary_Sales_Plan_AOP_IN1680",
+						"referenceName": "DF_Alc_Primary_Sales_Plan_AOP_IN1680",
 						"type": "DataFlowReference",
 						"datasetParameters": {
+							"SRCstg": {
+								"schema": "KRavi",
+								"table": "Stg_Primary_Sales_Plan_AOP_IN1680",
+								"database": "Target_ADF_B2025"
+							},
 							"SRCtgt": {
 								"schema": "KRavi",
+								"table": "Alc_Primary_Sales_Plan_AOP_IN1680",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKtgt": {
 								"schema": "KRavi",
+								"table": "Alc_Primary_Sales_Plan_AOP_IN1680",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKstgDel": {
 								"schema": "KRavi",
+								"table": "Stg_Primary_Sales_Plan_AOP_IN1680",
 								"database": "Target_ADF_B2025"
 							}
 						}
