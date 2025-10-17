@@ -1,0 +1,53 @@
+{
+	"name": "PL_DF_ProductMaster_IN1677",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_ProductMaster_IN1677",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Product_Master_SCD1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcProductMaster": {
+								"Schema": "JSivakum",
+								"Table": "Stg_ProductMaster_IN1677"
+							},
+							"TgtProductMaster": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Product_Master_IN1677"
+							},
+							"SnkProductMasterInsert": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Product_Master_IN1677"
+							},
+							"SnkProductMasterUpdate": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Product_Master_IN1677"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Stg to Dw"
+		},
+		"annotations": []
+	}
+}

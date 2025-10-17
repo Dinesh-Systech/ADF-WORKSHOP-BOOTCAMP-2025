@@ -28,14 +28,14 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SnkPlantMasterInsert"
+					"name": "SnkProductMasterInsert"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SnkPlantMasterUpdate"
+					"name": "SnkProductMasterUpdate"
 				}
 			],
 			"transformations": [
@@ -219,7 +219,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SnkPlantMasterInsert",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkProductMasterInsert",
 				"selectCols2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -229,7 +229,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SnkPlantMasterUpdate"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkProductMasterUpdate"
 			]
 		}
 	}
