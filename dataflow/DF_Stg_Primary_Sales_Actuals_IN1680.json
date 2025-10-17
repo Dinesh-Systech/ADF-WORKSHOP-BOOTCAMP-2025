@@ -350,7 +350,7 @@
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
 				"          Division,",
-				"          CustomerName,",
+				"          CustomerName = tgt_CustomerName,",
 				"          CountryKey = CountryCode,",
 				"          ZoneCode,",
 				"          TransactionDate,",
