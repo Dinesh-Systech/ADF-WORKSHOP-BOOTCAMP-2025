@@ -65,6 +65,9 @@
 				},
 				{
 					"name": "innerState"
+				},
+				{
+					"name": "SLCTKey"
 				}
 			],
 			"scriptLines": [
@@ -107,7 +110,7 @@
 				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
-				"innerState alterRow(insertIf(true())) ~> AlterInsert",
+				"SLCTKey alterRow(insertIf(true())) ~> AlterInsert",
 				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
 				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1),",
 				"     disjoint: true) ~> Insert@(Insert, delete)",
@@ -123,6 +126,22 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> innerState",
+				"innerState select(mapColumn(",
+				"          StateKey = StateCode,",
+				"          Month,",
+				"          ItemKey = SKUCode,",
+				"          BrandPackType,",
+				"          BrandPackSize,",
+				"          BrandCode,",
+				"          CreatedMonth,",
+				"          Plan_Qty,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTKey",
 				"AlterInsert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
