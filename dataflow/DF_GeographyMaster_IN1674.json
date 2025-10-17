@@ -58,7 +58,8 @@
 				"SRCGeography derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
 				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
-				"          each(match(type=='datetime'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
+				"          each(match(type=='datetime'), $$ = iifNull($$,toDate('31/12/1999'))),",
+				"          UpdatedAt = currentDate()) ~> NullHandling",
 				"SKGeography select(mapColumn(",
 				"          CountryCode,",
 				"          CountryName,",
@@ -85,20 +86,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          CountryCode,",
-				"          CountryName,",
-				"          ZoneCode,",
-				"          ZoneName,",
-				"          StateCode,",
-				"          StateName,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy,",
-				"          GeographyKey",
-				"     )) ~> SNKAlcGeography"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcGeography"
 			]
 		}
 	}
