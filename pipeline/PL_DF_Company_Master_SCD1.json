@@ -35,14 +35,6 @@
 								"Schema": "JSivakum",
 								"Table": "Alc_Company_Master_IN1677"
 							}
-						},
-						"linkedServiceParameters": {
-							"SnkCompanyMasterUpdate": {
-								"schemaLinkedService": {
-									"Schema": "JSivakum",
-									"Table": "Alc_Company_Master_IN1677"
-								}
-							}
 						}
 					},
 					"compute": {
