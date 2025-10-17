@@ -138,7 +138,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinSrcTgt",
-				"CustomerKey split(isNull(CustomerCode),",
+				"CustomerKey split(ERROR_FUNCTION('CustomerCode=tgt_CompanyCode||(CustomerCode ==tgt_CustomerCode && Address1!=tgt_Address1 || Address2!=tgt_Address2 || Address3!=tgt_Address3)'),",
 				"     (CustomerCode ==tgt_CustomerCode && Address1!=tgt_Address1 || Address2!=tgt_Address2 || Address3!=tgt_Address3),",
 				"     disjoint: true) ~> split1@(Insert, Update)",
 				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
