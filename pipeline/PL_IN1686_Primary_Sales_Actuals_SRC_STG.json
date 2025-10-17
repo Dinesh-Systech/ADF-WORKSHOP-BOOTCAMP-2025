@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CD_Primary_Sales_Actuals",
-				"type": "Copy",
+				"name": "DF_Primary_Sales_Actual",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,298 +15,30 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"additionalColumns": [
-							{
-								"name": "Created By",
-								"value": {
-									"value": "IN1686_Sanjay_Komala",
-									"type": "Expression"
-								}
+					"dataflow": {
+						"referenceName": "DF_Primary_Sales_Actuals_SRC_STG_INCR_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRC": {
+								"Schema": "Alcobev",
+								"table": "Primary_Sales_Actuals"
 							},
-							{
-								"name": "Created Date",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
+							"TGT": {
+								"schema": "SKomala",
+								"tablename": "stg_Primary_Sales_Actuals"
 							},
-							{
-								"name": "Updated By",
-								"value": {
-									"value": "null",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "Updated Date",
-								"value": {
-									"value": "1990-01-01",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "Pipeline RunID",
-								"value": {
-									"value": "@pipeline().RunId",
-									"type": "Expression"
-								}
+							"SNKtgt": {
+								"schema": "SKomala",
+								"tablename": "stg_Primary_Sales_Actuals"
 							}
-						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						}
 					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"preCopyScript": "Truncate table stg_Primary_Sales_Actuals",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "CompanyCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "CompanyCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "SalesOrgCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "SalesOrgCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "DistributionChannel",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "DistributionChannel",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "Division",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "Division",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "CustomerCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "CustomerCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "CustomerName",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "CustomerName",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "CountryCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "CountryCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "ZoneCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "ZoneCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "StateCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "StateCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "SKUCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "SKUCode",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "PlantCode",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "PlantCode",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "TransactionDate",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "TransactionDate",
-									"type": "Date",
-									"physicalType": "date"
-								}
-							},
-							{
-								"source": {
-									"name": "VolumeActualCase",
-									"type": "String",
-									"physicalType": "varchar"
-								},
-								"sink": {
-									"name": "VolumeActualCase",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "Created By",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Created By",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Created Date",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Created Date",
-									"type": "DateTime",
-									"physicalType": "datetime"
-								}
-							},
-							{
-								"source": {
-									"name": "Updated By",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Updated By",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Updated Date",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Updated Date",
-									"type": "DateTime",
-									"physicalType": "datetime"
-								}
-							},
-							{
-								"source": {
-									"name": "Pipeline RunID",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Pipeline_RunID",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_AzureSqlTable_SRC_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Schema": "Alcobev",
-							"table": "Primary_Sales_Actuals"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"schema": "SKomala",
-							"tablename": "stg_Primary_Sales_Actuals"
-						}
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
