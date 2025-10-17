@@ -25,7 +25,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "Alcobev",
-							"table": "CompanyMaster",
+							"table": "ActivationMapping",
 							"database": "Trainer"
 						}
 					},
@@ -55,7 +55,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "KRavi",
-							"table": "Alc_Company_Master_IN1680",
+							"table": "Alc_Activation_Mapping_IN1680",
 							"database": "Target_ADF_B2025"
 						}
 					},
