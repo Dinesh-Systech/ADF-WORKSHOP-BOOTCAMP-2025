@@ -16,15 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_ActivationMappting_IN1674",
+						"referenceName": "DF_GLAaccountMaster_IN1674",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCActivationMapping": {
+							"SrcGLAccountMaster": {
 								"Schema": "CKumaram",
 								"Table": "Stg_GLAccountMaster_IN1674",
 								"Database": "Target_ADF_B2025"
 							},
-							"SNKAlcActivationMapping": {
+							"TgtGLAccountMaster": {
 								"Schema": "CKumaram",
 								"Table": "Alc_GLAccountMaster",
 								"Database": "Target_ADF_B2025"
