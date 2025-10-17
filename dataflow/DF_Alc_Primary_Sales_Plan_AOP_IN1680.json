@@ -99,7 +99,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCtgt",
-				"SRCtgt aggregate() ~> maxDate",
+				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
 				"Insert@Insert alterRow() ~> AlterInsert",
