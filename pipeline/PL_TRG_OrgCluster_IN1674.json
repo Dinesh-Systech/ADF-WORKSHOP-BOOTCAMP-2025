@@ -1,0 +1,47 @@
+{
+	"name": "PL_TRG_OrgCluster_IN1674",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_TRG_OrgCluster",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SalesOrgCluster_IN1674",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCSalesOrgCluster": {
+								"Schema": "CKumaram",
+								"Table": "Stg_Sales_Org_Cluster_IN1674",
+								"Database": "Target_ADF_B2025"
+							},
+							"SNKAlcSalesOrgCluster": {
+								"Schema": "CKumaram",
+								"Table": "ALC_SalesOrgCluster",
+								"Database": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "STG-TRG"
+		},
+		"annotations": []
+	}
+}
