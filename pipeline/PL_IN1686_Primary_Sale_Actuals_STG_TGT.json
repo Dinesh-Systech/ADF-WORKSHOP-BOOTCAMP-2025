@@ -1,0 +1,65 @@
+{
+	"name": "PL_IN1686_Primary_Sale_Actuals_STG_TGT",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Primary_Sale_Actuals",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Primary_Sales_Actual_STG_TGT_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstg": {
+								"schema": "SKomala",
+								"tablename": "stg_Primary_Sales_Actuals"
+							},
+							"SRCcompany": {
+								"schema": "SKomala",
+								"tablename": "Alc_Company_Master"
+							},
+							"SRCcustomer": {
+								"schema": "SKomala",
+								"tablename": "Alc_Customer_Master"
+							},
+							"SRCgeography": {
+								"schema": "SKomala",
+								"tablename": "Alc_Geography_Master"
+							},
+							"SRCproduct": {
+								"schema": "SKomala",
+								"tablename": "Alc_Product_Master"
+							},
+							"SRCplant": {
+								"schema": "SKomala",
+								"tablename": "Alc_Plant_Master"
+							},
+							"SNKtgt": {
+								"schema": "SKomala",
+								"tablename": "Alc_Primary_Sales_Actuals"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"annotations": []
+	}
+}

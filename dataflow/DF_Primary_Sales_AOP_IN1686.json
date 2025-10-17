@@ -1,0 +1,126 @@
+{
+	"name": "DF_Primary_Sales_AOP_IN1686",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SRCstg"
+				},
+				{
+					"name": "SRCtgt"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKtgt"
+				},
+				{
+					"name": "SNKstgDel"
+				},
+				{
+					"name": "SNKdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "maxDate"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "AlterInsert"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "AlterDelete"
+				},
+				{
+					"name": "TransformationDate"
+				},
+				{
+					"name": "innerProduct"
+				},
+				{
+					"name": "innerState"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCstg",
+				"source(output(",
+				"          StateKey as string,",
+				"          Month as date,",
+				"          ItemKey as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCtgt",
+				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
+				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
+				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
+				"innerState alterRow(insertIf(true())) ~> AlterInsert",
+				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
+				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1),",
+				"     disjoint: true) ~> Insert@(Insert, delete)",
+				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
+				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
+				"Insert@Insert join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerProduct",
+				"innerProduct join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerState",
+				"AlterInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKtgt",
+				"AlterDelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKstgDel",
+				"TransformationDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKdate"
+			]
+		}
+	}
+}
