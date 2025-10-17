@@ -59,7 +59,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "SELECT * FROM Trainer.Alcobev.Primary_Sales_Actuals\nWHERE TransactionDate >(SELECT max(TransactionDate)FROM Target_ADF_B2025.SKomala.stg_Primary_Sales_Actuals)",
+						"preCopyScript": "Truncate table stg_Primary_Sales_Actuals",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
