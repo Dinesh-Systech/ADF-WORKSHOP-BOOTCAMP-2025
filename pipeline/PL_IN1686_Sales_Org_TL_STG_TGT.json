@@ -1,0 +1,45 @@
+{
+	"name": "PL_IN1686_Sales_Org_TL_STG_TGT",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Sales_Org_TL",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Sales_Org_TL_STG_TGT_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCSalesOrgTL": {
+								"schema": "SKomala",
+								"tablename": "stg_Sales_Org_TL"
+							},
+							"SNKAlcSalesOrgTL": {
+								"schema": "SKomala",
+								"tablename": "Alc_Sales_Org_TL"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"annotations": []
+	}
+}
