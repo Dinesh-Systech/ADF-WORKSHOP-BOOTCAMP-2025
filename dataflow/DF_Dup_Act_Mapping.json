@@ -1,6 +1,9 @@
 {
 	"name": "DF_Dup_Act_Mapping",
 	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
