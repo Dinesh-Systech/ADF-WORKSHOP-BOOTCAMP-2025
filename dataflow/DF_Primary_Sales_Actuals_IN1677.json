@@ -1,0 +1,354 @@
+{
+	"name": "DF_Primary_Sales_Actuals_IN1677",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "AlcCompanyMasterIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "AlcProductMasterIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "AlcPlantMasterIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "AlcCustomerMasterIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "AlcGeographyMasterIN1677"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SNKPrimarySalesActualsFullloadN1677"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "JoinAlcCompanyMaster"
+				},
+				{
+					"name": "JoinAlcProductionMaster"
+				},
+				{
+					"name": "JoinAlcPlantMasterIN1677"
+				},
+				{
+					"name": "JoinAlcCustomerMasterIN1677"
+				},
+				{
+					"name": "JoinAlcGeographyMasterIN1677"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "SelectCompany"
+				},
+				{
+					"name": "selectProduct"
+				},
+				{
+					"name": "selectCustomer"
+				},
+				{
+					"name": "selectGeography"
+				},
+				{
+					"name": "selectPlant"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AlcCompanyMasterIN1677",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AlcProductMasterIN1677",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantKey as integer,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AlcPlantMasterIN1677",
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerKey as integer,",
+				"          CustomerName as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          IsActive as string,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          Market_Type as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AlcCustomerMasterIN1677",
+				"source(output(",
+				"          CountryCode as string,",
+				"          StateKey as integer,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> AlcGeographyMasterIN1677",
+				"select1 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"SrcPrimarySalesActuals derive(UpdatedAt = toTimestamp(null())) ~> Transformation",
+				"Transformation, SelectCompany join(SrcPrimarySalesActuals@CompanyCode == SelectCompany@CompanyCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcCompanyMaster",
+				"JoinAlcCompanyMaster, selectProduct join(SrcPrimarySalesActuals@SKUCode == selectProduct@SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcProductionMaster",
+				"JoinAlcProductionMaster, selectPlant join(SrcPrimarySalesActuals@PlantCode == selectPlant@PlantCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcPlantMasterIN1677",
+				"JoinAlcPlantMasterIN1677, selectCustomer join(SrcPrimarySalesActuals@CompanyCode == selectCustomer@CustomerCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcCustomerMasterIN1677",
+				"JoinAlcCustomerMasterIN1677, selectGeography join(SrcPrimarySalesActuals@StateCode == selectGeography@StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcGeographyMasterIN1677",
+				"JoinAlcGeographyMasterIN1677 select(mapColumn(",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          CompanyKey,",
+				"          ProductKey,",
+				"          PlantKey,",
+				"          CustomerKey,",
+				"          StateKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"AlcCompanyMasterIN1677 select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectCompany",
+				"AlcProductMasterIN1677 select(mapColumn(",
+				"          SKUCode,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectProduct",
+				"AlcCustomerMasterIN1677 select(mapColumn(",
+				"          CustomerCode,",
+				"          CustomerKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCustomer",
+				"AlcGeographyMasterIN1677 select(mapColumn(",
+				"          StateKey,",
+				"          StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectGeography",
+				"AlcPlantMasterIN1677 select(mapColumn(",
+				"          PlantCode,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPlant",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKPrimarySalesActualsFullloadN1677"
+			]
+		}
+	}
+}
