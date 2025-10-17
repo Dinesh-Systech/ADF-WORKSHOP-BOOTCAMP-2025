@@ -31,6 +31,8 @@
 			{
 				"name": "CP_PlanAOP_FullLoad",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -201,26 +203,6 @@
 									"name": "updated_by",
 									"type": "String",
 									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "State_Key"
-								},
-								"sink": {
-									"name": "State_Key",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "SKU_Key"
-								},
-								"sink": {
-									"name": "SKU_Key",
-									"type": "Int32",
-									"physicalType": "int"
 								}
 							}
 						],
