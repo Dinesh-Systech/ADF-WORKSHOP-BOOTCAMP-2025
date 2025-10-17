@@ -2,7 +2,7 @@
 	"name": "DF_ActivationMappting_IN1674",
 	"properties": {
 		"folder": {
-			"name": "STG_TGT"
+			"name": "Final_Project/STG_TGT"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
