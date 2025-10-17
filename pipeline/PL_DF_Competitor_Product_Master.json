@@ -25,15 +25,15 @@
 							},
 							"TgtCompetitorProductMaster": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Competitor_Product_Master_IN1680"
+								"Table": "Alc_Competitor_Product_Master_IN1677"
 							},
 							"SnkCompetitorProductMasterInsert": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Competitor_Product_Master_IN1680"
+								"Table": "Alc_Competitor_Product_Master_IN1677"
 							},
 							"SnkCompetitorProductMasterUpdate": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Competitor_Product_Master_IN1680"
+								"Table": "Alc_Competitor_Product_Master_IN1677"
 							}
 						}
 					},
