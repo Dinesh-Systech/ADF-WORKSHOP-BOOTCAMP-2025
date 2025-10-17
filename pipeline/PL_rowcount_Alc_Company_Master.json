@@ -129,6 +129,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src_count'),variables('tgt_count'))",
+						"type": "Expression"
+					},
 					"ifFalseActivities": [
 						{
 							"name": "FalseNotMatch",
