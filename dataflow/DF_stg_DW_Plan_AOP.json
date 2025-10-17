@@ -103,7 +103,7 @@
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> TRANSFORMATIONS",
 				"Insert@INSERTstream alterRow(insertIf(true())) ~> ALTERInsert",
 				"TRANSFORMATIONS split(Month > SNKdate#outputs()[1].maxdate,",
-				"     SNKdate#outputs()[1].maxdate != toDate('01-01-1900','dd-MM-yyyy') && Month < SNKdate#outputs()[1].maxdate && Month > subMonths(SNKdate#outputs()[1].maxdate, -1),",
+				"     SNKdate#outputs()[1].maxdate != toDate('01-01-1900','dd-MM-yyyy') && Month < SNKdate#outputs()[1].maxdate && Month > subMonths(SNKdate#outputs()[1].maxdate, 1),",
 				"     disjoint: true) ~> Insert@(INSERTstream, DELETEstream)",
 				"Insert@DELETEstream alterRow(deleteIf(true())) ~> ALTERDelete",
 				"AGGRmaxDate derive(maxdate = coalesce(maxdate, toDate('01-01-1900','dd-MM-yyyy'))) ~> TransfDate",
