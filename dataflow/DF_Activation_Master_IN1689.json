@@ -17,7 +17,7 @@
 			],
 			"sinks": [
 				{
-					"name": "SinkAlcActivationMasterN1677"
+					"name": "SinkAlcActivationMasterN1689"
 				}
 			],
 			"transformations": [
@@ -63,7 +63,7 @@
 				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SinkAlcActivationMasterN1677"
+				"     format: 'table') ~> SinkAlcActivationMasterN1689"
 			]
 		}
 	}
