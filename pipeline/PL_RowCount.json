@@ -28,7 +28,8 @@
 							"Table": "ActivationMapping",
 							"DB_Name": "Trainer"
 						}
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -64,7 +65,8 @@
 							"Table": "stg_ALC_ActivationMapping_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
