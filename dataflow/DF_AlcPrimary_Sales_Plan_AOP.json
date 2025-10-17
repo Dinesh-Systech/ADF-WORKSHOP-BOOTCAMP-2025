@@ -1,0 +1,202 @@
+{
+	"name": "DF_AlcPrimary_Sales_Plan_AOP",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesPlanAOPIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcAlcProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcAlcGeography"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SrcTgtPrimarySalesPlan"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SnkMaxDate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "joinAlcProduct"
+				},
+				{
+					"name": "joinAlcGeography"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "AggMaxDate"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as date,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesPlanAOPIN1677",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          State_Code as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcAlcProduct",
+				"source(output(",
+				"          CountryCode as string,",
+				"          StateKey as integer,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcAlcGeography",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as date,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          Plan_Qty as decimal(18,0),",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcTgtPrimarySalesPlan",
+				"SrcPrimarySalesPlanAOPIN1677 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"SrcAlcProduct select(mapColumn(",
+				"          SKUCode,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"SrcAlcGeography select(mapColumn(",
+				"          StateKey,",
+				"          StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1, select2 join(select1@SKUCode == select2@SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinAlcProduct",
+				"joinAlcProduct, select3 join(select1@StateCode == select3@StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinAlcGeography",
+				"joinAlcGeography split(Month>SnkMaxDate#outputs()[1].MaxDate,",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(insert, delete)",
+				"SrcTgtPrimarySalesPlan aggregate(Month = max(Month)) ~> AggMaxDate",
+				"AggMaxDate derive(Month = coalesce(Month,toDate('01-01-1900','dd-MM-yyyy'))) ~> Transformation",
+				"Transformation sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          MaxDate = Month",
+				"     )) ~> SnkMaxDate"
+			]
+		}
+	}
+}

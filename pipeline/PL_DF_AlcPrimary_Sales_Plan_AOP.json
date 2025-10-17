@@ -1,0 +1,9 @@
+{
+	"name": "PL_DF_AlcPrimary_Sales_Plan_AOP",
+	"properties": {
+		"folder": {
+			"name": "End To End Workshop/Stg to Dw"
+		},
+		"annotations": []
+	}
+}
