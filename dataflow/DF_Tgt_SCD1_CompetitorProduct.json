@@ -1,0 +1,223 @@
+{
+	"name": "DF_Tgt_SCD1_CompetitorProduct",
+	"properties": {
+		"folder": {
+			"name": "DF_Stg_to_Tgt_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCompetitorProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCompetitorProduct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "AlcCompetitorProduct"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "JoinSrcAndTgt"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "newRecords"
+				},
+				{
+					"name": "ChangedRecords"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "CompetitorProductKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCompetitorProduct",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          CompetitorProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtCompetitorProduct",
+				"JoinSrcAndTgt split(isNull(TgtCompetitorProduct@SKUCode),",
+				"     !isNull(TgtCompetitorProduct@SKUCode) &&\r",
+				"(\r",
+				"  (SrcCompetitorProduct@SKUCode == TgtCompetitorProduct@SKUCode) &&\r",
+				"  (\r",
+				"    SrcCompetitorProduct@ReportingSegment != TgtCompetitorProduct@ReportingSegment||\r",
+				"    SrcCompetitorProduct@ProductSegment != TgtCompetitorProduct@ProductSegment\r",
+				"  )\r",
+				")\r",
+				",",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"CompetitorProductKey, TgtCompetitorProduct join(SrcCompetitorProduct@SKUCode == TgtCompetitorProduct@SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcAndTgt",
+				"newRecords select(mapColumn(",
+				"          SKUCode = split1@Insert@SKUCode,",
+				"          CompetitorProductKey = split1@Insert@CompetitorProductKey,",
+				"          ItemName = split1@Insert@ItemName,",
+				"          CompanyCode = split1@Insert@CompanyCode,",
+				"          IndustryName = split1@Insert@IndustryName,",
+				"          BrandFamily = split1@Insert@BrandFamily,",
+				"          BrandCode = split1@Insert@BrandCode,",
+				"          BrandName = split1@Insert@BrandName,",
+				"          ReportingSegment = split1@Insert@ReportingSegment,",
+				"          BrandPackSize = split1@Insert@BrandPackSize,",
+				"          PackTypeCode = split1@Insert@PackTypeCode,",
+				"          BrandPackType = split1@Insert@BrandPackType,",
+				"          StateCode = split1@Insert@StateCode,",
+				"          State = split1@Insert@State,",
+				"          ProductCategory = split1@Insert@ProductCategory,",
+				"          ProductSegment = split1@Insert@ProductSegment,",
+				"          Flavour = split1@Insert@Flavour,",
+				"          SubFlavour = split1@Insert@SubFlavour,",
+				"          Division = split1@Insert@Division,",
+				"          CreatedBy,",
+				"          CreatedDate,",
+				"          UpdatedBy = split1@Insert@UpdatedBy,",
+				"          UpdatedDate = split1@Insert@UpdatedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"ChangedRecords select(mapColumn(",
+				"          SKUCode = split1@Update@SKUCode,",
+				"          ItemName = split1@Update@ItemName,",
+				"          CompetitorProductKey = split1@Update@CompetitorProductKey,",
+				"          CompanyCode = split1@Update@CompanyCode,",
+				"          IndustryName = split1@Update@IndustryName,",
+				"          BrandFamily = split1@Update@BrandFamily,",
+				"          BrandCode = split1@Update@BrandCode,",
+				"          BrandName = split1@Update@BrandName,",
+				"          ReportingSegment = split1@Update@ReportingSegment,",
+				"          BrandPackSize = split1@Update@BrandPackSize,",
+				"          PackTypeCode = split1@Update@PackTypeCode,",
+				"          BrandPackType = split1@Update@BrandPackType,",
+				"          StateCode = split1@Update@StateCode,",
+				"          State = split1@Update@State,",
+				"          ProductCategory = split1@Update@ProductCategory,",
+				"          ProductSegment = split1@Update@ProductSegment,",
+				"          Flavour = split1@Update@Flavour,",
+				"          SubFlavour = split1@Update@SubFlavour,",
+				"          Division = split1@Update@Division,",
+				"          CreatedBy = split1@Update@CreatedBy,",
+				"          CreatedDate = split1@Update@CreatedDate,",
+				"          UpdatedBy,",
+				"          UpdatedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"split1@Insert derive(CreatedDate = currentTimestamp(),",
+				"          CreatedBy = 'IN1675') ~> derivedColumn1",
+				"split1@Update derive(UpdatedDate = currentTimestamp(),",
+				"          UpdatedBy = 'IN1675') ~> derivedColumn2",
+				"derivedColumn1 alterRow(insertIf(true())) ~> newRecords",
+				"derivedColumn2 alterRow(updateIf(true())) ~> ChangedRecords",
+				"select3 union(byName: true)~> union",
+				"union derive(each(match(type=='string'), $$ = iif(isNull($$),'UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$)),",
+				"          each(match(type=='datetime'), $$ = iif(isNull($$), toTimestamp('2999-12-31 00:00:00','yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"SrcCompetitorProduct keyGenerate(output(CompetitorProductKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CompetitorProductKey",
+				"NullHandling sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> AlcCompetitorProduct"
+			]
+		}
+	}
+}

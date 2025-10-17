@@ -1,5 +1,5 @@
 {
-	"name": "DF_Tgt_SCD1_Company_IN1675",
+	"name": "DF_Tgt_SCD1_PlantMaster_IN1675",
 	"properties": {
 		"folder": {
 			"name": "DF_Stg_to_Tgt_IN1675"
@@ -12,14 +12,14 @@
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "SrcCompany"
+					"name": "SrcPlantMaster"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_SQL_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "TgtCompany"
+					"name": "TgtPlantMaster"
 				}
 			],
 			"sinks": [
@@ -43,9 +43,6 @@
 				},
 				{
 					"name": "select4"
-				},
-				{
-					"name": "select5"
 				},
 				{
 					"name": "derivedColumn1"
@@ -92,7 +89,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcCompany",
+				"     format: 'table') ~> SrcPlantMaster",
 				"source(output(",
 				"          CompanyCode as string,",
 				"          ConpanyKey as integer,",
@@ -113,7 +110,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TgtCompany",
+				"     format: 'table') ~> TgtPlantMaster",
 				"JoinSrcAndTgt split(isNull(select6@CompanyCode),",
 				"     !isNull(select6@CompanyCode) &&\r",
 				"(\r",
@@ -124,8 +121,7 @@
 				"  )\r",
 				")\r",
 				",",
-				"     SrcCompany@CompanyCode==select6@CompanyCode && SrcCompany@SalesOrgCode==select6@SalesOrgCode&&SrcCompany@SalesOrgName==select6@SalesOrgName,",
-				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
+				"     disjoint: false) ~> split1@(Insert, Update)",
 				"CompanyKey, select6 join(SrcCompany@CompanyCode == select6@CompanyCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -169,25 +165,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
-				"split1@Existing select(mapColumn(",
-				"          CompanyCode = split1@Existing@CompanyCode,",
-				"          CompanyKey,",
-				"          CompanyName = split1@Existing@CompanyName,",
-				"          SalesOrgCode = split1@Existing@SalesOrgCode,",
-				"          SalesOrgName = split1@Existing@SalesOrgName,",
-				"          ReportingHierarchyCode1 = split1@Existing@ReportingHierarchyCode1,",
-				"          ReportingHierarchyName1 = split1@Existing@ReportingHierarchyName1,",
-				"          ReportingHierarchyCode2 = split1@Existing@ReportingHierarchyCode2,",
-				"          ReportingHierarchyName2 = split1@Existing@ReportingHierarchyName2,",
-				"          ReportingHierarchyCode3 = split1@Existing@ReportingHierarchyCode3,",
-				"          ReportingHierarchyName3 = split1@Existing@ReportingHierarchyName3,",
-				"          CreatedDate = split1@Existing@CreatedDate,",
-				"          CreatedBy = split1@Existing@CreatedBy,",
-				"          UpdatedDate = split1@Existing@UpdatedDate,",
-				"          UpdatedBy = split1@Existing@UpdatedBy",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select5",
 				"split1@Insert derive(CreatedDate = currentTimestamp(),",
 				"          CreatedBy = 'IN1675') ~> derivedColumn1",
 				"split1@Update derive(UpdatedDate = currentTimestamp(),",
@@ -198,7 +175,7 @@
 				"union derive(each(match(type=='string'), $$ = iif(isNull($$),'UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$)),",
 				"          each(match(type=='datetime'), $$ = iif(isNull($$), toTimestamp('2999-12-31 00:00:00','yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
-				"TgtCompany select(mapColumn(",
+				"TgtPlantMaster select(mapColumn(",
 				"          CompanyCode,",
 				"          CompanyKey = ConpanyKey,",
 				"          CompanyName,",
@@ -217,7 +194,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select6",
-				"SrcCompany keyGenerate(output(CompanyKey as long),",
+				"SrcPlantMaster keyGenerate(output(CompanyKey as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CompanyKey",
 				"NullHandling sink(allowSchemaDrift: true,",

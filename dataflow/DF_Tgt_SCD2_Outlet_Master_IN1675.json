@@ -1,0 +1,254 @@
+{
+	"name": "DF_Tgt_SCD2_Outlet_Master_IN1675",
+	"properties": {
+		"folder": {
+			"name": "DF_Stg_to_Tgt_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOutlet"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOutlet"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "NewRecords"
+				},
+				{
+					"name": "ChangedRecords"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "select7"
+				},
+				{
+					"name": "select8"
+				},
+				{
+					"name": "select10"
+				},
+				{
+					"name": "RemoveKey"
+				},
+				{
+					"name": "OutletKey"
+				},
+				{
+					"name": "select11"
+				},
+				{
+					"name": "derivedColumn5"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OUTLET_KEY as integer,",
+				"          OUTLET_CODE as string,",
+				"          OUTLET_NAME as string,",
+				"          GEO_KEY as integer,",
+				"          STREET as string,",
+				"          CITY as string,",
+				"          GEO_LONGITUDE as decimal(10,8),",
+				"          GEO_LATITUDE as decimal(10,8),",
+				"          OUTLET_STATUS as string,",
+				"          OWNER_CODE as string,",
+				"          OWNER_NAME as string,",
+				"          DISTRUBUTOR_CODE as string,",
+				"          MARKET_TYPE as string,",
+				"          HUB as string,",
+				"          CHANNEL as string,",
+				"          MICRO_CHANNEL as string,",
+				"          GROUP_OUTLET_CODE as string,",
+				"          OUTLET_TIER as string,",
+				"          IS_ACTIVE as string,",
+				"          BUSINESS_UNIT as string,",
+				"          SALES_REPRESENTATIVE_CODE as string,",
+				"          SALES_TERRITORY as string,",
+				"          CONTACT_NAME as string,",
+				"          CONTACT_EMAIL as string,",
+				"          LICENSE_TYPE as string,",
+				"          ACTIVE_FLAG as string,",
+				"          DW_CREATED_DATE as timestamp,",
+				"          DW_UPDATED_DATE as timestamp,",
+				"          DW_CREATED_BY as string,",
+				"          DW_UPDATED_BY as string,",
+				"          TERRITORY_CODE as string,",
+				"          OUTLET_SEGMENT as string,",
+				"          OUTLET_START_DATE as timestamp,",
+				"          OUTLET_END_DATE as timestamp,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcOutlet",
+				"source(output(",
+				"          OUTLET_KEY as integer,",
+				"          OUTLET_CODE as string,",
+				"          OUTLET_NAME as string,",
+				"          GEO_KEY as integer,",
+				"          STREET as string,",
+				"          CITY as string,",
+				"          GEO_LONGITUDE as decimal(10,8),",
+				"          GEO_LATITUDE as decimal(10,8),",
+				"          OUTLET_STATUS as string,",
+				"          OWNER_CODE as string,",
+				"          OWNER_NAME as string,",
+				"          DISTRUBUTOR_CODE as string,",
+				"          MARKET_TYPE as string,",
+				"          HUB as string,",
+				"          CHANNEL as string,",
+				"          MICRO_CHANNEL as string,",
+				"          GROUP_OUTLET_CODE as string,",
+				"          OUTLET_TIER as string,",
+				"          IS_ACTIVE as string,",
+				"          BUSINESS_UNIT as string,",
+				"          SALES_REPRESENTATIVE_CODE as string,",
+				"          SALES_TERRITORY as string,",
+				"          CONTACT_NAME as string,",
+				"          CONTACT_EMAIL as string,",
+				"          LICENSE_TYPE as string,",
+				"          ACTIVE_FLAG as string,",
+				"          DW_CREATED_DATE as timestamp,",
+				"          DW_UPDATED_DATE as timestamp,",
+				"          DW_CREATED_BY as string,",
+				"          DW_UPDATED_BY as string,",
+				"          TERRITORY_CODE as string,",
+				"          OUTLET_SEGMENT as string,",
+				"          OUTLET_START_DATE as timestamp,",
+				"          OUTLET_END_DATE as timestamp,",
+				"          CreatedBy as string,",
+				"          CreatedDate as timestamp,",
+				"          UpdatedBy as string,",
+				"          UpdatedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtOutlet",
+				"OutletKey, select8 join(OUTLET_KEY == Tgt_OUTLET_KEY,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(Tgt_OUTLET_KEY) || ((Src_OUTLET_CODE==Tgt_OUTLET_CODE)&&(Src_OUTLET_STATUS!=Tgt_OUTLET_STATUS||Src_OWNER_CODE!=Tgt_OWNER_CODE||Src_OWNER_NAME!=Tgt_OWNER_NAME)),",
+				"     !isNull(Tgt_OUTLET_KEY) || ((Src_OUTLET_CODE==Tgt_OUTLET_CODE)&&(Src_OUTLET_STATUS!=Tgt_OUTLET_STATUS||Src_OWNER_CODE!=Tgt_OWNER_CODE||Src_OWNER_NAME!=Tgt_OWNER_NAME)),",
+				"     Src_OUTLET_CODE==Tgt_OUTLET_CODE && Src_OUTLET_STATUS!=Tgt_OUTLET_STATUS && Src_OWNER_CODE!=Tgt_OWNER_CODE && Src_OWNER_NAME!=Tgt_OWNER_NAME,",
+				"     disjoint: true) ~> split1@(Insert, Old, Existing)",
+				"select11, select4, select10 union(byName: true)~> union1",
+				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
+				"derivedColumn1 alterRow(insertIf(true())) ~> NewRecords",
+				"derivedColumn4 alterRow(updateIf(true())) ~> ChangedRecords",
+				"ChangedRecords select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select4",
+				"split1@Old derive(isactive = 0) ~> derivedColumn4",
+				"SrcOutlet select(mapColumn(",
+				"          each(match(true()),",
+				"               'Src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7",
+				"TgtOutlet select(mapColumn(",
+				"          each(match(true()),",
+				"               'Tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select8",
+				"split1@Existing select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select10",
+				"derivedColumn5 select(mapColumn(",
+				"          Src_OUTLET_CODE,",
+				"          Src_OUTLET_NAME,",
+				"          Src_GEO_KEY,",
+				"          Src_STREET,",
+				"          Src_CITY,",
+				"          Src_GEO_LONGITUDE,",
+				"          Src_GEO_LATITUDE,",
+				"          Src_OUTLET_STATUS,",
+				"          Src_OWNER_CODE,",
+				"          Src_OWNER_NAME,",
+				"          Src_DISTRUBUTOR_CODE,",
+				"          Src_MARKET_TYPE,",
+				"          Src_HUB,",
+				"          Src_CHANNEL,",
+				"          Src_MICRO_CHANNEL,",
+				"          Src_GROUP_OUTLET_CODE,",
+				"          Src_OUTLET_TIER,",
+				"          Src_IS_ACTIVE,",
+				"          Src_BUSINESS_UNIT,",
+				"          Src_SALES_REPRESENTATIVE_CODE,",
+				"          Src_SALES_TERRITORY,",
+				"          Src_CONTACT_NAME,",
+				"          Src_CONTACT_EMAIL,",
+				"          Src_LICENSE_TYPE,",
+				"          Src_ACTIVE_FLAG,",
+				"          Src_DW_CREATED_DATE,",
+				"          Src_DW_UPDATED_DATE,",
+				"          Src_DW_CREATED_BY,",
+				"          Src_DW_UPDATED_BY,",
+				"          Src_TERRITORY_CODE,",
+				"          Src_OUTLET_SEGMENT,",
+				"          Src_OUTLET_START_DATE,",
+				"          Src_OUTLET_END_DATE,",
+				"          Src_CreatedBy,",
+				"          Src_CreatedDate,",
+				"          Src_UpdatedBy,",
+				"          Src_UpdatedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveKey",
+				"RemoveKey keyGenerate(output(OUTLET_KEY as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> OutletKey",
+				"NewRecords select(mapColumn(",
+				"          each(match(ERROR_FUNCTION('')),",
+				"               ERROR_FUNCTION('') = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select11",
+				"select7 derive(isActive = 1) ~> derivedColumn5"
+			]
+		}
+	}
+}
