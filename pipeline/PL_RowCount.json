@@ -25,7 +25,6 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
-							"Table": "ActivationMapping",
 							"DB_Name": "Trainer"
 						}
 					},
@@ -33,7 +32,7 @@
 				}
 			},
 			{
-				"name": "LK_STG_rowcount",
+				"name": "LK_TGT_rowcount",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -62,7 +61,6 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
-							"Table": "stg_ALC_ActivationMapping_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					},
@@ -98,7 +96,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LK_STG_rowcount",
+						"activity": "LK_TGT_rowcount",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -110,9 +108,9 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "STG_row_count",
+					"variableName": "TGT_row_count",
 					"value": {
-						"value": "@activity('LK_STG_rowcount').output.count",
+						"value": "@activity('LK_TGT_rowcount').output.count",
 						"type": "Expression"
 					}
 				}
@@ -131,7 +129,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(variables('SRC_row_count'), variables('STG_row_count'))",
+						"value": "@equals(variables('SRC_row_count'), variables('TGT_row_count'))",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -153,7 +151,7 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 5
+								"waitTimeInSeconds": 3
 							}
 						}
 					]
@@ -164,12 +162,12 @@
 			"SRC_row_count": {
 				"type": "Integer"
 			},
-			"STG_row_count": {
+			"TGT_row_count": {
 				"type": "Integer"
 			}
 		},
 		"folder": {
-			"name": "Testing_SRC_STG"
+			"name": "Testing"
 		},
 		"annotations": []
 	}
