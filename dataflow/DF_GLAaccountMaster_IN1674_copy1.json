@@ -1,0 +1,94 @@
+{
+	"name": "DF_GLAaccountMaster_IN1674_copy1",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SrcGLAccountMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "TgtGLAccountMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Generalkey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          GeneralLedgerCode as string,",
+				"          GeneralLedgerName as string,",
+				"          GLType as string,",
+				"          Currency as string,",
+				"          Reporting_Hierarchy_Name_L1 as string,",
+				"          Reporting_Hierarchy_Name_L2 as string,",
+				"          Reporting_Hierarchy_Name_L3 as string,",
+				"          Reporting_Hierarchy_Name_L4 as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcGLAccountMaster",
+				"SrcGLAccountMaster keyGenerate(output(GeneralLedgerKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> Generalkey",
+				"Generalkey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss'))),",
+				"          UpdatedAt = currentDate()) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          GeneralLedgerCode,",
+				"          GeneralLedgerName,",
+				"          GLType,",
+				"          Currency,",
+				"          Reporting_Hierarchy_Name_L1,",
+				"          Reporting_Hierarchy_Name_L2,",
+				"          Reporting_Hierarchy_Name_L3,",
+				"          Reporting_Hierarchy_Name_L4,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          GeneralLedgerKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TgtGLAccountMaster"
+			]
+		}
+	}
+}

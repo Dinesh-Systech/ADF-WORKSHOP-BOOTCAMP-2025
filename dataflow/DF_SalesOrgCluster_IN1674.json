@@ -1,0 +1,115 @@
+{
+	"name": "DF_SalesOrgCluster_IN1674",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCluster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOrgCluster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Generalkey"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Cluster Name} as string,",
+				"          {Cluster Code} as string,",
+				"          {Cluster ID} as string,",
+				"          {Cluster Head} as string,",
+				"          {Cluster SFA Code} as string,",
+				"          {Cluster Head Email} as string,",
+				"          {Cluster  Head Mobile} as string,",
+				"          Active_flag as string,",
+				"          {Cluster Start Date} as string,",
+				"          {Cluster End Date} as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCluster",
+				"SrcCluster keyGenerate(output(Cluster_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> Generalkey",
+				"Generalkey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss'))),",
+				"          UpdatedAt = currentDate()) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          {Cluster Name},",
+				"          {Cluster Code},",
+				"          {Cluster ID},",
+				"          {Cluster Head},",
+				"          {Cluster SFA Code},",
+				"          {Cluster Head Email},",
+				"          {Cluster  Head Mobile},",
+				"          Active_flag,",
+				"          {Cluster Start Date},",
+				"          {Cluster End Date},",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          Cluster_Key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {Cluster Name},",
+				"          {Cluster Code},",
+				"          {Cluster ID},",
+				"          {Cluster Head},",
+				"          {Cluster SFA Code},",
+				"          {Cluster Head Email},",
+				"          {Cluster  Head Mobile},",
+				"          Active_flag,",
+				"          {Cluster Start Date},",
+				"          {Cluster End Date},",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          Cluster_Key",
+				"     )) ~> TgtOrgCluster"
+			]
+		}
+	}
+}
