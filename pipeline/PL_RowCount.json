@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom stg_ALC_ActivationMapping_IN1685;\n",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom ActivationMapping;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -26,14 +26,14 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
-							"Table": "stg_ALC_ActivationMapping_IN1685",
+							"Table": "ActivationMapping",
 							"DB_Name": "Trainer"
 						}
 					}
 				}
 			},
 			{
-				"name": "LK_TGT_rowcount",
+				"name": "LK_STG_rowcount",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -54,7 +54,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom Alc_Activation_Mapping_IN1685;\n",
+						"sqlReaderQuery": "select count(*) AS cnt \nfrom stg_ALC_ActivationMapping_IN1685;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -63,7 +63,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
-							"Table": "Alc_Activation_Mapping_IN1685",
+							"Table": "stg_ALC_ActivationMapping_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					}
@@ -86,7 +86,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "src_row_count",
+					"variableName": "SRC_row_count",
 					"value": {
 						"value": "@activity('LK_SRC_rowcount').output.firstRow",
 						"type": "Expression"
@@ -94,11 +94,11 @@
 				}
 			},
 			{
-				"name": "SETtgt",
+				"name": "SETstg",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LK_TGT_rowcount",
+						"activity": "LK_STG_rowcount",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -110,9 +110,9 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "tgt_row_count",
+					"variableName": "STG_row_count",
 					"value": {
-						"value": "@activity('LK_TGT_rowcount').output.firstRow",
+						"value": "@activity('LK_STG_rowcount').output.firstRow",
 						"type": "Expression"
 					}
 				}
@@ -122,7 +122,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "SETtgt",
+						"activity": "SETstg",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -131,7 +131,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(variables('src_row_count'), variables('tgt_row_count'))",
+						"value": "@equals(variables('SRC_row_count'), variables('STG_row_count'))",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -161,15 +161,15 @@
 			}
 		],
 		"variables": {
-			"src_row_count": {
+			"SRC_row_count": {
 				"type": "Integer"
 			},
-			"tgt_row_count": {
+			"STG_row_count": {
 				"type": "Integer"
 			}
 		},
 		"folder": {
-			"name": "Testing"
+			"name": "Testing_SRC_STG"
 		},
 		"annotations": []
 	}
