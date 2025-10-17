@@ -1,0 +1,199 @@
+{
+	"name": "DF_scd_2_Customers",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "Split"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NULL"
+				},
+				{
+					"name": "TRANSFORMATIONS"
+				},
+				{
+					"name": "SKEY"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "INSERTderived"
+				},
+				{
+					"name": "UPDATEderived"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          IsActive as string,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          MarketType as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          Customer_Full_Name as string,",
+				"          Address1 as string,",
+				"          Address2 as string,",
+				"          Address3 as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          SaleDistrict as string,",
+				"          PostCode as integer,",
+				"          IsActive as string,",
+				"          RTM as string,",
+				"          ProfitCentreCode as string,",
+				"          ProfitCentreName as string,",
+				"          CostCentreCode as string,",
+				"          CostCentreName as string,",
+				"          CreditDays as integer,",
+				"          Division as integer,",
+				"          MarketType as string,",
+				"          CustomerLevel1 as string,",
+				"          CustomerLevel2 as string,",
+				"          CustomerLevel3 as string,",
+				"          Ref_Cluster as string,",
+				"          SalesGroupCode as string,",
+				"          SalesGroup as string,",
+				"          SaleOffice as string,",
+				"          SaleOfficeCode as string,",
+				"          LocalGroupCode as string,",
+				"          LocalGroupName as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          Customer_Key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT select(mapColumn(",
+				"          t_CustomerCode = CustomerCode,",
+				"          t_CustomerName = CustomerName,",
+				"          t_Customer_Full_Name = Customer_Full_Name,",
+				"          t_Address1 = Address1,",
+				"          t_Address2 = Address2,",
+				"          t_Address3 = Address3",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"SRCstg, SELECTtgt join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
+				"INSERTderived, Split@UpdateStream union(byName: true)~> UNIONstreams",
+				"TRANSFORMATIONS derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
+				"UNIONstreams derive() ~> TRANSFORMATIONS",
+				"NULL keyGenerate(output({} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKEY",
+				"SKEY select(mapColumn(",
+				"          undefined = {}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"Split@InsertStream derive() ~> INSERTderived",
+				"Split@UpdateStream derive() ~> UPDATEderived",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
+			]
+		}
+	}
+}
