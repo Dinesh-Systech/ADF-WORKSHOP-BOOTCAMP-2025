@@ -25,15 +25,15 @@
 							},
 							"TgtPlantMaster": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Plant_Master"
+								"Table": "Alc_Plant_Master_1677"
 							},
 							"SnkPlantMasterInsert": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Plant_Master"
+								"Table": "Alc_Plant_Master_1677"
 							},
 							"SnkPlantMasterUpdate": {
 								"Schema": "JSivakum",
-								"Table": "Alc_Plant_Master"
+								"Table": "Alc_Plant_Master_1677"
 							}
 						}
 					},
