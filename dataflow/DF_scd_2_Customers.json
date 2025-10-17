@@ -61,6 +61,12 @@
 				},
 				{
 					"name": "UPDATEderived"
+				},
+				{
+					"name": "ALTERinsert"
+				},
+				{
+					"name": "ALTERupdate"
 				}
 			],
 			"scriptLines": [
@@ -181,9 +187,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
-				"Split@InsertStream derive(created_date = currentUTC(toString(currentTimestamp())),",
+				"ALTERinsert derive(created_date = currentUTC(toString(currentTimestamp())),",
 				"          updated_date = toTimestamp(\"31-12-2999 00:00:00\", \"dd-MM-yyyy HH:mm:ss\") ) ~> INSERTderived",
-				"Split@UpdateStream derive(updated_date = currentUTC(toString(currentTimestamp()))) ~> UPDATEderived",
+				"ALTERupdate derive(updated_date = currentUTC(toString(currentTimestamp()))) ~> UPDATEderived",
+				"Split@InsertStream alterRow(insertIf(true())) ~> ALTERinsert",
+				"Split@UpdateStream alterRow(updateIf(true())) ~> ALTERupdate",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
