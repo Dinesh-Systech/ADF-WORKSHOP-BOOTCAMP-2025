@@ -1,0 +1,141 @@
+{
+	"name": "DF_stg_DW_Plan_AOP",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKstgDEL"
+				},
+				{
+					"name": "SNKdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGRmaxDate"
+				},
+				{
+					"name": "TRANSFORMATIONS"
+				},
+				{
+					"name": "ALTERInsert"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "ALTERDelete"
+				},
+				{
+					"name": "TransfDate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as date,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TGT aggregate(maxdate = max(Month)) ~> AGGRmaxDate",
+				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
+				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> TRANSFORMATIONS",
+				"Insert@INSERTstream alterRow(insertIf(true())) ~> ALTERInsert",
+				"TRANSFORMATIONS split(Month > SNKdate#outputs()[1].maxdate,",
+				"     SNKdate#outputs()[1].maxdate != toDate('01-01-1900','dd-MM-yyyy') && Month < SNKdate#outputs()[1].maxdate && Month > subMonths(SNKdate#outputs()[1].maxdate, -1),",
+				"     disjoint: true) ~> Insert@(INSERTstream, DELETEstream)",
+				"Insert@DELETEstream alterRow(deleteIf(true())) ~> ALTERDelete",
+				"AGGRmaxDate derive(maxdate = coalesce(maxdate, toDate('01-01-1900','dd-MM-yyyy'))) ~> TransfDate",
+				"ALTERInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
+				"ALTERDelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     keys:['SKUCode','Month'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgDEL",
+				"TransfDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKdate"
+			]
+		}
+	}
+}
