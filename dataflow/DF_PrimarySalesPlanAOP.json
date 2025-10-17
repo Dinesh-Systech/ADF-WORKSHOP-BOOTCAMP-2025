@@ -90,10 +90,7 @@
 					"name": "Transformations"
 				},
 				{
-					"name": "select1"
-				},
-				{
-					"name": "NullHandling"
+					"name": "selectCols"
 				}
 			],
 			"scriptLines": [
@@ -218,10 +215,10 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectColumns2",
 				"AlterInsert derive(PlanQty = round(PlanQty, 0)) ~> Transformations",
-				"NullHandling select(mapColumn(",
-				"          StateCode = NullHandling@StateCode,",
+				"Transformations select(mapColumn(",
+				"          StateCode = Insert@Insert@StateCode,",
 				"          Month,",
-				"          SKUCode = NullHandling@SKUCode,",
+				"          SKUCode = Insert@Insert@SKUCode,",
 				"          BrandPackType,",
 				"          BrandPackSize,",
 				"          BrandCode,",
@@ -235,11 +232,8 @@
 				"          ProductKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"Transformations derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type == 'integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
