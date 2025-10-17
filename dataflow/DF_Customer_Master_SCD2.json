@@ -279,7 +279,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols2",
-				"AuditColumns1 derive(CustomerName = split(CustomerName, '-')[2]) ~> Transformation",
+				"AuditColumns1 derive(CustomerName = right(CustomerName, length(CustomerName)-locate('-',CustomerName))) ~> Transformation",
 				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
