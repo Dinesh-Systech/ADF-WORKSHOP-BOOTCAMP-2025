@@ -1,0 +1,157 @@
+{
+	"name": "DF_Primary_Sales_Actuals_SRC_STG_INCR_IN1686",
+	"properties": {
+		"folder": {
+			"name": "SRC - STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_SRC_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SRC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TGT"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGR"
+				},
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "FILTERdate"
+				},
+				{
+					"name": "AUDIT"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "TRANSFORMATION"
+				},
+				{
+					"name": "TRANSFdate"
+				},
+				{
+					"name": "NULL"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRC",
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGT",
+				"TRANSFdate aggregate(groupBy(SalesOrgCode),",
+				"     max_date = max(TransactionDate)) ~> AGGR",
+				"AGGR select(mapColumn(",
+				"          t_SalesOrgCode = SalesOrgCode,",
+				"          max_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"TRANSFORMATION, SELECTtgt join(SalesOrgCode == t_SalesOrgCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"NULL filter(TransactionDate > max_date) ~> FILTERdate",
+				"FILTERdate derive(created_date = currentUTC(toString(currentTimestamp())),",
+				"          created_by = \"IN1685\",",
+				"          updated_date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),",
+				"          updated_by = \"UNK\") ~> AUDIT",
+				"AUDIT select(mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          t_SalesOrgCode,",
+				"          max_date,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
+				"SRC derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFORMATION",
+				"TGT derive(TransactionDate = toDate(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFdate",
+				"LEFTsrctgt derive(max_date = iif(isNull(max_date),toDate(\"1900-01-01\"),max_date)) ~> NULL",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt"
+			]
+		}
+	}
+}
