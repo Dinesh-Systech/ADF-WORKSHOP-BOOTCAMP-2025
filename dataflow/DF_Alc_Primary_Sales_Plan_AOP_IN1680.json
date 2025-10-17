@@ -35,13 +35,9 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKtgtDel"
+					"name": "SNKstgDel"
 				},
 				{
-					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
-						"type": "DatasetReference"
-					},
 					"name": "SNKdate"
 				}
 			],
@@ -60,6 +56,9 @@
 				},
 				{
 					"name": "AlterDelete"
+				},
+				{
+					"name": "TransformationDate"
 				}
 			],
 			"scriptLines": [
@@ -102,11 +101,12 @@
 				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
-				"Insert@Insert alterRow() ~> AlterInsert",
-				"Transformation split(ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
+				"Insert@Insert alterRow(insertIf(true())) ~> AlterInsert",
+				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
+				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1) ,",
 				"     disjoint: true) ~> Insert@(Insert, delete)",
-				"Insert@delete alterRow() ~> AlterDelete",
+				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
+				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
 				"AlterInsert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -123,20 +123,18 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     keys:['SKUCode','Month'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtDel",
-				"maxDate sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgDel",
+				"TransformationDate sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKdate"
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKdate"
 			]
 		}
 	}

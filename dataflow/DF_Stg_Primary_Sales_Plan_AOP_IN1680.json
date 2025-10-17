@@ -12,14 +12,14 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SRCPlan"
+					"name": "SRCstg"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SRCstg"
+					"name": "SRCtgt"
 				}
 			],
 			"sinks": [
@@ -28,14 +28,14 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKstg"
+					"name": "SNKtgt"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKtgtDel"
+					"name": "SNKstgDel"
 				}
 			],
 			"transformations": [
@@ -59,13 +59,13 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCPlan",
+				"     format: 'table') ~> SRCstg",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCstg",
-				"SRCstg aggregate() ~> maxDate",
-				"SRCPlan derive() ~> Transformation",
+				"     format: 'table') ~> SRCtgt",
+				"SRCtgt aggregate() ~> maxDate",
+				"SRCstg derive() ~> Transformation",
 				"Insert@Insert alterRow() ~> AlterInsert",
 				"Transformation split(ERROR_FUNCTION(''),",
 				"     ERROR_FUNCTION(''),",
@@ -80,7 +80,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstg",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
 				"AlterDelete sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:true,",
@@ -90,7 +90,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtDel"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgDel"
 			]
 		}
 	}
