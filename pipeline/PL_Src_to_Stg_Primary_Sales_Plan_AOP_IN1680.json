@@ -5,8 +5,6 @@
 			{
 				"name": "CPY_Src_to_Stg_Primary_Sales_Plan_AOP_IN1680",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -37,7 +35,7 @@
 							{
 								"name": "UpdatedAt",
 								"value": {
-									"value": "null",
+									"value": "@utcNow()",
 									"type": "Expression"
 								}
 							},
@@ -54,8 +52,10 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table Stg_Primary_Sales_Plan_AOP_IN1680",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -84,34 +84,11 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "KRavi",
+							"table": "Stg_Primary_Sales_Plan_AOP_IN1680",
 							"database": "Target_ADF_B2025"
 						}
 					}
 				]
-			},
-			{
-				"name": "DF_Src_to_Stg_Primary_Sales_Plan_AOP_IN1680",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_Stg_Primary_Sales_Plan_AOP_IN1680",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"folder": {
