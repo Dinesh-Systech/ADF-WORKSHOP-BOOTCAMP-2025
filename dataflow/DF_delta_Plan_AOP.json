@@ -1,0 +1,86 @@
+{
+	"name": "DF_delta_Plan_AOP",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTfct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRC2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "AGGRmaxdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          State_Key as string,",
+				"          SKU_Key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTfct",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRC2",
+				"SRCstg aggregate(latest_month = max(toDate(Month, 'MMM-yy'))\r",
+				") ~> AGGRmaxdate"
+			]
+		}
+	}
+}
