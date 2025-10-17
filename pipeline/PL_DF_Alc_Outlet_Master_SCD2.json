@@ -1,0 +1,53 @@
+{
+	"name": "PL_DF_Alc_Outlet_Master_SCD2",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Alc_Outlet_Master_IN1677",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Outlet_Master_SCD2",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcOutletMaster": {
+								"Schema": "JSivakum",
+								"Table": "Stg_OutletMaster_IN1677"
+							},
+							"TgtOutletMaster": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Outlet_Master_IN1677"
+							},
+							"SnkOutletMasterInsert": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Outlet_Master_IN1677"
+							},
+							"SnkOutletMasterUpdate": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Outlet_Master_IN1677"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "End To End Workshop/Stg to Dw"
+		},
+		"annotations": []
+	}
+}
