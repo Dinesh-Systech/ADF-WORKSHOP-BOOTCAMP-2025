@@ -39,6 +39,20 @@
 			"sinks": [
 				{
 					"name": "SnkMaxDate"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SnkAlcPrimarySalesPlanAOPIN1677"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference"
+					},
+					"name": "SnkDeleteAlcPrimarySalesPlanAOPIN1677"
 				}
 			],
 			"transformations": [
@@ -82,7 +96,7 @@
 			"scriptLines": [
 				"source(output(",
 				"          StateCode as string,",
-				"          Month as date,",
+				"          Month as string,",
 				"          SKUCode as integer,",
 				"          BrandPackType as string,",
 				"          BrandPackSize as string,",
@@ -188,13 +202,13 @@
 				"     disjoint: true) ~> split1@(insert, delete)",
 				"SrcTgtPrimarySalesPlan aggregate(Month = max(Month)) ~> AggMaxDate",
 				"AggMaxDate derive(Month = coalesce(Month,toDate('01-01-1900','dd-MM-yyyy'))) ~> Transformation",
-				"select1 derive(Month = ERROR_FUNCTION('')) ~> TransformationMonth",
+				"select1 derive(Month = toDate(Month,'MMM-yy')) ~> TransformationMonth",
 				"split1@insert alterRow(insertIf(true())) ~> alterInsert",
 				"split1@delete alterRow(deleteIf(true())) ~> alterDelete",
 				"alterDelete select(mapColumn(",
-				"          StateCode = split1@delete@StateCode,",
+				"          StateKey,",
 				"          Month,",
-				"          SKUCode = split1@delete@SKUCode,",
+				"          ProductKey,",
 				"          BrandPackType,",
 				"          BrandPackSize,",
 				"          BrandCode,",
@@ -203,18 +217,14 @@
 				"          CreatedAt,",
 				"          UpdatedAt,",
 				"          CreatedBy,",
-				"          UpdatedBy,",
-				"          SKUCode = split1@delete@SKUCode,",
-				"          ProductKey,",
-				"          StateKey,",
-				"          StateCode = split1@delete@StateCode",
+				"          UpdatedBy",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
 				"alterInsert select(mapColumn(",
-				"          StateCode = split1@insert@StateCode,",
+				"          StateKey,",
 				"          Month,",
-				"          SKUCode = split1@insert@SKUCode,",
+				"          ProductKey,",
 				"          BrandPackType,",
 				"          BrandPackSize,",
 				"          BrandCode,",
@@ -223,11 +233,7 @@
 				"          CreatedAt,",
 				"          UpdatedAt,",
 				"          CreatedBy,",
-				"          UpdatedBy,",
-				"          SKUCode = split1@insert@SKUCode,",
-				"          ProductKey,",
-				"          StateKey,",
-				"          StateCode = split1@insert@StateCode",
+				"          UpdatedBy",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select5",
@@ -256,7 +262,28 @@
 				"     saveOrder: 1,",
 				"     mapColumn(",
 				"          MaxDate = Month",
-				"     )) ~> SnkMaxDate"
+				"     )) ~> SnkMaxDate",
+				"select5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkAlcPrimarySalesPlanAOPIN1677",
+				"select4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     keys:['ProductKey','Month'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkDeleteAlcPrimarySalesPlanAOPIN1677"
 			]
 		}
 	}

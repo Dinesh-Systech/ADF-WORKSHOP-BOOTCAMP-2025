@@ -34,6 +34,14 @@
 							"SrcTgtPrimarySalesPlan": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
+							},
+							"SnkAlcPrimarySalesPlanAOPIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
+							},
+							"SnkDeleteAlcPrimarySalesPlanAOPIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Stg_Primary_Sales_Plan_AOP_IN1677"
 							}
 						}
 					},
