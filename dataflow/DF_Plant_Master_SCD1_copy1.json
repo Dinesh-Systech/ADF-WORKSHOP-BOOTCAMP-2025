@@ -1,5 +1,5 @@
 {
-	"name": "DF_Plant_Master_SCD1",
+	"name": "DF_Plant_Master_SCD1_copy1",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Dw"
@@ -203,8 +203,8 @@
 				"selectCols2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
-				"     insertable:false,",
-				"     updateable:true,",
+				"     insertable:true,",
+				"     updateable:false,",
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
