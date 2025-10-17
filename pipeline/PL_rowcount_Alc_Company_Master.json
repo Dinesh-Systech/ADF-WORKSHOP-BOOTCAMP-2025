@@ -1,0 +1,77 @@
+{
+	"name": "PL_rowcount_Alc_Company_Master",
+	"properties": {
+		"activities": [
+			{
+				"name": "LKP_src_count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LKP_tgt_count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
+			},
+			{
+				"name": "setSrcCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_src_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "src_count",
+					"value": ""
+				}
+			}
+		],
+		"variables": {
+			"src_count": {
+				"type": "Integer"
+			},
+			"tgt_count": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"annotations": []
+	}
+}
