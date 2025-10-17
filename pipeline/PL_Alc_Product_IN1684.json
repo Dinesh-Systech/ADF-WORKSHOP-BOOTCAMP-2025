@@ -1,0 +1,49 @@
+{
+	"name": "PL_Alc_Product_IN1684",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Product",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_ProductMaster",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCProduct": {
+								"PR_Schema": "PMahendi",
+								"PR_DB": "Target_ADF_B2025"
+							},
+							"TGTProduct": {
+								"PR_Schema": "PMahendi",
+								"PR_DB": "Target_ADF_B2025"
+							},
+							"SNKProduct": {
+								"PR_Schema": "PMahendi",
+								"PR_DB": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Workshop/STG to TGT"
+		},
+		"annotations": []
+	}
+}

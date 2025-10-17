@@ -1,0 +1,251 @@
+{
+	"name": "DF_ProductMaster",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTProduct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKProduct"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectSRC"
+				},
+				{
+					"name": "selectTGT"
+				},
+				{
+					"name": "joinSRCComapnyAndTGTCompany"
+				},
+				{
+					"name": "alterInsert"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "ProductKey"
+				},
+				{
+					"name": "SelectSRCOrder"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterUpdate"
+				},
+				{
+					"name": "transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCProduct",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTProduct",
+				"SRCProduct select(mapColumn(",
+				"          each(match(true()),",
+				"               \"SRC_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRC",
+				"TGTProduct select(mapColumn(",
+				"          each(match(true()),",
+				"               \"TGT_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"selectSRC, selectTGT join(SRC_SKUCode == TGT_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinSRCComapnyAndTGTCompany",
+				"split1@Insert alterRow(insertIf(true())) ~> alterInsert",
+				"union derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iifNull($#, -1)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"alterInsert, alterUpdate union(byName: true)~> union",
+				"transformation keyGenerate(output(ProductKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> ProductKey",
+				"ProductKey select(mapColumn(",
+				"          SKUCode = SRC_SKUCode,",
+				"          ProductKey,",
+				"          ItemName = SRC_ItemName,",
+				"          CompanyCode = SRC_CompanyCode,",
+				"          IndustryName = SRC_IndustryName,",
+				"          BrandFamily = SRC_BrandFamily,",
+				"          ReportingSegment = SRC_ReportingSegment,",
+				"          BrandPackSize = SRC_BrandPackSize,",
+				"          PackTypeCode = SRC_PackTypeCode,",
+				"          BrandPackType = SRC_BrandPackType,",
+				"          StateCode = SRC_StateCode,",
+				"          State = SRC_State,",
+				"          BrandCode = SRC_BrandCode,",
+				"          BrandName = SRC_BrandName,",
+				"          ProductCategory = SRC_ProductCategory,",
+				"          ProductSegment = SRC_ProductSegment,",
+				"          CaseConfig = SRC_CaseConfig,",
+				"          Division = SRC_Division,",
+				"          ConversionFactor = SRC_ConversionFactor,",
+				"          AcquiredStartDate = SRC_AcquiredStartDate,",
+				"          AcquiredEndDate = SRC_AcquiredEndDate,",
+				"          DisposedStartDate = SRC_DisposedStartDate,",
+				"          DisposedEndDate = SRC_DisposedEndDate,",
+				"          InnovationFlag = SRC_InnovationFlag,",
+				"          Flavour = SRC_Flavour,",
+				"          SubFlavour = SRC_SubFlavour,",
+				"          {Created By} = {SRC_Created By},",
+				"          {Created Date} = {SRC_Created Date},",
+				"          {Updated By} = {SRC_Updated By},",
+				"          {Updated Date} = {SRC_Updated Date}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectSRCOrder",
+				"joinSRCComapnyAndTGTCompany split(isNull(TGT_SKUCode),",
+				"     SRC_SKUCode == TGT_SKUCode && (SRC_ReportingSegment != TGT_ReportingSegment),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Update alterRow(updateIf(true())) ~> alterUpdate",
+				"NullHandling derive({SRC_Updated Date} = toTimestamp(\"2999-12-31 00:00:00\",\"yyyy-MM-dd HH:mm:ss\"),",
+				"          SRC_ItemName = SRC_Flavour) ~> transformation",
+				"SelectSRCOrder sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          SKUCode,",
+				"          ProductKey,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          StateCode,",
+				"          State,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          CaseConfig,",
+				"          Division,",
+				"          ConversionFactor,",
+				"          AcquiredStartDate,",
+				"          AcquiredEndDate,",
+				"          DisposedStartDate,",
+				"          DisposedEndDate,",
+				"          InnovationFlag,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date}",
+				"     )) ~> SNKProduct"
+			]
+		}
+	}
+}
