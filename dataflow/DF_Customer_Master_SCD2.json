@@ -74,6 +74,9 @@
 				},
 				{
 					"name": "selectCols2"
+				},
+				{
+					"name": "Transformation"
 				}
 			],
 			"scriptLines": [
@@ -176,7 +179,7 @@
 				"          UpdatedBy = toString(null())) ~> AuditColumns1",
 				"alterRowUpdate derive(tgt_UpdatedAt = currentTimestamp(),",
 				"          tgt_UpdatedBy = tgt_CreatedBy) ~> AuditColumns2",
-				"AuditColumns1 select(mapColumn(",
+				"Transformation select(mapColumn(",
 				"          CustomerCode,",
 				"          CustomerName,",
 				"          Address1,",
@@ -276,6 +279,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols2",
+				"AuditColumns1 derive(CustomerName = split(CustomerName, '-')[2]) ~> Transformation",
 				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
