@@ -1,5 +1,5 @@
 {
-	"name": "DF_Activation_Master_IN1689",
+	"name": "DF_GeographyMaster_IN1689",
 	"properties": {
 		"folder": {
 			"name": "END TO END WORKSHOP/STG TO DW"
@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
 						"type": "DatasetReference"
 					},
-					"name": "SrcActivationMaster"
+					"name": "SrcGeographyMaster"
 				}
 			],
 			"sinks": [
@@ -21,12 +21,12 @@
 						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcActivationMasterN1689"
+					"name": "SinkAlcGeographyMasterN1689"
 				}
 			],
 			"transformations": [
 				{
-					"name": "PromotionKey"
+					"name": "StateKey"
 				},
 				{
 					"name": "NullHandling"
@@ -37,12 +37,12 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          PromotionCode as string,",
-				"          PromotionDescription as string,",
-				"          PromotionType as string,",
-				"          ProductLevelCode as string,",
-				"          EffectiveFrom as string,",
-				"          EffectiveTo as string,",
+				"          CountryCode as string,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
 				"          CreatedAt as timestamp,",
 				"          UpdatedAt as timestamp,",
 				"          CreatedBy as string,",
@@ -51,16 +51,14 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SrcActivationMaster",
-				"Transformation keyGenerate(output(PromotionKey as long),",
+				"     format: 'table') ~> SrcGeographyMaster",
+				"Transformation keyGenerate(output(StateKey as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> PromotionKey",
-				"PromotionKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"     stepValue: 1L) ~> StateKey",
+				"StateKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
-				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
-				"SrcActivationMaster derive(EffectiveFrom = toDate(EffectiveFrom, 'dd-MM-yyyy'),",
-				"          EffectiveTo = toDate(EffectiveTo,'dd-MM-yyyy'),",
-				"          UpdatedAt = toTimestamp(\"2999-12-31 00:00:00\", \"yyyy-MM-dd HH:mm:ss\")) ~> Transformation",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('2999-12-31 00:00:00',\"yyyy-MM-dd HH:mm:ss\"),$$))) ~> NullHandling",
+				"SrcGeographyMaster derive(UpdatedAt = toTimestamp(null())) ~> Transformation",
 				"NullHandling sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -71,7 +69,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcActivationMasterN1689"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcGeographyMasterN1689"
 			]
 		}
 	}
