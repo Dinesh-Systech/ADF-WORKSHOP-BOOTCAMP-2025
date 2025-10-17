@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "LK_SRC_rowcnt",
+				"name": "LK_SRC_rowcnt_act_mapping",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -25,6 +25,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "Alcobev",
+							"Table": "ActivationMapping",
 							"DB_Name": "Trainer"
 						}
 					},
@@ -32,7 +33,7 @@
 				}
 			},
 			{
-				"name": "LK_TGT_rowcnt",
+				"name": "LK_TGT_rowcnt_act_mapping",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -61,6 +62,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "RRamesh",
+							"Table": "Alc_Activation_Mapping_IN1685",
 							"DB_Name": "Target_ADF_B2025"
 						}
 					},
@@ -72,7 +74,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LK_SRC_rowcnt",
+						"activity": "LK_SRC_rowcnt_act_mapping",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -86,7 +88,7 @@
 				"typeProperties": {
 					"variableName": "SRC_row_count",
 					"value": {
-						"value": "@activity('LK_SRC_rowcount').output.count",
+						"value": "@activity('LK_SRC_rowcnt_act_mapping').output.count",
 						"type": "Expression"
 					}
 				}
@@ -96,7 +98,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LK_TGT_rowcnt",
+						"activity": "LK_TGT_rowcnt_act_mapping",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -110,7 +112,7 @@
 				"typeProperties": {
 					"variableName": "TGT_row_count",
 					"value": {
-						"value": "@activity('LK_TGT_rowcount').output.count",
+						"value": "@activity('LK_TGT_rowcnt_act_mapping').output.count",
 						"type": "Expression"
 					}
 				}
