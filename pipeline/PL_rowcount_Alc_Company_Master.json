@@ -25,9 +25,11 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "Alcobev",
+							"table": "CompanyMaster",
 							"database": "Trainer"
 						}
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -41,7 +43,24 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "KRavi",
+							"table": "Alc_Company_Master_IN1680",
+							"database": "Target_ADF_B2025"
+						}
+					},
+					"firstRowOnly": false
+				}
 			},
 			{
 				"name": "setSrcCount",
@@ -61,7 +80,78 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "src_count",
-					"value": ""
+					"value": {
+						"value": "@activity('LKP_src_count').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "setTgtCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_tgt_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "tgt_count",
+					"value": {
+						"value": "@activity('LKP_tgt_count').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "IFCountCheck",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "setSrcCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "setTgtCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"ifFalseActivities": [
+						{
+							"name": "FalseNotMatch",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "count not match",
+								"errorCode": "ERROR 1"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "TrueWait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 2
+							}
+						}
+					]
 				}
 			}
 		],
