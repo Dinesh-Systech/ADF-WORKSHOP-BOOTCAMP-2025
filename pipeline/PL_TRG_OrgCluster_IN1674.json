@@ -19,15 +19,8 @@
 						"referenceName": "DF_SalesOrgCluster_IN1674",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCSalesOrgCluster": {
-								"Schema": "CKumaram",
-								"Table": "Stg_Sales_Org_Cluster_IN1674",
-								"Database": "Target_ADF_B2025"
-							},
-							"SNKAlcSalesOrgCluster": {
-								"Schema": "CKumaram",
-								"Table": "ALC_SalesOrgCluster",
-								"Database": "Target_ADF_B2025"
+							"SRCStgCluster": {
+								"Schema": "CKumaram"
 							}
 						}
 					},

@@ -12,7 +12,7 @@
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCSalesOrgCluster"
+					"name": "SRCStgCluster"
 				}
 			],
 			"sinks": [
@@ -21,33 +21,30 @@
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SNKAlcSalesOrgCluster"
+					"name": "sink1"
 				}
 			],
 			"transformations": [
 				{
-					"name": "SKSalesOrgCluster"
+					"name": "NullHandle"
 				},
 				{
-					"name": "NullHandling"
+					"name": "KeyCluster"
 				},
 				{
-					"name": "select1"
-				},
-				{
-					"name": "DataTypeConversion"
+					"name": "SLCTcols"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
 				"          {Cluster Name} as string,",
 				"          {Cluster Code} as string,",
-				"          {Cluster ID} as integer,",
+				"          {Cluster ID} as string,",
 				"          {Cluster Head} as string,",
 				"          {Cluster SFA Code} as string,",
 				"          {Cluster Head Email} as string,",
-				"          {Cluster  Head Mobile} as integer,",
-				"          Active_flag as integer,",
+				"          {Cluster  Head Mobile} as string,",
+				"          Active_flag as string,",
 				"          {Cluster Start Date} as string,",
 				"          {Cluster End Date} as string,",
 				"          CreatedAt as date,",
@@ -58,15 +55,16 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCSalesOrgCluster",
-				"NullHandling keyGenerate(output(Cluster_Key as long),",
+				"     format: 'table') ~> SRCStgCluster",
+				"SRCStgCluster derive(each(match(type=='string'), $$ = iifNull($$,'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$,-1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('1900-01-01', 'yyyy-MM-dd'))),",
+				"          Cluster_Start_DateN = toDate({Cluster Start Date}, 'dd-MM-yyyy'),",
+				"          Cluster_End_DateN = toDate({Cluster End Date}, 'dd-MM-yyyy')) ~> NullHandle",
+				"SLCTcols keyGenerate(output(Cluster_Key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> SKSalesOrgCluster",
-				"DataTypeConversion derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
-				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
-				"          each(match(type=='date'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
-				"SKSalesOrgCluster select(mapColumn(",
+				"     stepValue: 1L) ~> KeyCluster",
+				"NullHandle select(mapColumn(",
 				"          {Cluster Name},",
 				"          {Cluster Code},",
 				"          {Cluster ID},",
@@ -81,25 +79,40 @@
 				"          UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy,",
-				"          Cluster_Key",
+				"          Cluster_Start_DateN,",
+				"          Cluster_End_DateN",
 				"     ),",
-				"     partitionBy('hash', 1),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"SRCSalesOrgCluster derive({Cluster Start Date} = toDate({Cluster Start Date},'dd-MM-yyyy'),",
-				"          {Cluster End Date} = toDate({Cluster End Date},'dd-MM-yyyy'),",
-				"          UpdatedAt = currentDate()) ~> DataTypeConversion",
-				"select1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTcols",
+				"KeyCluster sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
-				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcSalesOrgCluster"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {Cluster Name},",
+				"          {Cluster Code},",
+				"          {Cluster ID},",
+				"          {Cluster Head},",
+				"          {Cluster SFA Code},",
+				"          {Cluster Head Email},",
+				"          {Cluster  Head Mobile},",
+				"          Active_flag,",
+				"          {Cluster Start Date},",
+				"          {Cluster End Date},",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          Cluster_Start_DateN,",
+				"          Cluster_End_DateN,",
+				"          Cluster_Key",
+				"     )) ~> sink1"
 			]
 		}
 	}
