@@ -2,7 +2,7 @@
 	"name": "DF_Tgt_SCD1_CompetitorProduct",
 	"properties": {
 		"folder": {
-			"name": "DF_Stg_to_Tgt_IN1675"
+			"name": "End to End Workshop/DF_Stg_to_Tgt_IN1675"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
