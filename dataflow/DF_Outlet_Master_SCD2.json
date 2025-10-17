@@ -1,5 +1,5 @@
 {
-	"name": "DF_Customer_Master_SCD2",
+	"name": "DF_Outlet_Master_SCD2",
 	"properties": {
 		"folder": {
 			"name": "End to End Workshop/Stg to Dw"
@@ -28,14 +28,14 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SnkCustomerMasterInsert"
+					"name": "SnkProductMasterInsert"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SnkCustomerMasterUpdate"
+					"name": "SnkProductMasterUpdate"
 				}
 			],
 			"transformations": [
@@ -219,7 +219,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCustomerMasterInsert",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkProductMasterInsert",
 				"selectCols2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -229,7 +229,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCustomerMasterUpdate"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkProductMasterUpdate"
 			]
 		}
 	}
