@@ -147,7 +147,7 @@
 				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
 				"          UpdatedBy = toString(null())) ~> AuditColumns1",
 				"alterRowUpdate derive(tgt_UpdatedAt = currentTimestamp(),",
-				"          tgt_UpdatedBy = tgt_UpdatedBy) ~> AuditColumns2",
+				"          tgt_UpdatedBy = tgt_CreatedBy) ~> AuditColumns2",
 				"AuditColumns1 select(mapColumn(",
 				"          SKUCode,",
 				"          ItemName,",
