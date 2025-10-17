@@ -1,0 +1,95 @@
+{
+	"name": "DF_ActivationMaster_IN1674",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCActivationMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SNKAlcActivationMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKActivationMaster"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          ProductLevelCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCActivationMaster",
+				"NullHandling keyGenerate(output(ActivationKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKActivationMaster",
+				"SRCActivationMaster derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
+				"          each(match(type=='string'), $$ = replace(iifNull($$,'UNK'),'null','UNK')),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
+				"          each(match(type=='datetime'), $$ = iifNull($$,toDate('31/12/1999'))),",
+				"          EffectiveFrom = currentDate(),",
+				"          EffectiveTo = currentDate(),",
+				"          UpdatedAt = currentDate()) ~> NullHandling",
+				"SKActivationMaster select(mapColumn(",
+				"          PromotionCode,",
+				"          PromotionDescription,",
+				"          PromotionType,",
+				"          ProductLevelCode,",
+				"          EffectiveFrom,",
+				"          EffectiveTo,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          ActivationKey",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKAlcActivationMaster"
+			]
+		}
+	}
+}
