@@ -1,0 +1,112 @@
+{
+	"name": "DF_GL_Account_Master_STG_TGT_IN1686",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SRCGLAccountMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_TGT_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SNKGLAccountMaster"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKGLAccountMaster"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          GeneralLedgerCode as integer,",
+				"          GeneralLedgerName as string,",
+				"          GLType as string,",
+				"          Currency as string,",
+				"          Reporting_Hierarchy_Name_L1 as string,",
+				"          Reporting_Hierarchy_Name_L2 as string,",
+				"          Reporting_Hierarchy_Name_L3 as string,",
+				"          Reporting_Hierarchy_Name_L4 as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp,",
+				"          Pipeline_RunID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCGLAccountMaster",
+				"NullHandling keyGenerate(output(GeneralLedgerKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKGLAccountMaster",
+				"SRCGLAccountMaster derive(each(match(type=='integer'), $$ = iifNull($#,0)),",
+				"          each(match(type=='string'), $$ = replace(replace(iifNull($$,'UNK'),'NULL','UNK'),'null','UNK')),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$,toTimestamp('31/12/2999 00:00:00'))),",
+				"          each(match(type=='date'), $$ = iifNull($$,toDate('31/12/2999')))) ~> NullHandling",
+				"SKGLAccountMaster select(mapColumn(",
+				"          GeneralLedgerKey,",
+				"          GeneralLedgerCode,",
+				"          GeneralLedgerName,",
+				"          GLType,",
+				"          Currency,",
+				"          Reporting_Hierarchy_Name_L1,",
+				"          Reporting_Hierarchy_Name_L2,",
+				"          Reporting_Hierarchy_Name_L3,",
+				"          Reporting_Hierarchy_Name_L4,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          Pipeline_RunID",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PromotionCode as string,",
+				"          PromotionDescription as string,",
+				"          PromotionType as string,",
+				"          RetailerCode as string,",
+				"          EffectiveFrom as date,",
+				"          EffectiveTo as date,",
+				"          MappingLevel as string,",
+				"          IsActive as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKGLAccountMaster"
+			]
+		}
+	}
+}
