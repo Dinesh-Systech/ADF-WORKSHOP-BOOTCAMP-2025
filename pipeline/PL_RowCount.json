@@ -17,7 +17,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom Alcobev.ActivationMapping;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -54,7 +53,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select count(*) AS cnt \nfrom RRamesh.stg_ALC_ActivationMapping_IN1685;\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -88,7 +86,7 @@
 				"typeProperties": {
 					"variableName": "SRC_row_count",
 					"value": {
-						"value": "@activity('LK_SRC_rowcount').output.firstRow",
+						"value": "@activity('LK_SRC_rowcount').output.count",
 						"type": "Expression"
 					}
 				}
@@ -112,7 +110,7 @@
 				"typeProperties": {
 					"variableName": "STG_row_count",
 					"value": {
-						"value": "@activity('LK_STG_rowcount').output.firstRow",
+						"value": "@activity('LK_STG_rowcount').output.count",
 						"type": "Expression"
 					}
 				}
