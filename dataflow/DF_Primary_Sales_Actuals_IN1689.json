@@ -73,7 +73,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TgtPrimarySalesActuals",
 				"HandlingTransactionDate filter(TransactionDate>sink1#outputs()[1].TransactionDate) ~> FilterTransactionDate",
-				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = max(TransactionDate)) ~> AggMaxDate",
+				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = ERROR_FUNCTION('')) ~> AggMaxDate",
 				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
 				"FilterTransactionDate derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = toTimestamp(null()),",
