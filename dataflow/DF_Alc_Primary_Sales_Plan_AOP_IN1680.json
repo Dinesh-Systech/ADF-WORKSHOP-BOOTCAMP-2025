@@ -106,7 +106,7 @@
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
 				"SLCTKey alterRow(insertIf(true())) ~> AlterInsert",
 				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
-				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1),",
+				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,1),",
 				"     disjoint: true) ~> Insert@(Insert, delete)",
 				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
 				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
