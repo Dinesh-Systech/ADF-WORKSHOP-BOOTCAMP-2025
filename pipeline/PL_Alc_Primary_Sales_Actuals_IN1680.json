@@ -21,7 +21,7 @@
 						"datasetParameters": {
 							"Srcsrcactuals": {
 								"schema": "KRavi",
-								"table": "Alc_Primary_Sales_Actuals_IN1680",
+								"table": "Stg_Primary_Sales_Actuals_IN1680",
 								"database": "Target_ADF_B2025"
 							},
 							"SRCtgtCompany": {
@@ -51,7 +51,7 @@
 							},
 							"SNKstgActuals": {
 								"schema": "KRavi",
-								"table": "Stg_Primary_Sales_Actuals_IN1680",
+								"table": "Alc_Primary_Sales_Actuals_IN1680",
 								"database": "Target_ADF_B2025"
 							}
 						}
