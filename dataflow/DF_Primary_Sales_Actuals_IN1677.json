@@ -82,7 +82,7 @@
 					"name": "JoinAlcGeographyMasterIN1677"
 				},
 				{
-					"name": "select1"
+					"name": "selectCols"
 				},
 				{
 					"name": "SelectCompany"
@@ -257,7 +257,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> AlcGeographyMasterIN1677",
-				"select1 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"selectCols derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
 				"SrcPrimarySalesActuals derive(UpdatedAt = toTimestamp(null())) ~> Transformation",
@@ -306,7 +306,7 @@
 				"          StateKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
 				"AlcCompanyMasterIN1677 select(mapColumn(",
 				"          CompanyCode,",
 				"          CompanyKey",
