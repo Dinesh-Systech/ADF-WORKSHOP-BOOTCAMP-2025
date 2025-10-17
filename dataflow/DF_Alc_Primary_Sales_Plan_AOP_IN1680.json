@@ -20,6 +20,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "SRCtgt"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCproduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCState"
 				}
 			],
 			"sinks": [
@@ -59,6 +73,18 @@
 				},
 				{
 					"name": "TransformationDate"
+				},
+				{
+					"name": "innerProduct"
+				},
+				{
+					"name": "SLCTproductkey"
+				},
+				{
+					"name": "SLCTStatekey"
+				},
+				{
+					"name": "innerState"
 				}
 			],
 			"scriptLines": [
@@ -98,15 +124,37 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCtgt",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCproduct",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCState",
 				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
-				"Insert@Insert alterRow(insertIf(true())) ~> AlterInsert",
+				"innerState alterRow(insertIf(true())) ~> AlterInsert",
 				"Transformation split(Month>SNKdate#outputs()[1].maxdate,",
-				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1) ,",
+				"     SNKdate#outputs()[1].maxdate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].maxdate && Month >subMonths(SNKdate#outputs()[1].maxdate,-1),",
 				"     disjoint: true) ~> Insert@(Insert, delete)",
 				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
 				"maxDate derive(maxdate = coalesce(maxdate,toDate('01-01-1900','dd-MM-yyyy'))) ~> TransformationDate",
+				"Insert@Insert, SLCTproductkey join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerProduct",
+				"SRCproduct select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTproductkey",
+				"SRCState select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTStatekey",
+				"innerProduct, SLCTStatekey join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerState",
 				"AlterInsert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
