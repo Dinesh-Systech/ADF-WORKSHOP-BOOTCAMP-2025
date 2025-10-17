@@ -79,6 +79,9 @@
 				},
 				{
 					"name": "selectColumns4"
+				},
+				{
+					"name": "NullHandling"
 				}
 			],
 			"scriptLines": [
@@ -215,7 +218,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> leftGeograpghy",
-				"leftGeograpghy select(mapColumn(",
+				"NullHandling select(mapColumn(",
 				"          CompanyCode = SRCPriamryActuals@CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
@@ -264,6 +267,9 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectColumns4",
+				"leftGeograpghy derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iifNull($#,0)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
 				"selectKeyColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
