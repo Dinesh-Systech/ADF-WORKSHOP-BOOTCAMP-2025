@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcGeographyMasterN1677"
+					"name": "SnkAlcGeographyMasterN1677"
 				}
 			],
 			"transformations": [
@@ -69,7 +69,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcGeographyMasterN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkAlcGeographyMasterN1677"
 			]
 		}
 	}
