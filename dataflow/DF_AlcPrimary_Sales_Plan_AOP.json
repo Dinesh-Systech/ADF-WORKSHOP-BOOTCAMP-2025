@@ -57,13 +57,13 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "selectcols1"
 				},
 				{
-					"name": "select2"
+					"name": "selectCols3"
 				},
 				{
-					"name": "select3"
+					"name": "selectCols4"
 				},
 				{
 					"name": "split1"
@@ -84,10 +84,10 @@
 					"name": "alterDelete"
 				},
 				{
-					"name": "select6"
+					"name": "selectCols2"
 				},
 				{
-					"name": "select7"
+					"name": "selectCols5"
 				},
 				{
 					"name": "NullHandling"
@@ -184,25 +184,25 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcTgtPrimarySalesPlan",
 				"SrcPrimarySalesPlanAOPIN1677 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> selectcols1",
 				"SrcAlcProduct select(mapColumn(",
 				"          SKUCode,",
 				"          ProductKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
+				"     skipDuplicateMapOutputs: true) ~> selectCols3",
 				"SrcAlcGeography select(mapColumn(",
 				"          StateKey,",
 				"          StateCode",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select6 split(Month>SnkMaxDate#outputs()[1].MaxDate,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols4",
+				"selectCols2 split(Month>SnkMaxDate#outputs()[1].MaxDate,",
 				"     SnkMaxDate#outputs()[1].MaxDate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SnkMaxDate#outputs()[1].MaxDate && Month >subMonths(SnkMaxDate#outputs()[1].MaxDate,1),",
 				"     disjoint: true) ~> split1@(insert, delete)",
 				"SrcTgtPrimarySalesPlan aggregate(Month = max(Month)) ~> AggMaxDate",
 				"AggMaxDate derive(Month = coalesce(Month,toDate('01-01-1900','dd-MM-yyyy'))) ~> Transformation",
-				"select1 derive(Month = toDate(Month,'MMM-yy')) ~> TransformationMonth",
+				"selectcols1 derive(Month = toDate(Month,'MMM-yy')) ~> TransformationMonth",
 				"split1@insert alterRow(insertIf(true())) ~> alterInsert",
 				"split1@delete alterRow(deleteIf(true())) ~> alterDelete",
 				"TransformationMonth select(mapColumn(",
@@ -220,7 +220,7 @@
 				"          UpdatedBy",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select6",
+				"     skipDuplicateMapOutputs: true) ~> selectCols2",
 				"alterDelete select(mapColumn(",
 				"          StateKey,",
 				"          Month,",
@@ -236,7 +236,7 @@
 				"          UpdatedBy",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select7",
+				"     skipDuplicateMapOutputs: true) ~> selectCols5",
 				"alterInsert derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
@@ -260,7 +260,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> SnkAlcPrimarySalesPlanAOPIN1677",
-				"select7 sink(allowSchemaDrift: true,",
+				"selectCols5 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:true,",
 				"     insertable:false,",
