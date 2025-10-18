@@ -88,6 +88,9 @@
 				},
 				{
 					"name": "select7"
+				},
+				{
+					"name": "NullHandling"
 				}
 			],
 			"scriptLines": [
@@ -234,6 +237,9 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select7",
+				"alterInsert derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
 				"Transformation sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -244,7 +250,7 @@
 				"     mapColumn(",
 				"          MaxDate = Month",
 				"     )) ~> SnkMaxDate",
-				"alterInsert sink(allowSchemaDrift: true,",
+				"NullHandling sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
