@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkSalesOrgClusterIN1677"
+					"name": "SnkSalesOrgClusterIN1677"
 				}
 			],
 			"transformations": [
@@ -35,7 +35,7 @@
 					"name": "Transformation"
 				},
 				{
-					"name": "select1"
+					"name": "selectCols"
 				}
 			],
 			"scriptLines": [
@@ -86,8 +86,8 @@
 				"          Cluster_Key",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -97,7 +97,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SinkSalesOrgClusterIN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkSalesOrgClusterIN1677"
 			]
 		}
 	}

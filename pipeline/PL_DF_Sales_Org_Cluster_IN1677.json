@@ -1,5 +1,5 @@
 {
-	"name": "PL_DF_Sales_Org_Cluster",
+	"name": "PL_DF_Sales_Org_Cluster_IN1677",
 	"properties": {
 		"activities": [
 			{
@@ -23,7 +23,7 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_Sales_Org_Cluster_IN1677"
 							},
-							"SinkSalesOrgClusterIN1677": {
+							"SnkSalesOrgClusterIN1677": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Sales_Org_Cluster_IN1677"
 							}
