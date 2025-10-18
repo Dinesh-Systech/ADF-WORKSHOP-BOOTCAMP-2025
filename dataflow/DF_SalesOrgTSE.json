@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkSalesOrgTL1N1677"
+					"name": "SnkSalesOrgTL1N1677"
 				}
 			],
 			"transformations": [
@@ -82,7 +82,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SinkSalesOrgTL1N1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkSalesOrgTL1N1677"
 			]
 		}
 	}

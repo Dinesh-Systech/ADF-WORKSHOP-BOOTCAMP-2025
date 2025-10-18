@@ -1,5 +1,5 @@
 {
-	"name": "PL_DF_Sales_Org_TL",
+	"name": "PL_DF_Sales_Org_TL_IN1677",
 	"properties": {
 		"activities": [
 			{
@@ -23,7 +23,7 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_Sales_Org_TL_IN1677"
 							},
-							"SinkSalesOrgTL1N1677": {
+							"SnkSalesOrgTL1N1677": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Sales_Org_TL_IN1677"
 							}
