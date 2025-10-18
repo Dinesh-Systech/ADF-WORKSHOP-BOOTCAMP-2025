@@ -21,7 +21,7 @@
 						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
 						"type": "DatasetReference"
 					},
-					"name": "SinkAlcActivationMasterN1677"
+					"name": "SnkAlcActivationMasterN1677"
 				}
 			],
 			"transformations": [
@@ -71,7 +71,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> SinkAlcActivationMasterN1677"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkAlcActivationMasterN1677"
 			]
 		}
 	}
