@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SalesOrgCluster",
+						"referenceName": "DF_SalesOrgCluster_",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcSalesOrgCluster": {
