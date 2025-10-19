@@ -1,0 +1,17 @@
+{
+	"name": "DF_Tgt_Primary_Sales_Plan_AOP",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Fact_Stg to Tgt"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
