@@ -20,7 +20,14 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SRCStgCluster": {
-								"Schema": "CKumaram"
+								"Schema": "CKumaram",
+								"Table": "Stg_Sales_Org_Cluster_IN1674",
+								"Database": "Target_ADF_B2025"
+							},
+							"sink1": {
+								"Schema": "CKumaram",
+								"Table": "ALC_SalesOrgCluster",
+								"Database": "Target_ADF_B2025"
 							}
 						}
 					},
