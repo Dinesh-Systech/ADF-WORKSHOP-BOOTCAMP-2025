@@ -243,7 +243,7 @@
 				"AuditColumns derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
-				"alterInsert derive() ~> AuditColumns",
+				"alterInsert derive(UpdatedAt = toTimestamp(null())) ~> AuditColumns",
 				"Transformation sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
