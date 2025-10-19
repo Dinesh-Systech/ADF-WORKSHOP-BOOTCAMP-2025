@@ -91,6 +91,9 @@
 				},
 				{
 					"name": "NullHandling"
+				},
+				{
+					"name": "AuditColumns"
 				}
 			],
 			"scriptLines": [
@@ -237,9 +240,10 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols5",
-				"alterInsert derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"AuditColumns derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"alterInsert derive() ~> AuditColumns",
 				"Transformation sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",

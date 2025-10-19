@@ -23,7 +23,7 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_ActivationMaster_IN1677"
 							},
-							"SinkAlcActivationMasterN1677": {
+							"SnkAlcActivationMasterN1677": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Activation_Master_IN1677"
 							}
