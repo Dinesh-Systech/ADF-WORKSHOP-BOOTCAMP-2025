@@ -2,7 +2,7 @@
 	"name": "DF_Tgt_Primary_Sales_Actuals",
 	"properties": {
 		"folder": {
-			"name": "End to End Workshop/Fact_Stg to Tgt"
+			"name": "End to End Workshop/Stg to Tgt"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

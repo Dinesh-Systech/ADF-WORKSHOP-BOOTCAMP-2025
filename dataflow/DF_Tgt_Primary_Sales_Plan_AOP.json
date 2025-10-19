@@ -2,15 +2,238 @@
 	"name": "DF_Tgt_Primary_Sales_Plan_AOP",
 	"properties": {
 		"folder": {
-			"name": "End to End Workshop/Fact_Stg to Tgt"
+			"name": "End to End Workshop/Stg to Tgt"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
-			"transformations": [],
+			"sources": [
+				{
+					"name": "SRCPrimarySalesAop"
+				},
+				{
+					"name": "SRCALCPrimarySales"
+				},
+				{
+					"name": "SRCGeography"
+				},
+				{
+					"name": "SRCProduct"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKPrimarySalesAOP"
+				},
+				{
+					"name": "SNKStgDelete"
+				},
+				{
+					"name": "SNKdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "maxDate"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "AlterInsert"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "AlterDelete"
+				},
+				{
+					"name": "TransformationDate"
+				},
+				{
+					"name": "innerGeography"
+				},
+				{
+					"name": "innerProduct"
+				},
+				{
+					"name": "selectColumns1"
+				},
+				{
+					"name": "selectColumns2"
+				},
+				{
+					"name": "Transformations"
+				},
+				{
+					"name": "selectCols"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as string,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as string,",
+				"          PlanQty as decimal(10,2),",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCPrimarySalesAop",
+				"source(output(",
+				"          StateCode as string,",
+				"          Month as date,",
+				"          SKUCode as integer,",
+				"          BrandPackType as string,",
+				"          BrandPackSize as string,",
+				"          BrandCode as string,",
+				"          CreatedMonth as date,",
+				"          PlanQty as integer,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCALCPrimarySales",
+				"source(output(",
+				"          CountryCode as string,",
+				"          GeographyKey as integer,",
+				"          CountryName as string,",
+				"          ZoneCode as string,",
+				"          ZoneName as string,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCGeography",
+				"source(output(",
+				"          SKUCode as integer,",
+				"          ProductKey as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          StateCode as string,",
+				"          State as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          CaseConfig as integer,",
+				"          Division as string,",
+				"          ConversionFactor as integer,",
+				"          AcquiredStartDate as timestamp,",
+				"          AcquiredEndDate as timestamp,",
+				"          DisposedStartDate as timestamp,",
+				"          DisposedEndDate as timestamp,",
+				"          InnovationFlag as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          {Created By} as string,",
+				"          {Created Date} as timestamp,",
+				"          {Updated By} as string,",
+				"          {Updated Date} as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> SRCProduct",
+				"SRCALCPrimarySales aggregate(max_date = max(Month)) ~> maxDate",
+				"SRCPrimarySalesAop derive(Month = toDate(Month,'MMM-yy'),",
+				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
+				"innerProduct alterRow(insertIf(true())) ~> AlterInsert",
+				"Transformation split(Month>SNKdate#outputs()[1].max_date,",
+				"     SNKdate#outputs()[1].max_date!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].max_date && Month >subMonths(SNKdate#outputs()[1].max_date,-1),",
+				"     disjoint: true) ~> Insert@(Insert, delete)",
+				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
+				"maxDate derive(max_date = coalesce(max_date, toDate(\"1900-01-01\", \"yyyy-MM-dd\"))) ~> TransformationDate",
+				"Insert@Insert, selectColumns1 join(Insert@Insert@StateCode == selectColumns1@StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerGeography",
+				"innerGeography, selectColumns2 join(Insert@Insert@SKUCode == selectColumns2@SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> innerProduct",
+				"SRCGeography select(mapColumn(",
+				"          GeographyKey,",
+				"          StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns1",
+				"SRCProduct select(mapColumn(",
+				"          SKUCode,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns2",
+				"AlterInsert derive(PlanQty = round(PlanQty, 0)) ~> Transformations",
+				"Transformations select(mapColumn(",
+				"          StateCode = Insert@Insert@StateCode,",
+				"          Month,",
+				"          SKUCode = Insert@Insert@SKUCode,",
+				"          BrandPackType,",
+				"          BrandPackSize,",
+				"          BrandCode,",
+				"          CreatedMonth,",
+				"          PlanQty,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          GeographyKey,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          StateCode,",
+				"          Month,",
+				"          SKUCode,",
+				"          BrandPackType,",
+				"          BrandPackSize,",
+				"          BrandCode,",
+				"          CreatedMonth,",
+				"          PlanQty,",
+				"          {Created By},",
+				"          {Created Date},",
+				"          {Updated By},",
+				"          {Updated Date},",
+				"          GeographyKey,",
+				"          ProductKey",
+				"     ),",
+				"     format: 'table') ~> SNKPrimarySalesAOP",
+				"AlterDelete sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKStgDelete",
+				"TransformationDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKdate"
 			]
 		}
 	}
