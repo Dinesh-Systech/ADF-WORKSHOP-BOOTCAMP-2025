@@ -84,9 +84,6 @@
 					"name": "alterDelete"
 				},
 				{
-					"name": "selectCols2"
-				},
-				{
 					"name": "selectCols5"
 				},
 				{
@@ -94,6 +91,15 @@
 				},
 				{
 					"name": "AuditColumns"
+				},
+				{
+					"name": "InnerProduct"
+				},
+				{
+					"name": "InnerGeography"
+				},
+				{
+					"name": "selectCols6"
 				}
 			],
 			"scriptLines": [
@@ -200,7 +206,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols4",
-				"selectCols2 split(Month>SnkMaxDate#outputs()[1].MaxDate,",
+				"InnerGeography split(Month>SnkMaxDate#outputs()[1].MaxDate,",
 				"     SnkMaxDate#outputs()[1].MaxDate!=toDate('01-01-1900','dd-MM-yyyy') && Month<SnkMaxDate#outputs()[1].MaxDate && Month >subMonths(SnkMaxDate#outputs()[1].MaxDate,1),",
 				"     disjoint: true) ~> split1@(insert, delete)",
 				"SrcTgtPrimarySalesPlan aggregate(Month = max(Month)) ~> AggMaxDate",
@@ -208,26 +214,10 @@
 				"selectcols1 derive(Month = toDate(Month,'MMM-yy')) ~> TransformationMonth",
 				"split1@insert alterRow(insertIf(true())) ~> alterInsert",
 				"split1@delete alterRow(deleteIf(true())) ~> alterDelete",
-				"TransformationMonth select(mapColumn(",
-				"          StateKey = StateCode,",
-				"          Month,",
-				"          ProductKey = SKUCode,",
-				"          BrandPackType,",
-				"          BrandPackSize,",
-				"          BrandCode,",
-				"          CreatedMonth,",
-				"          Plan_Qty,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
-				"          CreatedBy,",
-				"          UpdatedBy",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectCols2",
 				"alterDelete select(mapColumn(",
 				"          StateKey,",
 				"          Month,",
-				"          SKUCode = ProductKey,",
+				"          ProductKey,",
 				"          BrandPackType,",
 				"          BrandPackSize,",
 				"          BrandCode,",
@@ -244,6 +234,32 @@
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
 				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
 				"alterInsert derive(UpdatedAt = toTimestamp(null())) ~> AuditColumns",
+				"TransformationMonth, selectCols3 join(selectcols1@SKUCode == selectCols3@SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerProduct",
+				"InnerProduct, selectCols4 join(selectcols1@StateCode == selectCols4@StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerGeography",
+				"NullHandling select(mapColumn(",
+				"          StateKey,",
+				"          Month,",
+				"          ProductKey,",
+				"          BrandPackType,",
+				"          BrandPackSize,",
+				"          BrandCode,",
+				"          CreatedMonth,",
+				"          Plan_Qty,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols6",
 				"Transformation sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -254,7 +270,7 @@
 				"     mapColumn(",
 				"          MaxDate = Month",
 				"     )) ~> SnkMaxDate",
-				"NullHandling sink(allowSchemaDrift: true,",
+				"selectCols6 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
