@@ -75,10 +75,10 @@
 					"name": "TransformationDate"
 				},
 				{
-					"name": "innerGeography"
+					"name": "leftGeography"
 				},
 				{
-					"name": "innerProduct"
+					"name": "leftProduct"
 				},
 				{
 					"name": "selectColumns1"
@@ -186,22 +186,22 @@
 				"SRCALCPrimarySales aggregate(max_date = max(Month)) ~> maxDate",
 				"SRCPrimarySalesAop derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
-				"innerProduct alterRow(insertIf(true())) ~> AlterInsert",
+				"leftProduct alterRow(insertIf(true())) ~> AlterInsert",
 				"Transformation split(Month>SNKdate#outputs()[1].max_date,",
 				"     SNKdate#outputs()[1].max_date!=toDate('01-01-1900','dd-MM-yyyy') && Month<SNKdate#outputs()[1].max_date && Month >subMonths(SNKdate#outputs()[1].max_date,-1),",
 				"     disjoint: true) ~> Insert@(Insert, delete)",
 				"Insert@delete alterRow(deleteIf(true())) ~> AlterDelete",
 				"maxDate derive(max_date = coalesce(max_date, toDate(\"1900-01-01\", \"yyyy-MM-dd\"))) ~> TransformationDate",
 				"Insert@Insert, selectColumns1 join(Insert@Insert@StateCode == selectColumns1@StateCode,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> innerGeography",
-				"innerGeography, selectColumns2 join(Insert@Insert@SKUCode == selectColumns2@SKUCode,",
-				"     joinType:'inner',",
+				"     broadcast: 'auto')~> leftGeography",
+				"leftGeography, selectColumns2 join(Insert@Insert@SKUCode == selectColumns2@SKUCode,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> innerProduct",
+				"     broadcast: 'auto')~> leftProduct",
 				"SRCGeography select(mapColumn(",
 				"          GeographyKey,",
 				"          StateCode",
