@@ -160,7 +160,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
-				"SRCstg, SELECTtgt join(OUTLET_CODE == OUTLET_CODE,",
+				"SRCstg, SELECTtgt join(OUTLET_CODE == T_OUTLET_CODE,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -269,7 +269,7 @@
 				"          OUTLET_START_DATE,",
 				"          OUTLET_END_DATE,",
 				"          created_date,",
-				"          updated_date,",
+				"          updated_date = {Updated By},",
 				"          scd_flag",
 				"     )) ~> SNKtgt"
 			]
