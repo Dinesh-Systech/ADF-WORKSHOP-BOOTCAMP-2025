@@ -8,17 +8,33 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SrcCompanyMaster"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "TgtCompanyMaster"
 				}
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SnkCompanyMasterInsert"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SnkCompanyMasterUpdate"
 				}
 			],
@@ -78,7 +94,9 @@
 				"          UpdatedBy as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> SrcCompanyMaster",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCompanyMaster",
 				"source(output(",
 				"          CompanyCode as string,",
 				"          CompanyKey as integer,",
@@ -97,7 +115,9 @@
 				"          UpdatedBy as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> TgtCompanyMaster",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtCompanyMaster",
 				"SrcCompanyMaster, TransformationTgt join(CompanyCode == tgtCompanyCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -111,7 +131,7 @@
 				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
 				"          UpdatedBy = toString(null())) ~> AuditColumns1",
 				"alterRowUpdate derive(tgtUpdatedAt = currentTimestamp(),",
-				"          tgtUpdatedBy = tgtUpdatedBy,",
+				"          tgtUpdatedBy = UpdatedBy,",
 				"          tgtSalesOrgCode = SalesOrgCode,",
 				"          tgtSalesOrgName = SalesOrgName) ~> AuditColumns2",
 				"AuditColumns1 select(mapColumn(",
@@ -172,14 +192,24 @@
 				"     skipDuplicateMapOutputs: true) ~> selectCols2",
 				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SnkCompanyMasterInsert",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompanyMasterInsert",
 				"selectCols2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SnkCompanyMasterUpdate"
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompanyMasterUpdate"
 			]
 		}
 	}
