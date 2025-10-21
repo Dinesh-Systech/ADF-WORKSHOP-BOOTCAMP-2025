@@ -1,0 +1,52 @@
+{
+	"name": "PL_TRG_PlantMaster_IN1674",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_TRG_PlantMaster",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_PlantMaster_IN1674",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstgplant": {
+								"Schema": "CKumaram",
+								"Table": "Stg_PlantMaster_IN1674",
+								"Database": "Target_ADF_B2025"
+							},
+							"SRCtgtPlant": {
+								"Schema": "CKumaram",
+								"Table": "Alc_PlantMaster",
+								"Database": "Target_ADF_B2025"
+							},
+							"SNKtgtplant": {
+								"Schema": "CKumaram",
+								"Table": "Alc_PlantMaster",
+								"Database": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "STG-TRG"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,221 @@
+{
+	"name": "DF_PlantMaster_IN1674",
+	"properties": {
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgplant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtPlant"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtplant"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "LeftJoinStgAndTgt"
+				},
+				{
+					"name": "insert"
+				},
+				{
+					"name": "updatedAt"
+				},
+				{
+					"name": "SLCTsrccols"
+				},
+				{
+					"name": "SLCTtgtUpdate"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "AlterUpdate"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlantName as string,",
+				"          CompanyCode as double,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstgplant",
+				"source(output(",
+				"          PlantCode as string,",
+				"          PlankKey as integer,",
+				"          PlantName as string,",
+				"          CompanyCode as integer,",
+				"          StateCode as string,",
+				"          StateName as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtPlant",
+				"SRCtgtPlant select(mapColumn(",
+				"          PlantCode,",
+				"          PlankKey,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"SRCstgplant, selectTgt join(SRCstgplant@PlantCode == selectTgt@PlantCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"LeftJoinStgAndTgt split(isNull(selectTgt@PlantCode),",
+				"     !isNull(selectTgt@PlantCode) && (SRCstgplant@PlantName!=selectTgt@PlantCode),",
+				"     disjoint: true) ~> insert@(insert, update)",
+				"SLCTtgtUpdate derive(UpdatedAt = currentDate(),",
+				"          UpdatedBy = 'IN1674') ~> updatedAt",
+				"Transformation select(mapColumn(",
+				"          PlantCode,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          PlankKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          PlantCode = insert@update@PlantCode,",
+				"          PlantName = insert@update@PlantName,",
+				"          CompanyCode = insert@update@CompanyCode,",
+				"          StateCode = insert@update@StateCode,",
+				"          StateName = insert@update@StateName,",
+				"          CreatedAt = insert@update@CreatedAt,",
+				"          UpdatedAt = insert@update@UpdatedAt,",
+				"          CreatedBy = insert@update@CreatedBy,",
+				"          UpdatedBy = insert@update@UpdatedBy,",
+				"          PlantCode = insert@update@PlantCode,",
+				"          PlantName = insert@update@PlantName,",
+				"          CompanyCode = insert@update@CompanyCode,",
+				"          StateCode = insert@update@StateCode,",
+				"          StateName = insert@update@StateName,",
+				"          CreatedAt = insert@update@CreatedAt,",
+				"          UpdatedAt = insert@update@UpdatedAt,",
+				"          CreatedBy = insert@update@CreatedBy,",
+				"          UpdatedBy = insert@update@UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"NullHandling derive(PlantCode = left(concat(PlantCode, '000000'),6)) ~> Transformation",
+				"select1 derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss'))),",
+				"          UpdatedAt = currentDate()) ~> NullHandling",
+				"updatedAt alterRow(updateIf(true())) ~> AlterUpdate",
+				"insert@insert select(mapColumn(",
+				"          PlantCode = insert@insert@PlantCode,",
+				"          PlantName = insert@insert@PlantName,",
+				"          CompanyCode = insert@insert@CompanyCode,",
+				"          StateCode = insert@insert@StateCode,",
+				"          StateName = insert@insert@StateName,",
+				"          CreatedAt = insert@insert@CreatedAt,",
+				"          UpdatedAt = insert@insert@UpdatedAt,",
+				"          CreatedBy = insert@insert@CreatedBy,",
+				"          UpdatedBy = insert@insert@UpdatedBy,",
+				"          PlantCode = insert@insert@PlantCode,",
+				"          PlankKey,",
+				"          PlantName = insert@insert@PlantName,",
+				"          CompanyCode = insert@insert@CompanyCode,",
+				"          StateCode = insert@insert@StateCode,",
+				"          StateName = insert@insert@StateName,",
+				"          CreatedAt = insert@insert@CreatedAt,",
+				"          UpdatedAt = insert@insert@UpdatedAt,",
+				"          CreatedBy = insert@insert@CreatedBy,",
+				"          UpdatedBy = insert@insert@UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"surrogateKey1, AlterUpdate union(byName: true)~> union1",
+				"SLCTsrccols keyGenerate(output(PlantKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PlantCode,",
+				"          PlantName,",
+				"          CompanyCode,",
+				"          StateCode,",
+				"          StateName,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     )) ~> SNKtgtplant"
+			]
+		}
+	}
+}
