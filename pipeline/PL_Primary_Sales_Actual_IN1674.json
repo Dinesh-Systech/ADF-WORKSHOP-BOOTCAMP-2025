@@ -1,0 +1,127 @@
+{
+	"name": "PL_Primary_Sales_Actual_IN1674",
+	"properties": {
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"annotations": [],
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "Srcsrcactuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstg"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKstgActuals"
+				},
+				{
+					"name": "SNK"
+				}
+			],
+			"transformations": [
+				{
+					"name": "max"
+				},
+				{
+					"name": "MaxRecords"
+				},
+				{
+					"name": "TTransformation"
+				},
+				{
+					"name": "HandleTransactionDate"
+				},
+				{
+					"name": "AuditCols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Srcsrcactuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"SRCstg aggregate(TransactionDate = max(TransactionDate)) ~> max",
+				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
+				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
+				"max derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"MaxRecords derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = currentTimestamp(),",
+				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
+				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
+				"AuditCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgActuals",
+				"HandleTransactionDate sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNK"
+			]
+		}
+	}
+}

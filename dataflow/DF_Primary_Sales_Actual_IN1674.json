@@ -1,0 +1,213 @@
+{
+	"name": "DF_Primary_Sales_Actual_IN1674",
+	"properties": {
+		"folder": {
+			"name": "stg - dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "Srcsrcactuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtCompany"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtState"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtItem"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtPlant"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SRCtgtCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SNKstgActuals"
+				}
+			],
+			"transformations": [
+				{
+					"name": "InnerCompany"
+				},
+				{
+					"name": "SLCTCompanyKey"
+				},
+				{
+					"name": "SLCTStateKey"
+				},
+				{
+					"name": "SLCTItemKey"
+				},
+				{
+					"name": "SLCTPlantKey"
+				},
+				{
+					"name": "InnerState"
+				},
+				{
+					"name": "InnerItem"
+				},
+				{
+					"name": "InnerPlant"
+				},
+				{
+					"name": "SLCTKeys"
+				},
+				{
+					"name": "SLCTCustomerKey"
+				},
+				{
+					"name": "InnerCustomer"
+				},
+				{
+					"name": "AuditCols"
+				},
+				{
+					"name": "nullHandling"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Srcsrcactuals",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtCompany",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtState",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtItem",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtPlant",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgtCustomers",
+				"nullHandling, SLCTCompanyKey join(CompanyCode == tgt_CompanyCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerCompany",
+				"SRCtgtCompany select(mapColumn(",
+				"          tgt_CompanyCode = CompanyCode,",
+				"          CompanyKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTCompanyKey",
+				"SRCtgtState select(mapColumn(",
+				"          StateKey,",
+				"          tgt_StateCode = StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTStateKey",
+				"SRCtgtItem select(mapColumn(",
+				"          tgt_SKUCode = SKUCode,",
+				"          ItemKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTItemKey",
+				"SRCtgtPlant select(mapColumn(",
+				"          tgt_PlantCode = PlantCode,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTPlantKey",
+				"InnerCompany, SLCTStateKey join(StateCode == tgt_StateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerState",
+				"InnerState, SLCTItemKey join(SKUCode == tgt_SKUCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerItem",
+				"InnerItem, SLCTPlantKey join(PlantCode == tgt_PlantCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerPlant",
+				"InnerCustomer select(mapColumn(",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerName,",
+				"          CountryKey = CountryCode,",
+				"          ZoneCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CompanyKey,",
+				"          StateKey,",
+				"          ItemKey,",
+				"          PlantKey,",
+				"          CustomerKey,",
+				"          CustomerName = tgt_CustomerName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTKeys",
+				"SRCtgtCustomers select(mapColumn(",
+				"          tgt_CustomerCode = CustomerCode,",
+				"          CustomerKey,",
+				"          tgt_CustomerName = CustomerName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTCustomerKey",
+				"InnerPlant, SLCTCustomerKey join(CustomerCode == tgt_CustomerCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> InnerCustomer",
+				"SLCTKeys derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = currentTimestamp(),",
+				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
+				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
+				"Srcsrcactuals derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> nullHandling",
+				"AuditCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'table') ~> SNKstgActuals"
+			]
+		}
+	}
+}
