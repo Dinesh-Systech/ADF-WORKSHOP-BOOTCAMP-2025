@@ -12,54 +12,54 @@
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCstg"
+					"name": "SRCstgcompetitors"
 				},
 				{
-					"name": "TGT"
+					"name": "SRCtgtCustomer"
 				}
 			],
 			"sinks": [
 				{
-					"name": "SNKtgt"
+					"name": "SNKtgtCustomer"
 				}
 			],
 			"transformations": [
 				{
-					"name": "SELECTtgt"
+					"name": "selectTgt"
 				},
 				{
-					"name": "LEFTsrctgt"
+					"name": "LeftJoinStgAndTgt"
 				},
 				{
-					"name": "Split"
+					"name": "insert"
 				},
 				{
-					"name": "UNIONstreams"
+					"name": "updatedAt"
 				},
 				{
-					"name": "NULL"
+					"name": "SLCTsrccols"
 				},
 				{
-					"name": "SKEY"
+					"name": "SLCTtgtUpdate"
 				},
 				{
-					"name": "SELECTcols"
+					"name": "AlterUpdate"
 				},
 				{
-					"name": "ALTERinsert"
+					"name": "NullHandling"
 				},
 				{
-					"name": "ALTERupdate"
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCstg",
+				"     format: 'table') ~> SRCstgcompetitors",
 				"source(output(",
-				"          CompetitorProductKey as integer,",
 				"          SKUCode as integer,",
+				"          SKUkey as integer,",
 				"          ItemName as string,",
 				"          CompanyCode as string,",
 				"          IndustryName as string,",
@@ -70,44 +70,37 @@
 				"          BrandPackSize as string,",
 				"          PackTypeCode as string,",
 				"          BrandPackType as string,",
-				"          {State Code} as string,",
+				"          State_Code as string,",
 				"          State as string,",
 				"          ProductCategory as string,",
 				"          ProductSegment as string,",
 				"          Flavour as string,",
 				"          SubFlavour as string,",
 				"          Division as string,",
-				"          {Created By} as string,",
-				"          {Created Date} as timestamp,",
-				"          {Updated By} as string,",
-				"          {Updated Date} as timestamp,",
-				"          Pipeline_RunID as string",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> TGT",
-				"TGT select(mapColumn(",
-				"          t_SKUCode = SKUCode,",
-				"          t_ReportingSegment = ReportingSegment,",
-				"          t_ProductSegment = ProductSegment",
+				"     validateSchema: false) ~> SRCtgtCustomer",
+				"SRCtgtCustomer select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
 				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> SELECTtgt",
-				"SRCstg, SELECTtgt join(SKUCode == t_SKUCode,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"SRCstgcompetitors, selectTgt join(SKUCode == tgt_SKUCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> LEFTsrctgt",
-				"LEFTsrctgt split(isNull(t_SKUCode),",
-				"     (SKUCode == t_SKUCode) && ((ReportingSegment != t_ReportingSegment) || (ProductSegment != t_ProductSegment)),",
-				"     disjoint: true) ~> Split@(InsertStream, UpdateStream)",
-				"ALTERinsert, ALTERupdate union(byName: true)~> UNIONstreams",
-				"UNIONstreams derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
-				"          each(match(type=='int'), $$ = iifNull($#, -1)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NULL",
-				"NULL keyGenerate(output(CompetitorProductKey as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> SKEY",
-				"SKEY select(mapColumn(",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"LeftJoinStgAndTgt split(isNull(tgt_SKUCode),",
+				"     !isNull(tgt_SKUCode) && (ReportingSegment!=tgt_ReportingSegment ||ProductSegment!=tgt_ProductSegment),",
+				"     disjoint: true) ~> insert@(insert, update)",
+				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = 'PL_Alc_Competitor_Product_Master_IN1680') ~> updatedAt",
+				"NullHandling select(mapColumn(",
 				"          SKUCode,",
 				"          ItemName,",
 				"          CompanyCode,",
@@ -119,29 +112,56 @@
 				"          BrandPackSize,",
 				"          PackTypeCode,",
 				"          BrandPackType,",
-				"          {State Code},",
+				"          State_Code,",
 				"          State,",
 				"          ProductCategory,",
 				"          ProductSegment,",
 				"          Flavour,",
 				"          SubFlavour,",
 				"          Division,",
-				"          {Created By},",
-				"          {Created Date},",
-				"          {Updated By},",
-				"          {Updated Date},",
-				"          Pipeline_RunID,",
-				"          CompetitorProductKey",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
-				"Split@InsertStream alterRow(insertIf(true())) ~> ALTERinsert",
-				"Split@UpdateStream alterRow(updateIf(true())) ~> ALTERupdate",
-				"SELECTcols sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          ReportingSegment,",
+				"          ProductSegment,",
+				"          UpdatedAt,",
+				"          UpdatedBy,",
+				"          SKUCode = tgt_SKUCode,",
+				"          ItemName = tgt_ItemName,",
+				"          CompanyCode = tgt_CompanyCode,",
+				"          IndustryName = tgt_IndustryName,",
+				"          BrandFamily = tgt_BrandFamily,",
+				"          BrandCode = tgt_BrandCode,",
+				"          BrandName = tgt_BrandName,",
+				"          BrandPackSize = tgt_BrandPackSize,",
+				"          PackTypeCode = tgt_PackTypeCode,",
+				"          BrandPackType = tgt_BrandPackType,",
+				"          State_Code = tgt_State_Code,",
+				"          State = tgt_State,",
+				"          ProductCategory = tgt_ProductCategory,",
+				"          Flavour = tgt_Flavour,",
+				"          SubFlavour = tgt_SubFlavour,",
+				"          Division = tgt_Division,",
+				"          CreatedAt = tgt_CreatedAt,",
+				"          CreatedBy = tgt_CreatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"updatedAt alterRow(updateIf(true())) ~> AlterUpdate",
+				"insert@insert derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"SLCTsrccols, AlterUpdate union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SNKtgt"
+				"     format: 'table') ~> SNKtgtCustomer"
 			]
 		}
 	}
