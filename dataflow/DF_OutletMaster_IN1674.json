@@ -33,6 +33,13 @@
 						"referenceName": "LS_AzureBlobStorage",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -286,7 +293,17 @@
 				"          IsActive,",
 				"          effective_end_date,",
 				"          effective_start_date",
-				"     )) ~> SNKupdateTgt"
+				"     )) ~> SNKupdateTgt",
+				"AuditCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
