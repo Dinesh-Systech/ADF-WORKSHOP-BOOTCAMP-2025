@@ -156,7 +156,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinSrcTgt",
-				"ProductKey split(SKUCode!=tgt_SKUCode,",
+				"ProductKey split(isNull(tgt_SKUCode),",
 				"     (SKUCode ==tgt_SKUCode && ReportingSegment!=tgt_ReportingSegment),",
 				"     disjoint: false) ~> split1@(Insert, Update)",
 				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
