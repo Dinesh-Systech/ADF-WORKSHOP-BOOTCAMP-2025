@@ -6,11 +6,236 @@
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
-			"transformations": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "stgcustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "tgtCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgtCustomer"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "LeftJoinStgAndTgt"
+				},
+				{
+					"name": "insert"
+				},
+				{
+					"name": "updatedAt"
+				},
+				{
+					"name": "SLCTsrccols"
+				},
+				{
+					"name": "SLCTtgtUpdate"
+				},
+				{
+					"name": "AlterUpdate"
+				},
+				{
+					"name": "NullHandle"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> stgcustomer",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          CompanyKey as integer,",
+				"          CompanyName as string,",
+				"          SalesOrgCode as string,",
+				"          SalesOrgName as string,",
+				"          ReportingHierarchyCode1 as string,",
+				"          ReportingHierarchyName1 as string,",
+				"          ReportingHierarchyCode2 as string,",
+				"          ReportingHierarchyName2 as string,",
+				"          ReportingHierarchyCode3 as string,",
+				"          ReportingHierarchyName3 as string,",
+				"          CreatedAt as date,",
+				"          UpdatedAt as date,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tgtCustomer",
+				"tgtCustomer select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyKey,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"stgcustomer, selectTgt join(stgcustomer@CompanyCode == selectTgt@CompanyCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoinStgAndTgt",
+				"LeftJoinStgAndTgt split(isNull(selectTgt@CompanyCode),",
+				"     !isNull(selectTgt@CompanyCode) && (stgcustomer@SalesOrgCode!=selectTgt@SalesOrgCode ||stgcustomer@SalesOrgName!=selectTgt@SalesOrgName),",
+				"     disjoint: true) ~> insert@(insert, update)",
+				"SLCTtgtUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = 'IN1674') ~> updatedAt",
+				"NullHandle select(mapColumn(",
+				"          CompanyCode,",
+				"          CompanyName,",
+				"          SalesOrgCode,",
+				"          SalesOrgName,",
+				"          ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTsrccols",
+				"insert@update select(mapColumn(",
+				"          CompanyCode = insert@update@CompanyCode,",
+				"          CompanyName = insert@update@CompanyName,",
+				"          SalesOrgCode = insert@update@SalesOrgCode,",
+				"          SalesOrgName = insert@update@SalesOrgName,",
+				"          ReportingHierarchyCode1 = insert@update@ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = insert@update@ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = insert@update@ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = insert@update@ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = insert@update@ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = insert@update@ReportingHierarchyName3,",
+				"          CreatedAt = insert@update@CreatedAt,",
+				"          UpdatedAt = insert@update@UpdatedAt,",
+				"          CreatedBy = insert@update@CreatedBy,",
+				"          UpdatedBy = insert@update@UpdatedBy,",
+				"          CompanyCode = insert@update@CompanyCode,",
+				"          CompanyName = insert@update@CompanyName,",
+				"          SalesOrgCode = insert@update@SalesOrgCode,",
+				"          SalesOrgName = insert@update@SalesOrgName,",
+				"          ReportingHierarchyCode1 = insert@update@ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = insert@update@ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = insert@update@ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = insert@update@ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = insert@update@ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = insert@update@ReportingHierarchyName3,",
+				"          CreatedAt = insert@update@CreatedAt,",
+				"          UpdatedAt = insert@update@UpdatedAt,",
+				"          CreatedBy = insert@update@CreatedBy,",
+				"          UpdatedBy = insert@update@UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTtgtUpdate",
+				"updatedAt alterRow(updateIf(true())) ~> AlterUpdate",
+				"select1 derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, -1))) ~> NullHandle",
+				"surrogateKey1, AlterUpdate union(byName: true)~> union1",
+				"insert@insert select(mapColumn(",
+				"          CompanyCode = insert@insert@CompanyCode,",
+				"          CompanyName = insert@insert@CompanyName,",
+				"          SalesOrgCode = insert@insert@SalesOrgCode,",
+				"          SalesOrgName = insert@insert@SalesOrgName,",
+				"          ReportingHierarchyCode1 = insert@insert@ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = insert@insert@ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = insert@insert@ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = insert@insert@ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = insert@insert@ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = insert@insert@ReportingHierarchyName3,",
+				"          CreatedAt = insert@insert@CreatedAt,",
+				"          UpdatedAt = insert@insert@UpdatedAt,",
+				"          CreatedBy = insert@insert@CreatedBy,",
+				"          UpdatedBy = insert@insert@UpdatedBy,",
+				"          CompanyCode = insert@insert@CompanyCode,",
+				"          CompanyName = insert@insert@CompanyName,",
+				"          SalesOrgCode = insert@insert@SalesOrgCode,",
+				"          SalesOrgName = insert@insert@SalesOrgName,",
+				"          ReportingHierarchyCode1 = insert@insert@ReportingHierarchyCode1,",
+				"          ReportingHierarchyName1 = insert@insert@ReportingHierarchyName1,",
+				"          ReportingHierarchyCode2 = insert@insert@ReportingHierarchyCode2,",
+				"          ReportingHierarchyName2 = insert@insert@ReportingHierarchyName2,",
+				"          ReportingHierarchyCode3 = insert@insert@ReportingHierarchyCode3,",
+				"          ReportingHierarchyName3 = insert@insert@ReportingHierarchyName3,",
+				"          CreatedAt = insert@insert@CreatedAt,",
+				"          UpdatedAt = insert@insert@UpdatedAt,",
+				"          CreatedBy = insert@insert@CreatedBy,",
+				"          UpdatedBy = insert@insert@UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"SLCTsrccols keyGenerate(output(CompanyKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgtCustomer"
 			]
 		}
 	}
