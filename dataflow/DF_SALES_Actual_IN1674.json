@@ -1,23 +1,22 @@
 {
-	"name": "PL_Primary_Sales_Actual_IN1674",
+	"name": "DF_SALES_Actual_IN1674",
 	"properties": {
 		"folder": {
-			"name": "SRC_STG"
+			"name": "src_to_stg"
 		},
-		"annotations": [],
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
+						"referenceName": "DS_AzureSql_IN1674",
 						"type": "DatasetReference"
 					},
 					"name": "Srcsrcactuals"
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
+						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
 					"name": "SRCstg"
@@ -26,7 +25,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DS_Azure_sql_IN1680",
+						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
 					"name": "SNKstgActuals"
@@ -63,9 +62,9 @@
 				"          CountryCode as string,",
 				"          ZoneCode as string,",
 				"          StateCode as string,",
-				"          SKUCode as integer,",
+				"          SKUCode as string,",
 				"          PlantCode as string,",
-				"          TransactionDate as string,",
+				"          TransactionDate as date,",
 				"          VolumeActualCase as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
@@ -82,23 +81,24 @@
 				"          CountryCode as string,",
 				"          ZoneCode as string,",
 				"          StateCode as string,",
-				"          SKUCode as integer,",
+				"          SKUCode as string,",
 				"          PlantCode as string,",
 				"          TransactionDate as date,",
 				"          VolumeActualCase as integer,",
-				"          CreatedAt as timestamp,",
-				"          UpdatedAt as timestamp,",
-				"          CreatedBy as string,",
-				"          UpdatedBy as string",
+				"          created_date as date,",
+				"          created_by as string,",
+				"          updated_date as date,",
+				"          updated_by as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCstg",
-				"SRCstg aggregate(TransactionDate = max(TransactionDate)) ~> max",
+				"SRCstg aggregate(groupBy(TransactionDate),",
+				"     TransactionDate = max(TransactionDate)) ~> max",
 				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
 				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
-				"max derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"max derive(TransactionDate = coalesce(max@TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
 				"MaxRecords derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = currentTimestamp(),",
 				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",

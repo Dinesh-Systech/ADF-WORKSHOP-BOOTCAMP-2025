@@ -2,7 +2,7 @@
 	"name": "DF_Primary_Sales_Actual_IN1674",
 	"properties": {
 		"folder": {
-			"name": "stg - dw"
+			"name": "Final_Project/STG_TGT"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
