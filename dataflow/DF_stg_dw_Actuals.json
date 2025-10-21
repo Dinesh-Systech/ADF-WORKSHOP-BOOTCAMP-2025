@@ -97,7 +97,7 @@
 					"name": "SELECTcols"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "Transformation"
 				}
 			],
 			"scriptLines": [
@@ -317,7 +317,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JOINfctplant",
-				"derivedColumn1 select(mapColumn(",
+				"Transformation select(mapColumn(",
 				"          CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
@@ -343,7 +343,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
-				"NULL derive(CustomerName = Customer_Full_Name) ~> derivedColumn1",
+				"NULL derive(CustomerName = Customer_Full_Name) ~> Transformation",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
