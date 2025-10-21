@@ -36,9 +36,6 @@
 			],
 			"transformations": [
 				{
-					"name": "max"
-				},
-				{
 					"name": "MaxRecords"
 				},
 				{
@@ -49,6 +46,9 @@
 				},
 				{
 					"name": "AuditCols"
+				},
+				{
+					"name": "Max"
 				}
 			],
 			"scriptLines": [
@@ -64,7 +64,7 @@
 				"          StateCode as string,",
 				"          SKUCode as string,",
 				"          PlantCode as string,",
-				"          TransactionDate as date,",
+				"          TransactionDate as string,",
 				"          VolumeActualCase as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
@@ -83,7 +83,7 @@
 				"          StateCode as string,",
 				"          SKUCode as string,",
 				"          PlantCode as string,",
-				"          TransactionDate as date,",
+				"          TransactionDate as string,",
 				"          VolumeActualCase as integer,",
 				"          created_date as date,",
 				"          created_by as string,",
@@ -94,15 +94,14 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCstg",
-				"SRCstg aggregate(groupBy(TransactionDate),",
-				"     TransactionDate = max(TransactionDate)) ~> max",
 				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
 				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
-				"max derive(TransactionDate = coalesce(max@TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"Max derive(TransactionDate = coalesce(max@TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
 				"MaxRecords derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = currentTimestamp(),",
 				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
 				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
+				"SRCstg aggregate(groupBy(TransactionDate)) ~> Max",
 				"AuditCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
