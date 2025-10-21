@@ -21,35 +21,38 @@
 						"datasetParameters": {
 							"SRCfct": {
 								"SchemaName": "RRamesh",
+								"Table": "stg_ALC_Primary_Sales_Actuals_IN1685",
 								"DB_Name": "Target_ADF_B2025"
 							},
 							"SRCtgtCompany": {
 								"SchemaName": "RRamesh",
+								"Table": "Alc_Company_Master_IN1685",
 								"DB_Name": "Target_ADF_B2025"
 							},
 							"SRCtgtState": {
 								"SchemaName": "RRamesh",
+								"Table": "Alc_Geography_Master_IN1685",
 								"DB_Name": "Target_ADF_B2025"
-							}
-						},
-						"linkedServiceParameters": {
-							"SRCfct": {
-								"schemaLinkedService": {
-									"SchemaName": "RRamesh",
-									"DB_Name": "Target_ADF_B2025"
-								}
 							},
-							"SRCtgtCompany": {
-								"schemaLinkedService": {
-									"SchemaName": "RRamesh",
-									"DB_Name": "Target_ADF_B2025"
-								}
+							"SRCtgtProduct": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_Product_Master_IN1685",
+								"DB_Name": "Target_ADF_B2025"
 							},
-							"SRCtgtState": {
-								"schemaLinkedService": {
-									"SchemaName": "RRamesh",
-									"DB_Name": "Target_ADF_B2025"
-								}
+							"SRCtgtPlant": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_Plant_Master_IN1685",
+								"DB_Name": "Target_ADF_B2025"
+							},
+							"SRCtgtCustomers": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_Customer_Master_IN1685",
+								"DB_Name": "Target_ADF_B2025"
+							},
+							"SNKstgActuals": {
+								"SchemaName": "RRamesh",
+								"Table": "Alc_Primary_Sales_Actuals_IN1685",
+								"DB_Name": "Target_ADF_B2025"
 							}
 						}
 					},
