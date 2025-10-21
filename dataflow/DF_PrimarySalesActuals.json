@@ -369,7 +369,8 @@
 				"          CompanyKey,",
 				"          PlantKey,",
 				"          ProductKey,",
-				"          GeographyKey",
+				"          GeographyKey,",
+				"          CustomerKey",
 				"     )) ~> SNKPrimaryActuals"
 			]
 		}
