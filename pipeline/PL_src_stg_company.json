@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_comapny",
+				"name": "CP_company",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
