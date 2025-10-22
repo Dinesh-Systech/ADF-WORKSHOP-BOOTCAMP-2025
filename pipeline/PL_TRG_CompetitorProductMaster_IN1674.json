@@ -16,22 +16,27 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_ProductMaster_IN1674",
+						"referenceName": "DF_CompetitorproductMaster_IN1674",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SRCstgproduct": {
+							"SrcCompetitorProductMaster": {
 								"Schema": "CKumaram",
-								"Table": "Stg_ProductMaster_IN1674",
+								"Table": "Stg_CompetitorProductMaster_IN1674",
 								"Database": "Target_ADF_B2025"
 							},
-							"SRCtgtProduct": {
+							"TgtCompetitorProductMaster": {
 								"Schema": "CKumaram",
-								"Table": "Alc_ProductMaster",
+								"Table": "Alc_CompetitorProductMaster",
 								"Database": "Target_ADF_B2025"
 							},
-							"SNKtgtProduct": {
+							"SnkCompetitorProductMasterInsert": {
 								"Schema": "CKumaram",
-								"Table": "Alc_ProductMaster",
+								"Table": "Alc_CompetitorProductMaster",
+								"Database": "Target_ADF_B2025"
+							},
+							"SnkCompetitorProductMasterUpdate": {
+								"Schema": "CKumaram",
+								"Table": "Alc_CompetitorProductMaster",
 								"Database": "Target_ADF_B2025"
 							}
 						}

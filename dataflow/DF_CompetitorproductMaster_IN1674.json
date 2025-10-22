@@ -1,0 +1,263 @@
+{
+	"name": "DF_CompetitorproductMaster_IN1674",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Stg to Dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCompetitorProductMaster"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCompetitorProductMaster"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SnkCompetitorProductMasterInsert"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SnkCompetitorProductMasterUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "AuditColumns1"
+				},
+				{
+					"name": "AuditColumns2"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "TransformationTgt"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "selectCols1"
+				},
+				{
+					"name": "surrogateKeycompetitor"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SKUCode as double,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          {State Code} as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcCompetitorProductMaster",
+				"source(output(",
+				"          SKUCode as double,",
+				"          {Competitor Product Key} as integer,",
+				"          ItemName as string,",
+				"          CompanyCode as string,",
+				"          IndustryName as string,",
+				"          BrandFamily as string,",
+				"          BrandCode as string,",
+				"          BrandName as string,",
+				"          ReportingSegment as string,",
+				"          BrandPackSize as string,",
+				"          PackTypeCode as string,",
+				"          BrandPackType as string,",
+				"          {State Code} as string,",
+				"          State as string,",
+				"          ProductCategory as string,",
+				"          ProductSegment as string,",
+				"          Flavour as string,",
+				"          SubFlavour as string,",
+				"          Division as string,",
+				"          CreatedAt as string,",
+				"          UpdatedAt as string,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtCompetitorProductMaster",
+				"surrogateKeycompetitor, TransformationTgt join(SKUCode == TGT_SKUCode,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"JoinSrcTgt split(isNull(TGT_SKUCode),",
+				"     (SKUCode ==TGT_SKUCode && ReportingSegment!=TGT_ReportingSegment || ProductSegment!=TGT_ProductSegment),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(UpdatedAt = toTimestamp(null()),",
+				"          UpdatedBy = toString(null())) ~> AuditColumns1",
+				"alterRowUpdate derive(UpdatedAt = currentTimestamp(),",
+				"          UpdatedBy = TGT_CreatedBy,",
+				"          ReportingSegment = TGT_ReportingSegment,",
+				"          ProductSegment = TGT_ProductSegment) ~> AuditColumns2",
+				"NullHandling select(mapColumn(",
+				"          SKUCode,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          {State Code},",
+				"          State,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          Division,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          {Competitor Product Key}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"TgtCompetitorProductMaster select(mapColumn(",
+				"          each(match(true()),",
+				"               \"TGT_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformationTgt",
+				"AuditColumns1 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('2999-12-31 00:00:00',\"yyyy-MM-dd HH:mm:ss\"),$$))) ~> NullHandling",
+				"AuditColumns2 select(mapColumn(",
+				"          SKUCode,",
+				"          ItemName,",
+				"          CompanyCode,",
+				"          IndustryName,",
+				"          BrandFamily,",
+				"          BrandCode,",
+				"          BrandName,",
+				"          ReportingSegment,",
+				"          BrandPackSize,",
+				"          PackTypeCode,",
+				"          BrandPackType,",
+				"          {State Code},",
+				"          State,",
+				"          ProductCategory,",
+				"          ProductSegment,",
+				"          Flavour,",
+				"          SubFlavour,",
+				"          Division,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          {Competitor Product Key},",
+				"          TGT_SKUCode,",
+				"          {TGT_Competitor Product Key},",
+				"          TGT_ItemName,",
+				"          TGT_CompanyCode,",
+				"          TGT_IndustryName,",
+				"          TGT_BrandFamily,",
+				"          TGT_BrandCode,",
+				"          TGT_BrandName,",
+				"          TGT_ReportingSegment,",
+				"          TGT_BrandPackSize,",
+				"          TGT_PackTypeCode,",
+				"          TGT_BrandPackType,",
+				"          {TGT_State Code},",
+				"          TGT_State,",
+				"          TGT_ProductCategory,",
+				"          TGT_ProductSegment,",
+				"          TGT_Flavour,",
+				"          TGT_SubFlavour,",
+				"          TGT_Division,",
+				"          TGT_CreatedAt,",
+				"          TGT_UpdatedAt,",
+				"          TGT_CreatedBy,",
+				"          TGT_UpdatedBy",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols1",
+				"SrcCompetitorProductMaster keyGenerate(output({Competitor Product Key} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeycompetitor",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompetitorProductMasterInsert",
+				"selectCols1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['SKUCode'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkCompetitorProductMasterUpdate"
+			]
+		}
+	}
+}
