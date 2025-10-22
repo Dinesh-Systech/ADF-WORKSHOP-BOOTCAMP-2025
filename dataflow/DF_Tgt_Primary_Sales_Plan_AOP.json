@@ -38,6 +38,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference"
+					},
 					"name": "SNKPrimarySalesAOP"
 				},
 				{
@@ -139,9 +143,9 @@
 				"     skipDuplicateMapOutputs: true) ~> selectColumns2",
 				"AlterInsert derive(PlanQty = round(PlanQty, 0)) ~> Transformations",
 				"Transformations select(mapColumn(",
-				"          StateCode = Insert@Insert@StateCode,",
+				"          StateCode = {Insert@Insert@StateCode},",
 				"          Month,",
-				"          SKUCode = Insert@Insert@SKUCode,",
+				"          SKUCode = {Insert@Insert@SKUCode},",
 				"          BrandPackType,",
 				"          BrandPackSize,",
 				"          BrandCode,",
@@ -158,8 +162,14 @@
 				"     skipDuplicateMapOutputs: true) ~> selectCols",
 				"selectCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          StateCode,",
 				"          Month,",
@@ -175,8 +185,7 @@
 				"          {Updated Date},",
 				"          GeographyKey,",
 				"          ProductKey",
-				"     ),",
-				"     format: 'table') ~> SNKPrimarySalesAOP",
+				"     )) ~> SNKPrimarySalesAOP",
 				"AlterDelete sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
