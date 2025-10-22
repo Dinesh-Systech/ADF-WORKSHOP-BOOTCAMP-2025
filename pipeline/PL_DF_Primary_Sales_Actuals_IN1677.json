@@ -28,7 +28,7 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_Primary_Sales_Actuals_IN1677"
 							},
-							"SinkStgPrimarySalesActualsIN1677": {
+							"SnkStgPrimarySalesActualsIN1677": {
 								"Schema": "JSivakum",
 								"Table": "Stg_Primary_Sales_Actuals_IN1677"
 							}
