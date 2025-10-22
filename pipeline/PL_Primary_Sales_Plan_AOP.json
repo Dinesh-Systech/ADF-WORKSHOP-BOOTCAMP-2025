@@ -1,0 +1,236 @@
+{
+	"name": "PL_Primary_Sales_Plan_AOP",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_Primary_Sales_Plan_AOP_to_stg_Primary_Sales_Plan_AOP",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "CreatedDate",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "CreatedBy",
+								"value": {
+									"value": "IN1684",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedDate",
+								"value": {
+									"value": "1990-01-01 00:00:00",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "UpdatedBy",
+								"value": {
+									"value": "UNK",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "StateCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SKUCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "SKUCode",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandPackType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandPackType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandPackSize",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandPackSize",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BrandCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BrandCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedMonth",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CreatedMonth",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Plan Qty",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "PlanQty",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 10
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedDate"
+								},
+								"sink": {
+									"name": "CreatedDate",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedBy"
+								},
+								"sink": {
+									"name": "UpdatedBy",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UpdatedDate"
+								},
+								"sink": {
+									"name": "UpdatedDate",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false,
+							"dateFormat": "dd-MM-yyyy"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "Alcobev",
+							"TableName": "Primary_Sales_Plan_AOP",
+							"DatabaseName": "Trainer"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Azure_SQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "DMuthuku",
+							"TableName": "Stg_Primary_Sales_Plan_AOP_IN1675",
+							"DatabaseName": "Target_ADF_B2025"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Workshop/SRC to STG"
+		},
+		"annotations": []
+	}
+}

@@ -64,7 +64,6 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcSalesOrgTSE",
 				"TSEKey derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$)),",
 				"          each(match(type=='integer'), $$ = iifNull($$, -1, $$))) ~> NullHandling",
 				"SrcSalesOrgTSE derive(TSE_Start_Date = toDate(TSE_Start_Date,\"dd-MM-yyyy\"),",
 				"          TSE_End_Date = toDate(TSE_End_Date,\"dd-MM-yyyy\")) ~> DataTypeConversion",
