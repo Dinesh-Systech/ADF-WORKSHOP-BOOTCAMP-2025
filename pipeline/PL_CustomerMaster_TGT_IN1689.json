@@ -1,0 +1,57 @@
+{
+	"name": "PL_CustomerMaster_TGT_IN1689",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_CustomerMaster_SCD2_IN1689",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomerMaster": {
+								"schema": "VSri",
+								"tablename": "Stg_CustomerMaster_IN1689",
+								"dbName": "Target_ADF_B2025"
+							},
+							"TgtCustomerMaster": {
+								"schema": "VSri",
+								"tablename": "Alc_CustomerMaster_IN1689",
+								"dbName": "Target_ADF_B2025"
+							},
+							"SnkCustomerMasterInsert": {
+								"schema": "VSri",
+								"tablename": "Alc_CustomerMaster_IN1689",
+								"dbName": "Target_ADF_B2025"
+							},
+							"SnkCustomerMasterUpdate": {
+								"schema": "VSri",
+								"tablename": "Alc_CustomerMaster_IN1689",
+								"dbName": "Target_ADF_B2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "END TO END WORKSHOP/STG_TO_TGT_IN1689"
+		},
+		"annotations": []
+	}
+}
