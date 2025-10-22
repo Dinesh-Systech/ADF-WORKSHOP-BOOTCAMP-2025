@@ -8,17 +8,33 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SRCstg"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SRCtgt"
 				}
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SNKtgt"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "SNKstgDel"
 				},
 				{
@@ -54,24 +70,8 @@
 			"scriptLines": [
 				"source(output(",
 				"          StateCode as string,",
-				"          Month as string,",
-				"          SKUCode as integer,",
-				"          BrandPackType as string,",
-				"          BrandPackSize as string,",
-				"          BrandCode as string,",
-				"          CreatedMonth as string,",
-				"          Plan_Qty as decimal(18,0),",
-				"          CreatedAt as timestamp,",
-				"          UpdatedAt as timestamp,",
-				"          CreatedBy as string,",
-				"          UpdatedBy as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> SRCstg",
-				"source(output(",
-				"          StateKey as string,",
 				"          Month as date,",
-				"          ItemKey as integer,",
+				"          SKUCode as integer,",
 				"          BrandPackType as string,",
 				"          BrandPackSize as string,",
 				"          BrandCode as string,",
@@ -83,7 +83,13 @@
 				"          UpdatedBy as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> SRCtgt",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCstg",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRCtgt",
 				"SRCtgt aggregate(maxdate = max(Month)) ~> maxDate",
 				"SRCstg derive(Month = toDate(Month,'MMM-yy'),",
 				"          CreatedMonth = toDate(CreatedMonth,'MMM-yy')) ~> Transformation",
@@ -105,14 +111,24 @@
 				"     broadcast: 'auto')~> innerState",
 				"AlterInsert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SNKtgt",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
 				"AlterDelete sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SNKstgDel",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKstgDel",
 				"TransformationDate sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
