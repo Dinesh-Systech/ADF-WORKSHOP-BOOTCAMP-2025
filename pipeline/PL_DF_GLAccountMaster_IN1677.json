@@ -23,8 +23,8 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_GLAccountMaster_IN1677"
 							},
-							"SinkGLAccountMasterN1677": {
-								"Schema": "Jsivakum",
+							"SnkGLAccountMasterN1677": {
+								"Schema": "JSivakum",
 								"Table": "Alc_GL_Account_Master_IN1677"
 							}
 						}

@@ -23,7 +23,7 @@
 								"Schema": "JSivakum",
 								"Table": "Stg_GeographyMaster_IN1677"
 							},
-							"SinkAlcGeographyMasterN1677": {
+							"SnkAlcGeographyMasterN1677": {
 								"Schema": "JSivakum",
 								"Table": "Alc_Geography_Master_IN1677"
 							}
