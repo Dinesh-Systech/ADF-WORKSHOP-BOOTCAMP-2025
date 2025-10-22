@@ -1,0 +1,53 @@
+{
+	"name": "PL_IN1686_Primary_Sale_AOP_STG_TGT",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Primary_Sale_AOP",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Primary_Sales_AOP_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstg": {
+								"schema": "SKomala",
+								"tablename": "stg_Primary_Sales_Plan_AOP"
+							},
+							"SRCtgt": {
+								"schema": "SKomala",
+								"tablename": "Alc_Primary_Sales_Plan_AOP"
+							},
+							"SNKtgt": {
+								"schema": "SKomala",
+								"tablename": "Alc_Primary_Sales_Plan_AOP"
+							},
+							"SNKstgDel": {
+								"schema": "SKomala",
+								"tablename": "stg_Primary_Sales_Plan_AOP"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Final_Project/STG_TGT"
+		},
+		"annotations": []
+	}
+}
