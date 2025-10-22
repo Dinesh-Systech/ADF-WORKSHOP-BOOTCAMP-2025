@@ -64,7 +64,7 @@
 				"     stepValue: 1L) ~> ClusterKey",
 				"ClusterKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
-				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('2999-12-31 00:00:00',\"yyyy-MM-dd HH:mm:ss\"),$$)  )) ~> NullHandling",
 				"SrcSalesOrgCluster derive(UpdatedAt = toTimestamp(null()),",
 				"          Cluster_Start_Date = toDate(Cluster_Start_Date,'dd-MM-yyyy'),",
 				"          Cluster_End_Date = toDate(Cluster_End_Date,'dd-MM-yyyy')) ~> Transformation",
