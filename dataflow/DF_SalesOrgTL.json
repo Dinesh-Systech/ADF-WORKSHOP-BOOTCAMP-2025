@@ -65,7 +65,7 @@
 				"     stepValue: 1L) ~> TLTerritoryKey",
 				"TLTerritoryKey derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),-1,toInteger($$))),",
-				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('2999-12-31 00:00:00',\"yyyy-MM-dd HH:mm:ss\"),$$)  )) ~> NullHandling",
 				"SrcSalesOrgTL derive(UpdatedAt = toTimestamp(null()),",
 				"          TL_Start_Date = toDate(TL_Start_Date,'dd-MM-yyyy'),",
 				"          TL_End_Date = toDate(TL_End_Date,'dd-MM-yyyy')) ~> Transformation",
