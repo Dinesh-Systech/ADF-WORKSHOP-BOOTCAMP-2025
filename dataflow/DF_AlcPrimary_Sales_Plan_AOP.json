@@ -232,7 +232,7 @@
 				"     skipDuplicateMapOutputs: true) ~> selectCols5",
 				"selectCols6 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
 				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
-				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('2999-12-31 00:00:00',\"yyyy-MM-dd HH:mm:ss\"),$$)  )) ~> NullHandling",
 				"alterInsert derive(UpdatedAt = toTimestamp(null())) ~> AuditColumns",
 				"TransformationMonth, selectCols3 join(SKUCode == tgtSKUCode,",
 				"     joinType:'inner',",
