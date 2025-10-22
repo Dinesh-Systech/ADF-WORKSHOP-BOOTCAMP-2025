@@ -16,10 +16,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SALES_ORG_CLUSTER_IN1689",
+						"referenceName": "DF_SALES_ORG_TL_IN1689",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SrcSalesClusterMaster": {
+							"SrcSalesTLMaster": {
 								"schema": "VSri",
 								"tablename": "Stg_Sales_Org_TL_IN1689",
 								"dbName": "Target_ADF_B2025"

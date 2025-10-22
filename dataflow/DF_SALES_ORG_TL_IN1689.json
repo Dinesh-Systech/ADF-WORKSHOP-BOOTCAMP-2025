@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "DataTypeConversion"
+				},
+				{
+					"name": "selectCols"
 				}
 			],
 			"scriptLines": [
@@ -68,18 +71,7 @@
 				"          each(match(type=='integer'), $$ = iifNull($$, 0 ))) ~> NullHandling",
 				"SrcSalesTLMaster derive(TL_Start_Date = toDate(TL_Start_Date,\"dd-MM-yyyy\"),",
 				"          TL_End_Date = toDate(TL_End_Date,\"dd-MM-yyyy\")) ~> DataTypeConversion",
-				"NullHandling sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     truncate:true,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
+				"NullHandling select(mapColumn(",
 				"          TL_Territory_Name,",
 				"          TL_Territory_Code,",
 				"          TL_Territory_ID,",
@@ -89,17 +81,30 @@
 				"          TL_Email,",
 				"          TL_Mobile,",
 				"          Market_Working_Norms,",
-				"          Min_Market_Working_with_TSE,",
+				"          Min_Market_Working_With_TSE = Min_Market_Working_with_TSE,",
 				"          Active_flag,",
 				"          TL_Start_Date,",
 				"          TL_End_Date,",
 				"          Cluster_code,",
-				"          CreatedAt,",
-				"          UpdatedAt,",
+				"          CreatedDate = CreatedAt,",
+				"          UpdatedDate = UpdatedAt,",
 				"          CreatedBy,",
 				"          UpdatedBy,",
-				"          Cluster_Key = ClusterKey",
-				"     )) ~> TgtSalesClusterMaster"
+				"          Tl_Key = ClusterKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> TgtSalesClusterMaster"
 			]
 		}
 	}

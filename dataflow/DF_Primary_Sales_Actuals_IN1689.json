@@ -16,7 +16,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_AzureSQLtable_SRC_IN1689",
+						"referenceName": "DS_AzureSQLtable_TGT_IN1689",
 						"type": "DatasetReference"
 					},
 					"name": "TgtPrimarySalesActuals"
@@ -46,6 +46,12 @@
 				},
 				{
 					"name": "AuditColumns"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -68,17 +74,38 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SrcPrimarySalesActuals",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          CreatedAt as timestamp,",
+				"          UpdatedAt as timestamp,",
+				"          CreatedBy as string,",
+				"          UpdatedBy as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TgtPrimarySalesActuals",
-				"HandlingTransactionDate filter(TransactionDate>sink1#outputs()[1].TransactionDate) ~> FilterTransactionDate",
-				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = ERROR_FUNCTION('')) ~> AggMaxDate",
+				"derivedColumn1 filter(TransactionDate>sink1#outputs()[1].TransactionDate) ~> FilterTransactionDate",
+				"TgtPrimarySalesActuals aggregate(TransactionDate = max(TransactionDate)) ~> AggMaxDate",
 				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
 				"FilterTransactionDate derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = toTimestamp(null()),",
 				"          CreatedBy = 'PL_ProductMaster_IN1689',",
 				"          UpdatedBy = toString(null())) ~> AuditColumns",
+				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> derivedColumn1",
+				"AggMaxDate derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> derivedColumn2",
 				"AuditColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -108,7 +135,7 @@
 				"          CreatedBy,",
 				"          UpdatedBy",
 				"     )) ~> SinkStgPrimarySalesActualsIN1689",
-				"AggMaxDate sink(validateSchema: false,",
+				"derivedColumn2 sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     store: 'cache',",
@@ -116,7 +143,7 @@
 				"     output: false,",
 				"     saveOrder: 1,",
 				"     mapColumn(",
-				"          TransactionDate = MaxTransactionDate",
+				"          TransactionDate",
 				"     )) ~> sink1"
 			]
 		}
