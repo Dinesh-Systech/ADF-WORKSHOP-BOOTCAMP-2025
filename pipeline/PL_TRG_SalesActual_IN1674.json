@@ -5,6 +5,8 @@
 			{
 				"name": "DF_TRG_SalesActual",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -62,6 +64,62 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "CKumaram",
+							"Table": "Stg_Primary_Sales_Actual_IN1674",
+							"Database": "Target_ADF_B2025"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "CKumaram",
+							"Table": "Alc_PrimarySalesActual",
+							"Database": "Target_ADF_B2025"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
