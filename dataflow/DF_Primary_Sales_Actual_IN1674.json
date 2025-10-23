@@ -12,201 +12,230 @@
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "Srcsrcactuals"
+					"name": "SrcPrimarySalesActuals"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCtgtCompany"
+					"name": "AlcCompanyMasterIN1677"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCtgtState"
+					"name": "AlcProductMasterIN1677"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCtgtItem"
+					"name": "AlcPlantMasterIN1677"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCtgtPlant"
+					"name": "AlcCustomerMasterIN1677"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_AzureSqlTarget_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "SRCtgtCustomers"
+					"name": "AlcGeographyMasterIN1677"
 				}
 			],
 			"sinks": [
 				{
-					"name": "SNKstgActuals"
+					"name": "SNKPrimarySalesActualsFullloadN1677"
 				}
 			],
 			"transformations": [
 				{
-					"name": "InnerCompany"
+					"name": "NullHandling"
 				},
 				{
-					"name": "SLCTCompanyKey"
+					"name": "Transformation"
 				},
 				{
-					"name": "SLCTStateKey"
+					"name": "JoinAlcCompanyMaster"
 				},
 				{
-					"name": "SLCTItemKey"
+					"name": "JoinAlcProductionMaster"
 				},
 				{
-					"name": "SLCTPlantKey"
+					"name": "JoinAlcPlantMasterIN1677"
 				},
 				{
-					"name": "InnerState"
+					"name": "JoinAlcCustomerMasterIN1677"
 				},
 				{
-					"name": "InnerItem"
+					"name": "JoinAlcGeographyMasterIN1677"
 				},
 				{
-					"name": "InnerPlant"
+					"name": "selectCols"
 				},
 				{
-					"name": "SLCTKeys"
+					"name": "SelectCompany"
 				},
 				{
-					"name": "SLCTCustomerKey"
+					"name": "selectProduct"
 				},
 				{
-					"name": "InnerCustomer"
+					"name": "selectCustomer"
 				},
 				{
-					"name": "AuditCols"
+					"name": "selectGeography"
 				},
 				{
-					"name": "nullHandling"
+					"name": "selectPlant"
 				}
 			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> Srcsrcactuals",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCtgtCompany",
+				"     format: 'table') ~> AlcCompanyMasterIN1677",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCtgtState",
+				"     format: 'table') ~> AlcProductMasterIN1677",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCtgtItem",
+				"     format: 'table') ~> AlcPlantMasterIN1677",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCtgtPlant",
+				"     format: 'table') ~> AlcCustomerMasterIN1677",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCtgtCustomers",
-				"nullHandling, SLCTCompanyKey join(CompanyCode == tgt_CompanyCode,",
+				"     format: 'table') ~> AlcGeographyMasterIN1677",
+				"selectCols derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null','UNK',$$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$))),",
+				"          each(match(type=='timestamp'), $$ = iif(isNull($$),toTimestamp('31/12/2999'),$$))) ~> NullHandling",
+				"SrcPrimarySalesActuals derive(UpdatedAt = toTimestamp(null())) ~> Transformation",
+				"Transformation, SelectCompany join(CompanyCode == tgtCompanyCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerCompany",
-				"SRCtgtCompany select(mapColumn(",
-				"          tgt_CompanyCode = CompanyCode,",
-				"          CompanyKey",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTCompanyKey",
-				"SRCtgtState select(mapColumn(",
-				"          StateKey,",
-				"          tgt_StateCode = StateCode",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTStateKey",
-				"SRCtgtItem select(mapColumn(",
-				"          tgt_SKUCode = SKUCode,",
-				"          ItemKey",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTItemKey",
-				"SRCtgtPlant select(mapColumn(",
-				"          tgt_PlantCode = PlantCode,",
-				"          PlantKey",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTPlantKey",
-				"InnerCompany, SLCTStateKey join(StateCode == tgt_StateCode,",
+				"     broadcast: 'auto')~> JoinAlcCompanyMaster",
+				"JoinAlcCompanyMaster, selectProduct join(SKUCode == tgtSKUCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerState",
-				"InnerState, SLCTItemKey join(SKUCode == tgt_SKUCode,",
+				"     broadcast: 'auto')~> JoinAlcProductionMaster",
+				"JoinAlcProductionMaster, selectPlant join(PlantCode == tgtPlantCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerItem",
-				"InnerItem, SLCTPlantKey join(PlantCode == tgt_PlantCode,",
+				"     broadcast: 'auto')~> JoinAlcPlantMasterIN1677",
+				"JoinAlcPlantMasterIN1677, selectCustomer join(CustomerCode == tgtCustomerCode,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerPlant",
-				"InnerCustomer select(mapColumn(",
+				"     broadcast: 'auto')~> JoinAlcCustomerMasterIN1677",
+				"JoinAlcCustomerMasterIN1677, selectGeography join(StateCode == tgtStateCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinAlcGeographyMasterIN1677",
+				"JoinAlcGeographyMasterIN1677 select(mapColumn(",
+				"          CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
 				"          Division,",
+				"          CustomerCode,",
 				"          CustomerName,",
-				"          CountryKey = CountryCode,",
+				"          CountryCode,",
 				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
 				"          TransactionDate,",
 				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
 				"          CompanyKey,",
-				"          StateKey,",
-				"          ItemKey,",
+				"          ProductKey,",
 				"          PlantKey,",
 				"          CustomerKey,",
-				"          CustomerName = tgt_CustomerName",
+				"          StateKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTKeys",
-				"SRCtgtCustomers select(mapColumn(",
-				"          tgt_CustomerCode = CustomerCode,",
-				"          CustomerKey,",
-				"          tgt_CustomerName = CustomerName",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"AlcCompanyMasterIN1677 select(mapColumn(",
+				"          tgtCompanyCode = CompanyCode,",
+				"          CompanyKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SLCTCustomerKey",
-				"InnerPlant, SLCTCustomerKey join(CustomerCode == tgt_CustomerCode,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerCustomer",
-				"SLCTKeys derive(CreatedAt = currentTimestamp(),",
-				"          UpdatedAt = currentTimestamp(),",
-				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
-				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
-				"Srcsrcactuals derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
-				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> nullHandling",
-				"AuditCols sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectCompany",
+				"AlcProductMasterIN1677 select(mapColumn(",
+				"          tgtSKUCode = SKUCode,",
+				"          ProductKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectProduct",
+				"AlcCustomerMasterIN1677 select(mapColumn(",
+				"          tgtCustomerCode = CustomerCode,",
+				"          CustomerKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCustomer",
+				"AlcGeographyMasterIN1677 select(mapColumn(",
+				"          StateKey,",
+				"          tgtStateCode = StateCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectGeography",
+				"AlcPlantMasterIN1677 select(mapColumn(",
+				"          tgtPlantCode = PlantCode,",
+				"          PlantKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPlant",
+				"NullHandling sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     format: 'table') ~> SNKstgActuals"
+				"     mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
+				"          CompanyKey,",
+				"          ProductKey,",
+				"          PlantKey,",
+				"          CustomerKey,",
+				"          StateKey",
+				"     ),",
+				"     format: 'table') ~> SNKPrimarySalesActualsFullloadN1677"
 			]
 		}
 	}

@@ -1,0 +1,153 @@
+{
+	"name": "DF_PrimarySalesSTG_IN1674",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Src to Stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "TgtPrimarySalesActuals"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSqlTarget_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SnkStgPrimarySalesActualsIN1677"
+				},
+				{
+					"name": "SNK"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterTransactionDate"
+				},
+				{
+					"name": "AggMaxDate"
+				},
+				{
+					"name": "HandlingTransactionDate"
+				},
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "selectactual"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as integer,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as integer,",
+				"          Division as integer,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as date,",
+				"          VolumeActualCase as integer,",
+				"          created_date as date,",
+				"          created_by as string,",
+				"          updated_date as date,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtPrimarySalesActuals",
+				"HandlingTransactionDate filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> FilterTransactionDate",
+				"TgtPrimarySalesActuals aggregate(MaxTransactionDate = max(TransactionDate)) ~> AggMaxDate",
+				"SrcPrimarySalesActuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
+				"FilterTransactionDate derive(created_date = currentDate(),",
+				"          created_by = 'IN1674',",
+				"          updated_date = currentDate(),",
+				"          updated_by = 'IN1674') ~> AuditColumns",
+				"AggMaxDate derive(MaxTransactionDate = coalesce(MaxTransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> Transformation",
+				"AuditColumns select(mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectactual",
+				"selectactual sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SnkStgPrimarySalesActualsIN1677",
+				"Transformation sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          TransactionDate = MaxTransactionDate",
+				"     )) ~> SNK"
+			]
+		}
+	}
+}

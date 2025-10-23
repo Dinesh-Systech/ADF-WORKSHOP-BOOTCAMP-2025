@@ -16,20 +16,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SALES_Actual_IN1674",
+						"referenceName": "DF_PrimarySalesSTG_IN1674",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"Srcsrcactuals": {
+							"SrcPrimarySalesActuals": {
 								"SchemaName": "Alcobev",
 								"TableName": "Primary_Sales_Actuals",
 								"databasename": "Trainer"
 							},
-							"SRCstg": {
+							"TgtPrimarySalesActuals": {
 								"Schema": "CKumaram",
 								"Table": "Stg_Primary_Sales_Actual_IN1674",
 								"Database": "Target_ADF_B2025"
 							},
-							"SNKstgActuals": {
+							"SnkStgPrimarySalesActualsIN1677": {
 								"Schema": "CKumaram",
 								"Table": "Stg_Primary_Sales_Actual_IN1674",
 								"Database": "Target_ADF_B2025"
