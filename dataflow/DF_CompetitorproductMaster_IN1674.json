@@ -2,7 +2,7 @@
 	"name": "DF_CompetitorproductMaster_IN1674",
 	"properties": {
 		"folder": {
-			"name": "End to End Workshop/Stg to Dw"
+			"name": "Final_Project/STG_TGT"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
