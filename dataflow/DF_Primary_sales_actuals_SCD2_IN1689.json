@@ -280,6 +280,7 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
+				"          CompanyCode,",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
 				"          Division,",
@@ -287,11 +288,18 @@
 				"          CustomerName,",
 				"          CountryCode,",
 				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
 				"          TransactionDate,",
 				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy,",
 				"          CompanyKey,",
 				"          PlantKey,",
-				"          CompanyCode",
+				"          StateKey",
 				"     )) ~> SNKPrimaryActuals"
 			]
 		}

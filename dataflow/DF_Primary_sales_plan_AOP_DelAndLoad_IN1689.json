@@ -229,7 +229,7 @@
 				"          StateKey,",
 				"          StateCode = select1@StateCode,",
 				"          SKUCode = select2@SKUCode,",
-				"          PoductKey = ProductKey",
+				"          ProductKey",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
