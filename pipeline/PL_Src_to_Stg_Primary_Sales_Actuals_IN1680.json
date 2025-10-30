@@ -24,34 +24,9 @@
 								"table": "Primary_Sales_Actuals",
 								"database": "Trainer"
 							},
-							"SRCstg": {
+							"SRCcontroltable": {
 								"schema": "KRavi",
-								"table": "Stg_Primary_Sales_Actuals_IN1680",
-								"database": "Target_ADF_B2025"
-							},
-							"SRCtgtCompany": {
-								"schema": "KRavi",
-								"table": "Alc_Company_Master_IN1680",
-								"database": "Target_ADF_B2025"
-							},
-							"SRCtgtState": {
-								"schema": "KRavi",
-								"table": "Alc_Geography_Master_IN1680",
-								"database": "Target_ADF_B2025"
-							},
-							"SRCtgtItem": {
-								"schema": "KRavi",
-								"table": "Alc_Product_Master_IN1680",
-								"database": "Target_ADF_B2025"
-							},
-							"SRCtgtPlant": {
-								"schema": "KRavi",
-								"table": "Alc_Plant_Master_IN1680",
-								"database": "Target_ADF_B2025"
-							},
-							"SRCtgtCustomers": {
-								"schema": "KRavi",
-								"table": "Alc_Customer_Master_IN1680",
+								"table": "ControlTable",
 								"database": "Target_ADF_B2025"
 							},
 							"SNKstgActuals": {
@@ -66,6 +41,45 @@
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "SCR_controltable",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_azure_sql_IN1680",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"database": "Target_ADF_B2025"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "update [KRavi].[ControlTable]\nset maxDate = (select max() from [KRavi].[Alc_Primary_Sales_Actuals_IN1680])",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],

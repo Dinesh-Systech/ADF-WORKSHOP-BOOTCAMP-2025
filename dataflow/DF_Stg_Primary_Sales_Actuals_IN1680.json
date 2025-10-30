@@ -19,7 +19,7 @@
 						"referenceName": "DS_Azure_sql_IN1680",
 						"type": "DatasetReference"
 					},
-					"name": "SRCstg"
+					"name": "SRCcontroltable"
 				}
 			],
 			"sinks": [
@@ -35,9 +35,6 @@
 				}
 			],
 			"transformations": [
-				{
-					"name": "max"
-				},
 				{
 					"name": "MaxRecords"
 				},
@@ -72,32 +69,16 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> Srcsrcactuals",
 				"source(output(",
-				"          CompanyCode as string,",
-				"          SalesOrgCode as string,",
-				"          DistributionChannel as integer,",
-				"          Division as integer,",
-				"          CustomerCode as string,",
-				"          CustomerName as string,",
-				"          CountryCode as string,",
-				"          ZoneCode as string,",
-				"          StateCode as string,",
-				"          SKUCode as integer,",
-				"          PlantCode as string,",
-				"          TransactionDate as date,",
-				"          VolumeActualCase as integer,",
-				"          CreatedAt as timestamp,",
-				"          UpdatedAt as timestamp,",
-				"          CreatedBy as string,",
-				"          UpdatedBy as string",
+				"          tablename as string,",
+				"          maxDate as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SRCstg",
-				"SRCstg aggregate(TransactionDate = max(TransactionDate)) ~> max",
+				"     format: 'table') ~> SRCcontroltable",
 				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
 				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
-				"max derive(TransactionDate = coalesce(TransactionDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"SRCcontroltable derive(TransactionDate = coalesce(maxDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
 				"MaxRecords derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = currentTimestamp(),",
 				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
