@@ -124,7 +124,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinSrcTgt",
 				"CompanyKey split(isNull(tgtCompanyCode),",
-				"     (CompanyName==tgtCompanyCode && SalesOrgCode!=tgtSalesOrgCode || SalesOrgName!=tgtSalesOrgName),",
+				"     (CompanyCode==tgtCompanyCode && SalesOrgCode!=tgtSalesOrgCode || SalesOrgName!=tgtSalesOrgName),",
 				"     disjoint: false) ~> split1@(Insert, Update)",
 				"split1@Insert alterRow(insertIf(true())) ~> alterRowInsert",
 				"split1@Update alterRow(updateIf(true())) ~> alterRowUpdate",
