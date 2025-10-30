@@ -61,7 +61,7 @@
 			],
 			"transformations": [
 				{
-					"name": "InnerCompany"
+					"name": "LeftCompany"
 				},
 				{
 					"name": "SLCTCompanyKey"
@@ -76,13 +76,13 @@
 					"name": "SLCTPlantKey"
 				},
 				{
-					"name": "InnerState"
+					"name": "LeftState"
 				},
 				{
-					"name": "InnerItem"
+					"name": "LeftItem"
 				},
 				{
-					"name": "InnerPlant"
+					"name": "LeftPlant"
 				},
 				{
 					"name": "SLCTKeys"
@@ -91,7 +91,7 @@
 					"name": "SLCTCustomerKey"
 				},
 				{
-					"name": "InnerCustomer"
+					"name": "LeftCustomer"
 				},
 				{
 					"name": "AuditCols"
@@ -257,10 +257,10 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SRCtgtCustomers",
 				"nullHandling, SLCTCompanyKey join(CompanyCode == tgt_CompanyCode,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerCompany",
+				"     broadcast: 'auto')~> LeftCompany",
 				"SRCtgtCompany select(mapColumn(",
 				"          tgt_CompanyCode = CompanyCode,",
 				"          CompanyKey",
@@ -285,22 +285,22 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SLCTPlantKey",
-				"InnerCompany, SLCTStateKey join(StateCode == tgt_StateCode,",
-				"     joinType:'inner',",
+				"LeftCompany, SLCTStateKey join(StateCode == tgt_StateCode,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerState",
-				"InnerState, SLCTItemKey join(SKUCode == tgt_SKUCode,",
-				"     joinType:'inner',",
+				"     broadcast: 'auto')~> LeftState",
+				"LeftState, SLCTItemKey join(SKUCode == tgt_SKUCode,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerItem",
-				"InnerItem, SLCTPlantKey join(PlantCode == tgt_PlantCode,",
-				"     joinType:'inner',",
+				"     broadcast: 'auto')~> LeftItem",
+				"LeftItem, SLCTPlantKey join(PlantCode == tgt_PlantCode,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerPlant",
-				"InnerCustomer select(mapColumn(",
+				"     broadcast: 'auto')~> LeftPlant",
+				"LeftCustomer select(mapColumn(",
 				"          SalesOrgCode,",
 				"          DistributionChannel,",
 				"          Division,",
@@ -325,11 +325,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SLCTCustomerKey",
-				"InnerPlant, SLCTCustomerKey join(CustomerCode == tgt_CustomerCode,",
-				"     joinType:'inner',",
+				"LeftPlant, SLCTCustomerKey join(CustomerCode == tgt_CustomerCode,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> InnerCustomer",
+				"     broadcast: 'auto')~> LeftCustomer",
 				"SLCTKeys derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = currentTimestamp(),",
 				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
