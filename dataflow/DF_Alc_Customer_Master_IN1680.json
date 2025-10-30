@@ -65,6 +65,9 @@
 				},
 				{
 					"name": "Transformation"
+				},
+				{
+					"name": "Update"
 				}
 			],
 			"scriptLines": [
@@ -168,7 +171,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftStgandTgt",
 				"LeftStgandTgt split(!isNull(tgt_CustomerCode) &&  tgt_IsActive=='Y' && (Address1!=tgt_Address1 ||Address2!=tgt_Address2 ||Address3!=tgt_Address3 ),",
-				"     isNull(tgt_CustomerCode) && !isNull(CustomerCode) || !isNull(tgt_CustomerCode) && tgt_IsActive=='Y' &&  (Address1!=tgt_Address1 ||Address2!=tgt_Address2 ||Address3!=tgt_Address3 ) ,",
+				"     isNull(tgt_CustomerCode) && !isNull(CustomerCode) || !isNull(tgt_CustomerCode) && tgt_IsActive=='Y' &&  (Address1!=tgt_Address1 ||Address2!=tgt_Address2 ||Address3!=tgt_Address3 ),",
 				"     disjoint: true) ~> Insert@(update, insert)",
 				"Insert@update select(mapColumn(",
 				"          CustomerCode = tgt_CustomerCode,",
@@ -258,11 +261,14 @@
 				"          each(match(type=='integer'), $$ = iifNull($$, -1)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('2999-12-31 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> nullHandle",
 				"SLCTupdate derive(IsActive = 'N',",
-				"          effective_end_date = currentTimestamp()) ~> updateEnd",
+				"          effective_end_date = currentTimestamp(),",
+				"          UpdatedBy = 'PL_Alc_Customer_Master_IN1680') ~> updateEnd",
 				"SLCTinsert derive(effective_start_date = currentTimestamp(),",
-				"          IsActive = 'N') ~> addStartdate",
+				"          IsActive = 'Y',",
+				"          UpdatedBy = 'PL_Alc_Customer_Master_IN1680') ~> addStartdate",
 				"Insert@insert derive(CustomerLocation = right(CustomerName, length(CustomerName)-locate('-',CustomerName))) ~> Transformation",
-				"updateEnd sink(allowSchemaDrift: true,",
+				"updateEnd alterRow(updateIf(true())) ~> Update",
+				"Update sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
