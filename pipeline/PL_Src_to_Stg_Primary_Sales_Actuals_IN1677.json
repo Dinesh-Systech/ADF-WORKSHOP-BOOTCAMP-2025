@@ -1,0 +1,134 @@
+{
+	"name": "PL_Src_to_Stg_Primary_Sales_Actuals_IN1677",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "InsertOrUpdate",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "SCR_controltable",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "update [KRavi].[ControlTable]\nset maxDate = (select max(TransactionDate) from [KRavi].[Stg_Primary_Sales_Actuals_IN1680])\nwhere tablename = 'actuals'",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "InsertOrUpdate",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LKP_stg_Actuals",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('LKP_stg_Actuals').output.count ,0)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "SCR_Insert",
+							"type": "Script",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": "Insert into  [KRavi].[ControlTable]\nValues('actuals','01-01-1900')"
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "LKP_stg_Actuals",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"folder": {
+			"name": "src_to_stg"
+		},
+		"annotations": []
+	}
+}
