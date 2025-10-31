@@ -22,6 +22,25 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Primary_Sales_Actuals_Incremental_IN1677",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcPrimarySalesActuals": {
+								"Schema": "Alcobev",
+								"Table": "Primary_Sales_Actuals",
+								"DB": "Trainer"
+							},
+							"TgtPrimarySalesActuals": {
+								"Schema": "JSivakum",
+								"Table": "Alc_control_table"
+							},
+							"SnkStgPrimarySalesActualsIN1677": {
+								"Schema": "JSivakum",
+								"Table": "Stg_Primary_Sales_Plan_AOP_IN1677"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
