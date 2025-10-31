@@ -27,9 +27,9 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"Srcsrcactuals": {
-								"schema": "Alcobev",
-								"table": "Primary_Sales_Actuals",
-								"database": "Trainer"
+								"schema": "KRavi",
+								"table": "test_Primary_Sales_Actuals",
+								"database": "Target_ADF_B2025"
 							},
 							"SRCcontroltable": {
 								"schema": "KRavi",
