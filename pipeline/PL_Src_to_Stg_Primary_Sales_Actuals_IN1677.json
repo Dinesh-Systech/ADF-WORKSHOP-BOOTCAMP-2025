@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+				"name": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1677",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
@@ -34,7 +34,7 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1680",
+						"activity": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1677",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -48,12 +48,19 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_AzureSqlDatabase_IN1677",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"db": "Target_ADF_B2025"
+					}
+				},
 				"typeProperties": {
 					"scripts": [
 						{
 							"type": "Query",
 							"text": {
-								"value": "update [KRavi].[ControlTable]\nset maxDate = (select max(TransactionDate) from [KRavi].[Stg_Primary_Sales_Actuals_IN1680])\nwhere tablename = 'actuals'",
+								"value": "update [JSivakum].[Alc_control_table]\nset maxDate = (select max(TransactionDate) from [JSivakum].[Stg_Primary_Sales_Plan_AOP_IN1677])\nwhere tablename = 'actuals'",
 								"type": "Expression"
 							}
 						}
@@ -91,11 +98,18 @@
 								"secureInput": false
 							},
 							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "LS_AzureSqlDatabase_IN1677",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"db": "Target_ADF_B2025"
+								}
+							},
 							"typeProperties": {
 								"scripts": [
 									{
 										"type": "Query",
-										"text": "Insert into  [KRavi].[ControlTable]\nValues('actuals','01-01-1900')"
+										"text": "Insert into  [JSivakum].[Alc_control_table]\nValues('actuals','01-01-1900')"
 									}
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
@@ -122,12 +136,20 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable_Tgt_In1677",
+						"type": "DatasetReference",
+						"parameters": {
+							"Schema": "JSivakum",
+							"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
+						}
+					},
 					"firstRowOnly": false
 				}
 			}
 		],
 		"folder": {
-			"name": "src_to_stg"
+			"name": "src_to_stg_Incremental_Ct"
 		},
 		"annotations": []
 	}
