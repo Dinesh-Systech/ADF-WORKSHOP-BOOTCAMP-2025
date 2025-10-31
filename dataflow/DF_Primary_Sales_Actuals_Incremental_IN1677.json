@@ -73,7 +73,7 @@
 				"     format: 'table') ~> SrcPrimarySalesActuals",
 				"source(output(",
 				"          Pipeline_Name as string,",
-				"          Latest_Modified_Date as timestamp",
+				"          Latest_Modified_Date as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
