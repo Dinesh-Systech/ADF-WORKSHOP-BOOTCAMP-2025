@@ -81,7 +81,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update [KRavi].[ControlTable]\nset maxDate = (select max() from [KRavi].[Alc_Primary_Sales_Actuals_IN1680])\nwhere tablename = 'actuals'",
+								"value": "update [KRavi].[ControlTable]\nset maxDate = (select max(TransactionDate) from [KRavi].[Stg_Primary_Sales_Actuals_IN1680])\nwhere tablename = 'actuals'",
 								"type": "Expression"
 							}
 						}
@@ -103,7 +103,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@less(activity('LKP_stg_Actuals').output.count ,0)",
+						"value": "@equals(activity('LKP_stg_Actuals').output.count ,0)",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [

@@ -46,6 +46,9 @@
 				},
 				{
 					"name": "AuditCols"
+				},
+				{
+					"name": "max"
 				}
 			],
 			"scriptLines": [
@@ -59,7 +62,7 @@
 				"          CountryCode as string,",
 				"          ZoneCode as string,",
 				"          StateCode as string,",
-				"          SKUCode as integer,",
+				"          SKUCode as string,",
 				"          PlantCode as string,",
 				"          TransactionDate as string,",
 				"          VolumeActualCase as integer",
@@ -78,11 +81,12 @@
 				"     format: 'table') ~> SRCcontroltable",
 				"TTransformation filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> MaxRecords",
 				"Srcsrcactuals derive(TransactionDate = toDate(TransactionDate,'dd-MM-yyyy')) ~> TTransformation",
-				"SRCcontroltable derive(TransactionDate = coalesce(maxDate,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
+				"max derive(TransactionDate = coalesce(maxdatefinal,toDate('01-01-1900','dd-MM-yyyy'))) ~> HandleTransactionDate",
 				"MaxRecords derive(CreatedAt = currentTimestamp(),",
 				"          UpdatedAt = currentTimestamp(),",
 				"          CreatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680',",
 				"          UpdatedBy = 'PL_Src_to_Stg_Primary_Sales_Actuals_IN1680') ~> AuditCols",
+				"SRCcontroltable aggregate(maxdatefinal = max(maxDate)) ~> max",
 				"AuditCols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
