@@ -60,7 +60,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update [JSivakum].[Alc_control_table]\nset maxDate = (select max(TransactionDate) from [JSivakum].[Stg_Primary_Sales_Plan_AOP_IN1677])\nwhere tablename = 'actuals'",
+								"value": "update [JSivakum].[Alc_control_table]\nset maxDate = (select max(TransactionDate) from [JSivakum].[Alc_Primary_Sales_Actuals_IN1677])\nwhere tablename = 'actuals'",
 								"type": "Expression"
 							}
 						}
@@ -141,7 +141,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Alc_Primary_Sales_Plan_AOP_IN1677"
+							"Table": "Alc_Primary_Sales_Actuals_IN1677"
 						}
 					},
 					"firstRowOnly": false
