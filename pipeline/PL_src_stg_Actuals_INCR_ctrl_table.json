@@ -74,7 +74,7 @@
 						{
 							"type": "NonQuery",
 							"text": {
-								"value": "@concat(\n'update alc_ctrl_table set load_timestamp = ',utcNow(), ' row_count = ',activity('LKrowcount').output ,' pipeline_id = ',pipeline().RunId)",
+								"value": "@concat(\n'update alc_ctrl_table set load_timestamp = ',utcNow(), ' row_count = ',activity('LKrowcount').output.value ,' pipeline_id = ',pipeline().RunId)",
 								"type": "Expression"
 							}
 						}
