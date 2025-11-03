@@ -1,0 +1,143 @@
+{
+	"name": "DF_incr_ctrl_table",
+	"properties": {
+		"folder": {
+			"name": "SRC - STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTctrltable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSQL_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKtgt"
+				},
+				{
+					"name": "SNKctrl"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGR"
+				},
+				{
+					"name": "SELECTtctrltable"
+				},
+				{
+					"name": "FILTERdate"
+				},
+				{
+					"name": "AUDIT"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "TRANSFORMATION"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as string,",
+				"          Division as string,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SRC",
+				"source(output(",
+				"          t_name as string,",
+				"          load_timestamp as timestamp,",
+				"          row_count as integer,",
+				"          pipeline_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TGTctrltable",
+				"TGTctrltable aggregate(groupBy(t_name),",
+				"     max_ctrl_table_date = max(load_timestamp)) ~> AGGR",
+				"AGGR select(mapColumn(",
+				"          t_name,",
+				"          max_ctrl_table_date",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SELECTtctrltable",
+				"TRANSFORMATION filter(TransactionDate > SNKctrl#outputs()[1].max_ctrl_table_date\r",
+				") ~> FILTERdate",
+				"FILTERdate derive(created_date = currentUTC(toString(currentTimestamp())),",
+				"          created_by = \"IN1685\",",
+				"          updated_date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),",
+				"          updated_by = \"UNK\") ~> AUDIT",
+				"AUDIT select(mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> SELECTcols",
+				"SRC derive(TransactionDate = toTimestamp(TransactionDate, 'dd-MM-yyyy')) ~> TRANSFORMATION",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SNKtgt",
+				"SELECTtctrltable sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> SNKctrl"
+			]
+		}
+	}
+}
