@@ -45,9 +45,6 @@
 					"name": "select4"
 				},
 				{
-					"name": "select5"
-				},
-				{
 					"name": "derivedColumn1"
 				},
 				{
@@ -122,10 +119,8 @@
 				"    SrcCompany@SalesOrgCode != select6@SalesOrgCode ||\r",
 				"    SrcCompany@SalesOrgName != select6@SalesOrgName\r",
 				"  )\r",
-				")\r",
-				",",
-				"     SrcCompany@CompanyCode==select6@CompanyCode && SrcCompany@SalesOrgCode==select6@SalesOrgCode&&SrcCompany@SalesOrgName==select6@SalesOrgName,",
-				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
+				"),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
 				"CompanyKey, select6 join(SrcCompany@CompanyCode == select6@CompanyCode,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -169,25 +164,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
-				"split1@Existing select(mapColumn(",
-				"          CompanyCode = split1@Existing@CompanyCode,",
-				"          CompanyKey,",
-				"          CompanyName = split1@Existing@CompanyName,",
-				"          SalesOrgCode = split1@Existing@SalesOrgCode,",
-				"          SalesOrgName = split1@Existing@SalesOrgName,",
-				"          ReportingHierarchyCode1 = split1@Existing@ReportingHierarchyCode1,",
-				"          ReportingHierarchyName1 = split1@Existing@ReportingHierarchyName1,",
-				"          ReportingHierarchyCode2 = split1@Existing@ReportingHierarchyCode2,",
-				"          ReportingHierarchyName2 = split1@Existing@ReportingHierarchyName2,",
-				"          ReportingHierarchyCode3 = split1@Existing@ReportingHierarchyCode3,",
-				"          ReportingHierarchyName3 = split1@Existing@ReportingHierarchyName3,",
-				"          CreatedDate = split1@Existing@CreatedDate,",
-				"          CreatedBy = split1@Existing@CreatedBy,",
-				"          UpdatedDate = split1@Existing@UpdatedDate,",
-				"          UpdatedBy = split1@Existing@UpdatedBy",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select5",
 				"split1@Insert derive(CreatedDate = currentTimestamp(),",
 				"          CreatedBy = 'IN1675') ~> derivedColumn1",
 				"split1@Update derive(UpdatedDate = currentTimestamp(),",
