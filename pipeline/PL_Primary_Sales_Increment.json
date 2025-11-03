@@ -3,10 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Workshop/SRC to STG",
+				"name": "WorkshopSRCtoSTG",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "InsertOrUpdate",
@@ -24,6 +22,27 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Incremental",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcPrimarySalesActuals": {
+								"PR_Schema": "Alcobev",
+								"PR_TableName": "Primary_Sales_Actuals",
+								"PR_DB": "Trainer"
+							},
+							"TgtPrimarySalesActuals": {
+								"PR_Schema": "PMahendi",
+								"PR_TableName": "control_table",
+								"PR_DB": "Target_Adf_B2025"
+							},
+							"SnkStgPrimarySalesActualsIN1677": {
+								"PR_Schema": "PMahendi",
+								"PR_TableName": "stg_Primary_Sales_Actuals_IN1684",
+								"PR_DB": "Target_ADF_B2025"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -32,49 +51,8 @@
 				}
 			},
 			{
-				"name": "SCR_controltable",
-				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "Workshop/SRC to STG",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "LS_AzureSql_IN1684",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"PR_DB": "Target_ADF_B2025"
-					}
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query",
-							"text": {
-								"value": "update [PMahendi].[control_table]\nset Latest_Modified_Date = (select max(TransactionDate) from [PMahendi].[stg_Primary_Sales_Actuals_IN1684])\nwhere Pipeline_Name = 'actuals'",
-								"type": "Expression"
-							}
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
 				"name": "InsertOrUpdate",
 				"type": "IfCondition",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "LKP_stg_Actuals",
@@ -125,8 +103,6 @@
 			{
 				"name": "LKP_stg_Actuals",
 				"type": "Lookup",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -152,6 +128,45 @@
 						}
 					},
 					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Script_controlTable",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "WorkshopSRCtoSTG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_AzureSql_IN1684",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"PR_DB": "Target_ADF_B2025"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "update [PMahendi].[control_table]\nset max_date = (select max(TransactionDate) from [PMahendi].[stg_Primary_Sales_Actuals_IN1684])\nwhere pipeline_id = 'actuals'",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
