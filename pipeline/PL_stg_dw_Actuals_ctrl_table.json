@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_stg_dw_Actuals",
+				"name": "DF_stg_dw_Actuals_control_table",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,45 +16,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_stg_dw_Actuals",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SRCstg": {
-								"SchemaName": "RRamesh",
-								"Table": "stg_ALC_Primary_Sales_Actuals_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SRCcompany": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Company_Master_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SRCcustomer": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Customer_Master_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SRCgeography": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Geography_Master_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SRCproduct": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Product_Master_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SRCplant": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Plant_Master_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							},
-							"SNKtgt": {
-								"SchemaName": "RRamesh",
-								"Table": "Alc_Primary_Sales_Actuals_IN1685",
-								"DB_Name": "Target_ADF_B2025"
-							}
-						}
+						"referenceName": "DF_stg_dw_Actuals_control_table",
+						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 8,
