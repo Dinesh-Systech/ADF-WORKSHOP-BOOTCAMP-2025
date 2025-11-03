@@ -5,6 +5,8 @@
 			{
 				"name": "DF_Src_to_Stg_Primary_Sales_Actuals_IN1677",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "InsertOrUpdate",
@@ -79,7 +81,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update [JSivakum].[Alc_control_table]\nset Latest_Modified_Date = (select max(TransactionDate) from [JSivakum].[Alc_Primary_Sales_Actuals_IN1677])\nwhere Pipeline_Name = 'actuals'",
+								"value": "update [JSivakum].[Alc_control_table]\nset Latest_Modified_Date = (select max(TransactionDate) from [JSivakum].[Stg_Primary_Sales_Actuals_IN1677])\nwhere Pipeline_Name = 'actuals'",
 								"type": "Expression"
 							}
 						}
@@ -90,6 +92,8 @@
 			{
 				"name": "InsertOrUpdate",
 				"type": "IfCondition",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "LKP_stg_Actuals",
@@ -140,6 +144,8 @@
 			{
 				"name": "LKP_stg_Actuals",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -160,7 +166,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Schema": "JSivakum",
-							"Table": "Alc_Primary_Sales_Actuals_IN1677"
+							"Table": "Stg_Primary_Sales_Actuals_IN1677"
 						}
 					},
 					"firstRowOnly": false
