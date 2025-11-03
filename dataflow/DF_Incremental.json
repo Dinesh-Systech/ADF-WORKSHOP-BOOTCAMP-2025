@@ -1,0 +1,133 @@
+{
+	"name": "DF_Incremental",
+	"properties": {
+		"folder": {
+			"name": "End to End Workshop/Src to Stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SrcPrimarySalesActuals"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TgtPrimarySalesActuals"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_AzureSql_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SnkStgPrimarySalesActualsIN1677"
+				},
+				{
+					"name": "SNK"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterTransactionDate"
+				},
+				{
+					"name": "AggMaxDate"
+				},
+				{
+					"name": "HandlingTransactionDate"
+				},
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "Transformation"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyCode as string,",
+				"          SalesOrgCode as string,",
+				"          DistributionChannel as string,",
+				"          Division as string,",
+				"          CustomerCode as string,",
+				"          CustomerName as string,",
+				"          CountryCode as string,",
+				"          ZoneCode as string,",
+				"          StateCode as string,",
+				"          SKUCode as string,",
+				"          PlantCode as string,",
+				"          TransactionDate as string,",
+				"          VolumeActualCase as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcPrimarySalesActuals",
+				"source(output(",
+				"          pipeline_id as string,",
+				"          max_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtPrimarySalesActuals",
+				"HandlingTransactionDate filter(TransactionDate>SNK#outputs()[1].TransactionDate) ~> FilterTransactionDate",
+				"TgtPrimarySalesActuals aggregate(max_date = max(max_date)) ~> AggMaxDate",
+				"SrcPrimarySalesActuals derive(TransactionDate = toTimestamp(TransactionDate,'dd-MM-yyyy')) ~> HandlingTransactionDate",
+				"FilterTransactionDate derive(CreatedAt = currentTimestamp(),",
+				"          UpdatedAt = toTimestamp(null()),",
+				"          CreatedBy = 'PL_ProductMaster_IN1677',",
+				"          UpdatedBy = toString(null())) ~> AuditColumns",
+				"AggMaxDate derive(TransactionDate = coalesce(coalesce(max_date,toDate('01-01-1900','dd-MM-yyyy')),toDate('01-01-1900','dd-MM-yyyy'))) ~> Transformation",
+				"AuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CompanyCode,",
+				"          SalesOrgCode,",
+				"          DistributionChannel,",
+				"          Division,",
+				"          CustomerCode,",
+				"          CustomerName,",
+				"          CountryCode,",
+				"          ZoneCode,",
+				"          StateCode,",
+				"          SKUCode,",
+				"          PlantCode,",
+				"          TransactionDate,",
+				"          VolumeActualCase,",
+				"          CreatedAt,",
+				"          UpdatedAt,",
+				"          CreatedBy,",
+				"          UpdatedBy",
+				"     )) ~> SnkStgPrimarySalesActualsIN1677",
+				"Transformation sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          TransactionDate",
+				"     )) ~> SNK"
+			]
+		}
+	}
+}
